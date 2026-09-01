@@ -103,9 +103,9 @@ shipped as art.
 Three cards on that grid are live. **Relay** opens straight from home, because it is a
 Merchant Dashboard product rather than a builder tool — but it opens a *shelf* rather than a
 demo, because Relay is a set of agents with one payment operation each. Pick an agent and its
-own conversation runs. **Cashfree Spark** also opens straight from home, and straight into its
-run: Spark is one agent, not a shelf and not a tier, so a picker in front of it would be a
-door with nothing behind it. It sits in the slot the SecureID tile used to hold. **Cashfree
+own conversation runs. **Cashfree Spark** sits in the slot the SecureID tile used to hold, and
+opens the **merchant dashboard** — the real Payments home, navy bar and welcome hero and product
+cards — with a Spark button floating on it. Tapping that button starts the chat. **Cashfree
 For Builders** sits in the hero slot (where Checkout360 sits in the reference) and opens
 **three more**. Each demo has its own steps, its own bottom panel and its own status chips:
 
@@ -114,7 +114,7 @@ For Builders** sits in the hero slot (where Checkout360 sits in the reference) a
 | **Relay · Cart Recovery** *(from home → shelf)* | **spoken** prompt → the month in a table → Relay builds trigger/condition/action → test run → activate → the buyer's own screen leaves a ₹2,598 cart → **Relay calls Priya** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Payment Recovery** *(from the shelf)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Subscription Dunning** *(from the shelf)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Cashfree Spark** *(from home)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
+| **Cashfree Spark** *(home → dashboard)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
 | **Agent Toolkit** | 6 tool calls: customer → ₹500 order → UPI → status → ₹200 refund → list | Merchant ledger, net position | **Real** captured sandbox run |
 | **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + verification → the v3 checkout SDK → validation skill → ShirtShop → Proceed to Pay → the Cashfree drop-in pays | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
 | **MCP Server** | unsettled → next settlement → withdrawal cost → recon report → download → payment link | Account: settlement, report, link | Illustrative |
@@ -146,8 +146,8 @@ MCP server, a repo to the skills — and the wire filling is that bridge being b
 bridges nothing: it is an assistant already inside the merchant dashboard, "same dashboard,
 same login, same permissions, nothing to install". Animating a connection would have staged a
 step that does not exist and contradicted the one line the product leads with. Segment 1 of the
-flow doc is "log in, click Spark", and tapping the tile already *is* that, so the run opens on
-the merchant's first real question.
+flow doc is "log in, click Spark" — which is played as an actual screen rather than as a step
+(see below), so the run itself opens on the merchant's first real question.
 
 `connectStep` is therefore optional: `loadDemo()` prepends it when a demo has one and starts on
 `steps[0]` when it does not, and the step counters on the cards add the extra beat the same way.
@@ -285,12 +285,32 @@ claims it is meant to prove taken from the positioning doc (`Narrative (2).docx`
 
 | segment | what happens | who is on screen |
 |---|---|---|
-| **1 · open it** | tapping the tile. **Not a step** — see above | — |
+| **1 · log in, click Spark** | **the merchant dashboard itself** — a screen, not a step | the merchant |
 | **2 · four prompts** | a settlement question **asked and answered in Hindi**, a customer's payment status, a refund that stops and asks, a ₹500 payment link | the merchant |
 | **3 · tell the customer** | the merchant leaves Spark and messages the buyer; the new order is paid | **the buyer** |
 
-So the run is seven steps and opens cold on `मेरा अगला सेटलमेंट कब आएगा?` — the merchant is
-mid-work in a dashboard they never left.
+### Segment 1 is a screen, not a step
+
+Spark's pitch is that it is a layer on a dashboard you already have — *"same dashboard, same
+login, same permissions, nothing to install"* — and that claim is only legible if you have seen
+the dashboard it is sitting on. Told as a chat bubble it is a boast; shown as the Payments home
+with a Spark button floating in the corner, it is just true.
+
+So `#mdash` is a replica of that screen: the navy bar with the Cashfree mark, the apps grid,
+Developers and Switch to Test; the purple welcome hero; and the Payment Gateway / Payment Links
+/ Payment Forms cards with their Try Test Environment and View Docs buttons. Copy is verbatim.
+**It is scenery — only the Spark button does anything**, and it pulses, because on a screen the
+viewer has never seen before the eye needs telling where to go.
+
+That makes it a level of its own (`mode = 'dash'`, z-index 12), modelled on the Relay shelf:
+home → dashboard → chat going in, and Back retracing the same way out. The run itself is then
+seven steps and opens cold on `मेरा अगला सेटलमेंट कब आएगा?`, because by then the merchant is
+already inside a dashboard you watched them open.
+
+> The card footer row is `.cfoot`, not `.cf`. `.cf` is the Cashfree drop-in overlay for the
+> Skills store demo, which sits at `opacity: 0` until that demo opens it — and it swallowed the
+> Try Test Environment row whole. Same trap as the `.sub` one below: **bare single-class rules
+> in this file are shared ground.**
 
 **The refund is two steps, not one, and that is the point.** The doc's control section says
 reading is free and anything that moves money stops and asks; the demo would be claiming that

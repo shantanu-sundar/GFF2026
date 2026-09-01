@@ -533,6 +533,148 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 /* the reference has one card whose tag sits under the title instead of at the foot */
 .hcard.tagtop { justify-content: flex-start; gap: 9px; }
 
+/* ---------------- level 2c: the merchant dashboard ----------------
+ *
+ * Segment 1 of the Spark flow doc is "merchant logs into the Cashfree Merchant
+ * Dashboard, clicks Spark to open the chat". Spark's whole pitch is that it is
+ * a layer ON a dashboard you already have -- same login, same permissions,
+ * nothing installed -- and that claim is only legible if you have SEEN the
+ * dashboard it is sitting on. So the Spark tile opens the dashboard, and the
+ * chat opens from the button on it.
+ *
+ * This is a replica of the real Payments home: the navy bar, the purple
+ * welcome hero, and the "Explore our products" cards. Copy is verbatim from
+ * that screen. It is scenery -- only the Spark button does anything.
+ */
+.mdash {
+  position: absolute; inset: 0; z-index: 12;
+  background: #f4f5f7;
+  overflow-y: auto;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.mdash.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
+.mdash::-webkit-scrollbar { width: 0; }
+
+/* the navy bar. Left-padded so the section's back button sits inside it
+   rather than on top of the logo. */
+.mdash .md-bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 38px 9px 9px 46px;
+  background: #180f4a;
+  position: sticky; top: 0; z-index: 3;
+}
+.mdash .md-bar .cfm { width: 19px; height: 19px; flex: none; display: grid; place-items: center; }
+.mdash .md-bar .cfm svg, .mdash .md-bar .cfm img { width: 19px; height: 19px; }
+.mdash .md-bar .grid9 {
+  display: grid; grid-template-columns: repeat(3, 2.5px); gap: 2.2px;
+  margin-left: 7px;
+}
+.mdash .md-bar .grid9 i { width: 2.5px; height: 2.5px; border-radius: 50%; background: rgba(255,255,255,0.75); }
+.mdash .md-bar .bpill {
+  margin-left: auto; padding: 4px 8px; border-radius: 5px;
+  background: #fff; color: #180f4a;
+  font-size: 8.5px; font-weight: 700; white-space: nowrap;
+}
+.mdash .md-bar .bpill + .bpill { margin-left: 5px; }
+
+.mdash .md-body { padding: 10px 11px 74px; }
+
+/* the welcome hero, with the light rays the real one has */
+.mdash .md-hero {
+  position: relative; overflow: hidden;
+  border-radius: 10px; padding: 15px 14px 16px;
+  background: linear-gradient(128deg, #35006e 0%, #4b1596 55%, #3b0b7d 100%);
+  color: #fff;
+}
+.mdash .md-hero::after {
+  content: ''; position: absolute; right: -30px; top: -46px;
+  width: 190px; height: 190px; transform: rotate(24deg);
+  background: repeating-linear-gradient(90deg,
+    rgba(255,255,255,0.045) 0 7px, rgba(255,255,255,0) 7px 26px);
+  -webkit-mask-image: linear-gradient(200deg, #000 8%, transparent 62%);
+  mask-image: linear-gradient(200deg, #000 8%, transparent 62%);
+}
+.mdash .md-hero h4 {
+  position: relative; z-index: 2;
+  margin: 0 0 7px; font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+}
+.mdash .md-hero p {
+  position: relative; z-index: 2;
+  margin: 0 0 13px; font-size: 10px; line-height: 1.5; color: rgba(255,255,255,0.9);
+  max-width: 26ch;
+}
+.mdash .md-hero .act {
+  position: relative; z-index: 2;
+  display: block; width: 100%; padding: 8px 0; border-radius: 5px;
+  background: #fff; color: #5b21b6;
+  font-size: 10.5px; font-weight: 700; text-align: center;
+}
+
+.mdash .md-h5 {
+  margin: 15px 0 9px; font-size: 12px; font-weight: 700;
+  letter-spacing: -0.015em; color: #1f2430;
+}
+
+.mdash .md-card {
+  background: #fff; border: 1px solid #e6e8ec; border-radius: 9px;
+  padding: 12px 12px 11px; margin-bottom: 9px;
+}
+.mdash .md-card .ct { display: flex; align-items: center; gap: 8px; }
+.mdash .md-card .ci {
+  flex: none; width: 24px; height: 24px; border-radius: 6px;
+  display: grid; place-items: center;
+}
+.mdash .md-card .ci svg { width: 13px; height: 13px; }
+.mdash .md-card .ci.gw { background: #fdf0dc; color: #d98324; }
+.mdash .md-card .ci.pl { background: #dcf4f2; color: #0e9c94; }
+.mdash .md-card .ci.pf { background: #dff3e6; color: #16964f; }
+.mdash .md-card .cn { font-size: 12px; font-weight: 600; color: #1f2430; letter-spacing: -0.015em; }
+.mdash .md-card .cd {
+  margin: 8px 0 11px; font-size: 9.5px; line-height: 1.55; color: #7c8493;
+}
+/* NOT .cf -- that is the Cashfree drop-in overlay, which is opacity:0 until the
+   store demo opens it, and it swallowed this row whole. Bare single-class rules
+   in this file are shared ground. */
+.mdash .md-card .cfoot { display: flex; align-items: center; gap: 12px; }
+.mdash .md-card .btry {
+  padding: 5px 9px; border-radius: 5px;
+  border: 1px solid #a78bfa; color: #6d28d9;
+  font-size: 9px; font-weight: 600; white-space: nowrap;
+}
+.mdash .md-card .bdoc { font-size: 9px; font-weight: 600; color: #6d28d9; }
+
+/* --- the Spark button ---
+ * A floating pill, the way an assistant that lives on top of a product always
+ * arrives. It is the only live thing on this screen, so it pulses: on a shot
+ * of a dashboard nobody has seen before, the eye needs telling where to go.
+ */
+.mdash .md-spark {
+  position: sticky; bottom: 13px; float: right; margin-right: 3px;
+  z-index: 4; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 15px 9px 12px; border-radius: 999px;
+  background: linear-gradient(140deg, #14c47d 0%, #00ad6c 52%, #00915a 100%);
+  color: #fff; font-size: 11.5px; font-weight: 700; letter-spacing: -0.01em;
+  box-shadow: 0 8px 22px rgba(0, 145, 90, 0.42), 0 0 0 1px rgba(255,255,255,0.16) inset;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mdash .md-spark:hover { transform: translateY(-2px) scale(1.03); }
+.mdash .md-spark svg { width: 14px; height: 14px; }
+.mdash .md-spark::before {
+  content: ''; position: absolute; inset: -4px; border-radius: 999px;
+  border: 2px solid rgba(0, 173, 108, 0.5);
+  animation: sparkpulse 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  pointer-events: none;
+}
+@keyframes sparkpulse {
+  0%   { transform: scale(0.94); opacity: 0.85 }
+  70%  { transform: scale(1.16); opacity: 0 }
+  100% { transform: scale(1.16); opacity: 0 }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mdash .md-spark::before { animation: none; opacity: 0.6 }
+}
+
 /* ---------------- glassmorphic product icons ---------------- */
 
 /*
@@ -2434,7 +2576,59 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
               </div>
             </div>
 
-            <div class="backbtn" id="back" style="display:none">
+        
+            <!-- level 2c: the merchant dashboard Spark sits on -->
+            <div class="mdash gone" id="mdash">
+              <div class="md-bar">
+                <span class="cfm" id="md-mark"></span>
+                <span class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="bpill">Developers</span>
+                <span class="bpill">Switch to Test</span>
+              </div>
+
+              <div class="md-body">
+                <div class="md-hero">
+                  <h4>Welcome to Cashfree Payments</h4>
+                  <p>Explore our products that best suit your business and scale faster.
+                    Activate the products to process real-time payments.</p>
+                  <span class="act">Activate</span>
+                </div>
+
+                <div class="md-h5">Explore our products</div>
+
+                <div class="md-card">
+                  <div class="ct"><span class="ci gw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="m14.5 14.5 6-6 2.5 2.5-6 6-3 .5.5-3Z"/></svg></span>
+                    <span class="cn">Payment Gateway</span></div>
+                  <p class="cd">Accept domestic and international payments with 100+ payment
+                    options. Get paid the next day.</p>
+                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
+                </div>
+
+                <div class="md-card">
+                  <div class="ct"><span class="ci pl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6 14.5h4"/></svg></span>
+                    <span class="cn">Payment Links</span></div>
+                  <p class="cd">Create and share payment links instantly with your customers via
+                    SMS, email, WhatsApp etc., and receive payments in no time.</p>
+                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
+                </div>
+
+                <div class="md-card">
+                  <div class="ct"><span class="ci pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></span>
+                    <span class="cn">Payment Forms</span></div>
+                  <p class="cd">Create Payment Forms, a no-code solution, to collect domestic and
+                    international payments instantly from multiple customers using a common link.</p>
+                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
+                </div>
+
+                <!-- the one live thing on this screen -->
+                <div class="md-spark" id="md-spark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg>
+                  Spark
+                </div>
+              </div>
+            </div>
+
+    <div class="backbtn" id="back" style="display:none">
               <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#1d221f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
@@ -4405,13 +4599,17 @@ async function playScene(sc, animate) {
 const homeEl = document.getElementById('home');
 const tier2El = document.getElementById('tier2');
 const agentsEl = document.getElementById('agents');
+const mdashEl = document.getElementById('mdash');
+// the dashboard bar wears the same mark the connect cards do, rather than a
+// second hand-drawn copy of it
+document.getElementById('md-mark').innerHTML = CX_ICON.cf;
 const backEl = document.getElementById('back');
 const provEl = document.getElementById('prov');
 
 /** The demos that hang off the Relay shelf rather than off tier 2. */
 const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayDun'];
 
-/** 'home' | 'tier2' | 'agents' | 'demo'. Taps only advance steps while in 'demo'. */
+/** 'home' | 'tier2' | 'agents' | 'dash' | 'demo'. Taps only advance steps in 'demo'. */
 let mode = 'home';
 
 function setProvenance(key) {
@@ -4446,6 +4644,7 @@ function goHome() {
   homeEl.classList.remove('gone');
   tier2El.classList.add('gone');
   agentsEl.classList.add('gone');
+  mdashEl.classList.add('gone');
   backEl.style.display = 'none';
   thread.innerHTML = '';
   paintNav();
@@ -4465,6 +4664,31 @@ function goAgents() {
   homeEl.classList.add('gone');
   tier2El.classList.add('gone');
   agentsEl.classList.remove('gone');
+  mdashEl.classList.add('gone');
+  backEl.style.display = 'grid';
+  thread.innerHTML = '';
+  paintNav();
+}
+
+/*
+ * Level 2c. Spark is a layer on a dashboard the merchant already has, and that
+ * claim only reads if you have seen the dashboard. So the Spark tile opens the
+ * real Payments home -- navy bar, welcome hero, product cards -- and the chat
+ * opens from the Spark button floating on it. That IS segment 1 of the flow
+ * doc: log in, click Spark.
+ */
+function goDash() {
+  mode = 'dash';
+  hideConnect();
+  setChassis(null);
+  screenEl2.classList.remove('skin-claude');
+  stopAuto();
+  if (window.__tourActive) endTour();
+  homeEl.classList.add('gone');
+  tier2El.classList.add('gone');
+  agentsEl.classList.add('gone');
+  mdashEl.classList.remove('gone');
+  mdashEl.scrollTop = 0;
   backEl.style.display = 'grid';
   thread.innerHTML = '';
   paintNav();
@@ -4480,6 +4704,7 @@ function goTier2() {
   homeEl.classList.add('gone');
   tier2El.classList.remove('gone');
   agentsEl.classList.add('gone');
+  mdashEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
 }
@@ -4494,6 +4719,7 @@ function openDemo(key) {
   tier2El.classList.add('gone');
   homeEl.classList.add('gone');
   agentsEl.classList.add('gone');
+  mdashEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
 
@@ -4502,8 +4728,10 @@ function openDemo(key) {
 
 document.getElementById('card-builders').addEventListener('click', (e) => { e.stopPropagation(); goTier2(); });
 document.getElementById('card-relay').addEventListener('click', (e) => { e.stopPropagation(); goAgents(); });
-// Spark is one agent, not a shelf and not a tier, so its tile opens the run itself
-document.getElementById('card-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
+// Spark's tile opens the dashboard it lives on; the button on that dashboard
+// opens the chat. Two taps, because that is the two the merchant actually makes.
+document.getElementById('card-spark').addEventListener('click', (e) => { e.stopPropagation(); goDash(); });
+document.getElementById('md-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
 
 document.querySelectorAll('.acard').forEach((card) => {
   card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.agent); });
@@ -4532,7 +4760,7 @@ backEl.addEventListener('click', (e) => {
   // picked from, the three builder demos to tier 2, everything else to home.
   if (mode === 'demo') {
     if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goAgents(); return; }
-    if (DEMO_KEY === 'spark') { goHome(); return; }
+    if (DEMO_KEY === 'spark') { goDash(); return; }
     goTier2();
     return;
   }
