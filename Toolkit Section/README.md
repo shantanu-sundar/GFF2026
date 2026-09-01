@@ -155,6 +155,64 @@ has native angular and radial fills, so these survive as editable gradients.
 > which also applied between the two spans of a two-tone name, rendering "AutoCollect" as
 > "Auto Collect". The icon carries `margin-right` instead.
 
+## The Figma file, and what "same as the HTML" means
+
+<https://www.figma.com/design/W35CsMvurIhKQuC3Y8pZoB> — built natively with the Figma
+plugin API, not imported. Every frame is **360×800, Figma's Android Large**.
+
+**The standard is parity with `index.html`.** Anything below that is a defect, not a
+trade-off, and this section exists so the gaps are visible instead of quietly shipped.
+
+### Verified identical
+
+| thing | how it was made identical |
+|---|---|
+| every prompt, tool line, reply, stat, tag | lifted verbatim from the `DEMOS` object — not paraphrased |
+| the shelf card | `.acard`: `#0a0a0b`, `1px #2a2a2a`, radius 20, padding 13/14 |
+| the chat | `.bubble-me` `#e6f7cd` + `rgba(0,122,76,.14)`, `.bubble-ai` white + `rgba(29,34,31,.10)`, asymmetric radii 17/17/17/6, `.toolrow` and `.ledger` on `#fafaf9` |
+| the orbs | each CSS `radial-gradient(rx ry at cx cy)` converted stop-for-stop into a Figma radial fill, stacked in **reversed** order because CSS paints top-first and Figma's `fills` is bottom-first |
+| the corner blobs | `.hblob` recipe as a gradient ellipse with a real Figma layer blur at 30, opacity 0.34 |
+| screen structure | `ph-top` / `thread` / `ledger` / `composer`, thread bottom-aligned and clipped so turns accumulate and scroll off the top |
+
+### Cannot be identical, and why
+
+These are mechanism differences, not sloppiness. Each is a place where Figma has no
+equivalent primitive:
+
+- **`filter: blur(1.4px)` on `.orb::before`.** Figma has no per-fill blur, so the
+  gradients are stacked on the ball itself. Reads the same; the layer tree differs.
+- **The prompt typing into the composer.** Figma has no text-typing primitive. The
+  prompt currently appears already sent. *Closable* by splitting each beat into a
+  typing frame and a sent frame — 8 more frames per agent.
+- **The `bead` travelling down the connect wire.** Replaced by a Smart Animate wire
+  fill plus the switch throw, on a 0.35s auto-advance. The motion is there; the bead
+  is not.
+- **The blink** is a two-variant component swap on an After-delay loop, not a CSS
+  `scaleY` keyframe. Same read, different mechanism.
+- **The thread renders a window of the last ~5 turns**, where the HTML holds the whole
+  transcript and lets `overflow: hidden` clip it. Identical on screen; a shorter layer
+  tree underneath.
+
+### Not built yet
+
+**Only Cart Recovery exists.** Payment Recovery and Subscription Dunning are the same
+eight-beat shape with different orbs, buyers and amounts, and are not in the file. Spark
+has no screen. The For Builders demos open nothing. Do not describe the file as complete.
+
+### The flow
+
+`02 Relay — agents` → Cart Recovery card → `CR0a` **auto-advances after 0.35s** (that is
+the connect animation) → `CR0b` → then every frame is a **whole-frame hotspot**, so a tap
+anywhere advances. `CR7` returns to the shelf; `back` returns from anywhere.
+
+> One trap: the frame modifier and the inner container must never share a class name —
+> and in Figma the equivalent trap is windowing. `CR0b` first rendered **both** connect
+> cards, idle and live, because the two states are alternatives but the window that picks
+> a frame's turns was a contiguous range. Ranges cannot express "one of these two".
+
+**Set `Prototype → Device → Android Large` by hand.** `prototypeDevice` is not writable
+from the plugin API, and neither is the document name.
+
 ## Three levels
 
 The phone boots to a **home screen of three tiles — Relay, Spark, Cashfree For Builders —
