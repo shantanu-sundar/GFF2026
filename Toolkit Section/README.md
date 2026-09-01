@@ -261,6 +261,15 @@ logo again is a one-line change. It renders through `img.cfmark`, which carries
 `max-width/max-height: 100%` so it can never outgrow whatever box a call site hands it; the two
 call sites that need a specific size (the 38px connect tile, the 14px WhatsApp link) set it.
 
+**Relay has a mark too**, and the home screen uses it: `#card-relay`'s glass tile carries the
+two-swoosh Relay logo (`../black -Logo.svg`) instead of the drawn glyph every other card gets.
+Only the mark is lifted, not the lockup — that file sets the word "Relay" as a **black** path,
+which would be invisible on a near-black card and a duplicate of the card's own label anyway.
+The four gradients come along with their ids renamed `rl0`–`rl3`, because gradient ids are
+global to the document and `paint0_linear_4_13` is exactly the kind of name a second pasted
+logo would also bring. It runs at 21px rather than the 16px the glyphs use, since it is two
+thin strokes rather than one solid shape.
+
 > One trap worth remembering, and it has now bitten twice: the section subtitle up top is a bare
 > `.sub { margin: 18px 0 0 }`, and it leaked into the call scene's caption spans and pushed them off their node. Those are
 > `.cwho` now. The second time was the mark inside the WhatsApp link, on a `<span class="cf">`
