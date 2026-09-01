@@ -2549,20 +2549,9 @@ const DEMOS = {
     // every skill path below are lifted from @cashfreepayments/agent-skills@0.2.6
     // itself (dist/cli-ui.js, dist/config.js) -- not from a screenshot.
     surface: 'terminal',
-    connectStep: {"kind":"connect","label":"Install the skills","tool":"npx @cashfreepayments/agent-skills","ask":"npx @cashfreepayments/agent-skills add skills","mono":true,"say":"It asks which assistants to configure. Claude Code here \u2014 the same one command covers the other eight.",
+    connectStep: {"kind":"connect","label":"Install the skills","tool":"npx @cashfreepayments/agent-skills","ask":"npx @cashfreepayments/agent-skills add skills","mono":true,"say":"One command, run at your project root. That is the whole install.",
       term: { kind: 'shell', ms: 1180, banner: true,
-        setup: '\ud83c\udfaf Agent Skills Setup - Add Cashfree Payments Integration Knowledge to AI Assistants',
-        pick: { q: 'Select AI coding assistants to configure:', items: [
-          { n: 'Cursor' },
-          { n: 'Claude Code', on: true },
-          { n: 'Codex' },
-          { n: 'OpenCode' },
-          { n: 'VS Code Copilot' },
-          { n: 'Gemini CLI' },
-          { n: 'Antigravity' },
-          { n: 'GitHub Copilot CLI' },
-          { n: 'Kiro' }
-        ] } },
+        setup: '\ud83c\udfaf Agent Skills Setup - Add Cashfree Payments Integration Knowledge to AI Assistants' },
       patch: { __headline: 'installing\u2026' } },
     connect: {"host":"Claude Code + Cursor","hostIcon":"ide","target":"Cashfree Skills","via":"npx @cashfreepayments/agent-skills","ok":"Skills + manifest installed"},
     title: 'Agent <span class="thin">Skills</span>',
@@ -2583,6 +2572,27 @@ const DEMOS = {
       ]
     },
     steps: [
+      {
+        // no ask: the installer is still running. Its own beat because the
+        // banner and a nine-item picker do not share one terminal screen --
+        // and the script separates them too ("it asks which assistants").
+        label: 'Pick your assistant', tool: 'Claude Code',
+        call: { name: 'select frameworks', summary: 'claude-code', ms: 900 },
+        term: { kind: 'shell', ms: 520,
+          pick: { q: 'Select AI coding assistants to configure:', items: [
+            { n: 'Cursor' },
+            { n: 'Claude Code', on: true },
+            { n: 'Codex' },
+            { n: 'OpenCode' },
+            { n: 'VS Code Copilot' },
+            { n: 'Gemini CLI' },
+            { n: 'Antigravity' },
+            { n: 'GitHub Copilot CLI' },
+            { n: 'Kiro' }
+          ] } },
+        say: 'It asks which assistants you want. Claude Code here \u2014 the same one command covers the other eight.',
+        patch: {}
+      },
       {
         // no ask: the installer is still running
         label: 'What it wrote', tool: '.claude/skills/cashfree-skills/',
