@@ -91,6 +91,65 @@ text, every image decoded, no console errors. A clipped-text check is worth keep
 any harness you write against this file — a caption one pixel wider than its box is
 invisible in a screenshot and arrives in Figma as a truncated layer.
 
+## `booth-frames.html` — the eight-frame loop for the booth
+
+Generated, not hand-written. Eight frames, every one **360×800 — Figma's Android Large**,
+so they drop straight into the prototype file next to the Index / Index L2 frames already
+there:
+
+`B01 Introducing Checkout 360` → `B02 Shopping Cart` → `B03 Checkout — Base` →
+`B04`–`B07` the four feature callouts → `B08 Payment Successful` → **back to `B01`.**
+
+**Do not draw a phone around these.** Select the frames in Figma and set
+**Prototype → Device → Android Large**; Figma renders the phone body itself at Present
+time. A shell baked into a 360×800 frame would eat ~40px a side and shrink the actual
+checkout — the booth would show a *smaller* design, not a bigger one.
+
+`B03` and `B08` carry their `data-goto` **on the frame element itself**, meaning the whole
+frame is the hotspot. A booth crowd jabs at the screen rather than hunting for the one live
+element, and `B08` looping back to `B01` is what lets the thing run unattended all day.
+
+The cart totals **₹1,530**, which is exactly what the checkout then charges. Two of its
+three rows are tinted tiles rather than photographs: the reference export contains only two
+mug images, and the green one is reserved for the checkout's cross-sell card — putting it in
+the cart as well would have the buyer cross-sold something already in their basket. The
+markup takes an `<img>` in place of the `<span>` unchanged when there is real photography.
+
+## Index and L3 — the navigation in front of it all
+
+Flow D in `checkout-frames.html`, built to the frame spec from the Figma file rather than to
+a guess: **Index 360×902, `#000000`**, column, padding 8, gap 8; **Index L3 360×800,
+`#010101`**, padding 8. (The L3 spec says `flex-direction: row` — that is the outer wrapper
+holding one full-width column, so the content here is a column inside a row and the geometry
+is identical.)
+
+| frame | what it is |
+|---|---|
+| `N01 Index` | the black bento. Checkout360 → `B01`, Relay → `N02`, For Builders → `N03`; the rest are the `locked` tiles from the section's own home grid |
+| `N02 L3 · Relay` | Cart Recovery, Payment Recovery, Subscription Dunning |
+| `N03 L3 · Cashfree For Builders` | Agent Toolkit, Agent Skills, MCP Server |
+
+**The copy on those six cards is lifted verbatim from the `DEMOS` blurbs in `index.html`,**
+so the booth says exactly what the section says. Do not paraphrase it in one place only.
+
+**The other tiles have no L3, on purpose.** Payouts, Subscriptions, AutoCollect, EasySplit,
+CrossBorder and Settlements have no sub-items or descriptions anywhere in this repo, and a
+booth screen is the last place to find out what a made-up product description sounds like.
+They render as `locked` tiles with their existing tag and nothing else. Give them sourced
+copy before wiring them.
+
+The card arc is a **conic-gradient ring with a punched hole**, and the B01 blobs are
+**radial-gradients** — not blurred divs. `filter: blur()` is the one thing that reliably
+arrives in Figma as a flat raster, which is exactly the layer you would want to edit. Figma
+has native angular and radial fills, so these survive as editable gradients.
+
+> Two traps this cost, both worth remembering. The frame modifier for the 902-tall Index was
+> first called `.idx` — the same class as the inner container — so `.idx`'s `padding: 8px`
+> and `display: flex` landed on the *frame* too, insetting the screen and giving the artboard
+> 16px of scroll. It is `.frame.idxf` now. And `.itile .nm` had `gap: 8px` for the icon,
+> which also applied between the two spans of a two-tone name, rendering "AutoCollect" as
+> "Auto Collect". The icon carries `margin-right` instead.
+
 ## Three levels
 
 The phone boots to a **home screen replicating `../Checkout Screen/Screen 1.png`** — the
