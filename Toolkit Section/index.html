@@ -884,6 +884,12 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   box-shadow: none;
 }
 .cxi-node .tile svg { width: 19px; height: 19px; }
+/* The Cashfree mark ships as artwork rather than as a path we redraw, so it is
+   an <img> among inline SVGs. It fills whatever box it is given; the connect
+   tile is the one place that needs an explicit size. */
+img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 100%; }
+.cxi-node .tile img.cfmark { width: 24px; height: 24px; }
+.wa .wlink .lt .cfl img.cfmark { width: 14px; height: 14px; }
 .cxi-node .nm {
   font-size: 10.5px; font-weight: 600; text-align: center; line-height: 1.2;
   color: rgba(29,34,31,0.78);
@@ -1286,7 +1292,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   background: rgba(255, 255, 255, 0.72);
 }
 .wa .wlink .lt { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 600 }
-.wa .wlink .lt .cf { flex: none; width: 14px; height: 14px }
+.wa .wlink .lt .cfl { flex: none; width: 14px; height: 14px }
 .wa .wlink .lu {
   display: block; margin-top: 2px;
   font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(29, 34, 31, 0.5);
@@ -2519,7 +2525,8 @@ const CX_ICON = {
  "claude": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#c15f3c\" stroke-width=\"1.9\" stroke-linecap=\"round\"><path d=\"M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9\"/></svg>",
  "ide": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2.5\"/><path d=\"M3 8.5h18M8 13l2 2-2 2M12.5 17h3.5\"/></svg>",
  "dash": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2.5\"/><path d=\"M7 15v3M12 10v8M17 13v5\"/></svg>",
- "cf": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00ad6c\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 17L12 5l7 12M9 17l3-5 3 5\"/></svg>"
+ /* the Cashfree mark, inlined so the section stays one self-contained file */
+ "cf": '<img class="cfmark" alt="Cashfree" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABQxJREFUeAHtWM1uHEUQruoxRkFivUduXvECGZ6A9RPElm0ih0jZOXLzCgkhLp5ckCUOyQUhkCAbaZ1AYsvmCdi8ANgvgIZbjhbkQNYzXVT/zE/Pzv6FzWot7Wd5erq7uru+6arq6gVYYoklrjVQP395tAmreCtrlbYUQ96LGNUOFX2SLiCGM9gLIpgBMHs7/qmDSPdMKwIR6U71TIWI//KB6NTzVqhor1pSduBvrw1BcAn/A+jUnn/fAYH3yp1GIa4pUoqc7aOyHPcr8pCWBTksTKq7zYiI+nID9j6LYCYEFE6+C3niA72w1VDrVBhAFZOMastJVO5PBP3XTKIdwRsAK1tPvm2BlA14E1TavjQdSD5/jFtFQ7Q0LyFOArjdPoMpgTBvnD7w2ZF/46XreSNZn5IhbH9+f4rZsu81P2y1z4GSX4FDUfqPkLDy6p0JnHxzMM10K+ME6PSDRh9Ea1i0ZFMDIURqJE4J9j3miHNj62WUD4rt5EX/MnvACOn4ax/+6QcQhGMj1FgCyAtfnXzIb96BcGJKwRWlUtS4qLD9wmqoWj2gdYCXQSYv4nUkNBEJXDvWdYRNqgkfnobs3GE0Sr+JTOid7T9DiN+/D0kNMF4DTNYAEluqeqzqNX6v6fbyO/f/VZyPTcZXJqPNhnT5IqurkpRZyQausq88DRujdBu7AxmJ27+HV0dNXt07MEqkytgvYeN7WhY3Cyk5zyZ69pVPMq47EyRyn+2wwZ/+EQ/KnJuHN+Bd4DbYGKbX1FGo393cF4n0B2xdaHdQ/sDmgs18Af7eQn60+umZIXH8xSZ/hNPsHFePnUOjx+mXDZDIEYoaUMgDSNIG7B72qvSZeAdSrN49eziqP/6x1UKPCVDmI5erQSffAZI+b0laARR4nkluHUZMYgNk/EcpzPr86FWtN/MwilTzc/tfY31rF46Al3yMxfApY8c/NAlUJqdkEv6/UrL1YetNvQNjCcRrN22AMS5AdO4IUOwXE0Q+E3oDk8irOqIoJB1yaDidOQFI6j7aRAo1EYqyvtP9OsjX9cz1dCFcglqmzySLp448H7bcTAnQgx98SLBOhdSNtyRfPP7XB0GQ5rM6e33Vd5VjGRTSPR9evTcfAklyo+GhZxZOQ+j+nV4mIPp+Ls0EkdPpoOOah1Bf30CXiBEED+djQp63Ui8e0FS2f3nV1AdFmjSo21kZWsbEFm2JVTIFzDQKYXuvw4XOJk2MJzfCoEopVOKW6AjE2g2YBqJc131Kjqpliph9GG3vhWBJcL7TczvJmhCZCINQcuBWnRB97RvqjMAKmRLeSjqtSKAiwYdU1vj8btP25k8pI2dgHPtp9MrMzFsZSWD2YdTC7kQOwclZdqXUGl7CJ0eucoJ3iFL/13t0CVudaNQ687vQEPhpANVVCRcVMk3zYgPoGAdWmB8BIW7mFWXbVc6J64iFXaLR9q+nhXmB4IVzfUGvQjny818yVG4uejAG8yOw3Q1ZLXthRxXvI6dfOXl2AtqnV3LyCsz3Uq9ISBNiYffnntMnKDul7R6xAz9ZIBNKsdsN+fMHA+3qnqAx4pSuwPwJKGw/6Qy0CW/dWFD6c+B4B9bDYEHA94amSd5sA3ESNwEWg8CzOz6Vf1wFvEY7YH6RcH/p2O32JhoKi4Cd7hk77eO0SjSZ/SssjA/A7lGLCC2JUho+AotDQGGn2+IY+pi3oAfXGnwvgCWWWGKJa4H/ALQqGaixCsdCAAAAAElFTkSuQmCC">'
 };
 
 const DEMOS = {
@@ -2616,8 +2623,8 @@ const DEMOS = {
 
   relayCart: {
     agent: { name: 'Cart Recovery', orb: 'o1' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Cart Recovery agent","say":"Relay is open on Cart Recovery — Agents, Runs and Connections."},
-    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cart Recovery","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Cart Recovery agent","say":"Connected to your Cashfree sandbox. Relay is open on Cart Recovery — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Cart <span class="thin">Recovery</span>',
     blurb: 'Say what you want chased. Relay builds it, tests it, waits for your yes — then calls the buyer back itself.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Cart Recovery journey doc' },
@@ -2723,8 +2730,8 @@ const DEMOS = {
 
   relayPay: {
     agent: { name: 'Payment Recovery', orb: 'o2' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Payment Recovery agent","say":"Relay is open on Payment Recovery — Agents, Runs and Connections."},
-    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Payment Recovery","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Payment Recovery agent","say":"Connected to your Cashfree sandbox. Relay is open on Payment Recovery — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Payment <span class="thin">Recovery</span>',
     blurb: 'Every failed payment gets a second try — with the real reason, and the method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Payment Recovery journey doc' },
@@ -2826,8 +2833,8 @@ const DEMOS = {
 
   relayDun: {
     agent: { name: 'Subscription Dunning', orb: 'o4' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Relay is open on Subscription Dunning \u2014 Agents, Runs and Connections."},
-    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Subscription Dunning","via":"Agents \u00b7 Runs \u00b7 Connections","ok":"canvas, agents and runs"},
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Connected to your Cashfree sandbox. Relay is open on Subscription Dunning — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Subscription <span class="thin">Dunning</span>',
     blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, and retries on the day the money actually lands.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
@@ -3226,8 +3233,9 @@ const DEMOS = {
           ],
           yes: 'Yes, refund', no: 'Not now'
         },
+        sceneLast: true,
         say: 'Refund of \u20b91,299 for Aarav\u2019s order ORD-7741. Shall I go ahead?',
-        patch: { refund: 'awaiting your yes', refund__warn: true }
+        patch: { refund: 'awaiting yes', refund__warn: true }
       },
       {
         label: 'You say yes', tool: 'Audit trail',
@@ -3267,7 +3275,7 @@ const DEMOS = {
         call: { name: 'Payments and orders', summary: 'ORD-7752 \u00b7 \u20b9500 \u00b7 PAID', ms: 330 },
         scene: {
           kind: 'buy', tone: 'ok', tag: 'Buyer\u2019s screen \u00b7 live',
-          store: 'Aarav\u2019s payment', amount: '\u20b9500',
+          store: 'One-Stop Shoppy', amount: '\u20b9500',
           head: 'Payment successful',
           reason: 'Paid by UPI against the link Spark created a minute ago.',
           meta: 'Order ORD-7752 \u00b7 link PL-8842 \u00b7 settles Wed 2 Sep'
@@ -3860,10 +3868,16 @@ async function runStep(i) {
   applyPatch(s.patch);
   await sleep(200);
 
-  // the set pieces: the month's numbers, the buyer's own screen, the call
-  await playScene(s.scene, true);
+  // the set pieces: the month's numbers, the buyer's own screen, the call.
+  // sceneLast puts the card AFTER the answer, for the one card that IS the
+  // answer's question -- Spark asks "shall I go ahead?", then hands you the
+  // thing to say yes to. The other way round, the buttons sit above the
+  // sentence they are answering.
+  if (!s.sceneLast) await playScene(s.scene, true);
 
   add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+
+  if (s.sceneLast) await playScene(s.scene, true);
 
   busy = false;
   paintNav();
@@ -3897,10 +3911,11 @@ function rebuild(i) {
       '<span class="ms">' + s.call.ms + 'ms</span></div>',
       'msg',
     );
-    playScene(s.scene, false);
+    if (!s.sceneLast) playScene(s.scene, false);
     // the call is a moment, not a state: it only stands if you landed on it
     if (s.scene && s.scene.kind === 'call' && n === i) paintCall(s.scene);
     add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+    if (s.sceneLast) playScene(s.scene, false);
     applyPatch(s.patch);
   }
   at = i;
@@ -4182,6 +4197,67 @@ function buyscrHTML(b) {
   '</div>';
 }
 
+/* --- the approval gate ---------------------------------------------------- *
+ *
+ * The card Spark raises before it moves money. It is added on the turn the
+ * merchant ASKS for the refund and stays in the thread; the next turn does not
+ * add a second card, it flips this one into its approved state. That is the
+ * doc's control claim rendered as an interaction rather than asserted in a
+ * bubble: reading is free, anything that moves money stops and asks, and the
+ * approval is what lands in the audit trail.
+ */
+function gateHTML(g) {
+  return '<div class="gate">' +
+    '<div class="g-top"><span class="lbl">Approval needed</span>' +
+      '<span class="tag">moves money</span></div>' +
+    '<div class="g-amt">' + g.amount + '<span class="w">' + g.what + '</span></div>' +
+    '<div class="g-rows">' +
+      g.rows.map((r) => '<span><i>' + r.k + '</i><b>' + r.v + '</b></span>').join('') +
+    '</div>' +
+    '<div class="g-btns"><button class="yes">' + g.yes + '</button>' +
+      '<button class="no">' + g.no + '</button></div>' +
+    '<div class="g-done"><span class="tk">' + BS_TICK + '</span>' +
+      '<span class="who"></span><span class="trail"></span></div>' +
+  '</div>';
+}
+
+/** Flip the gate already in the thread rather than raise a second one. */
+function approveGate(a) {
+  const cards = thread.querySelectorAll('.gate');
+  const el = cards[cards.length - 1];
+  if (!el) return;
+  el.classList.add('ok');
+  el.querySelector('.g-top .tag').textContent = 'approved';
+  el.querySelector('.g-done .who').textContent = a.who;
+  el.querySelector('.g-done .trail').textContent = '\u00b7 ' + a.trail;
+}
+
+/* --- the buyer's WhatsApp ------------------------------------------------- *
+ *
+ * Segment 3 of the demo flow doc. The merchant leaves Spark and tells the
+ * customer, so this is deliberately not a Cashfree surface -- it is the one
+ * screen in the run that proves the answer was worth having.
+ */
+function waHTML(w) {
+  return '<div class="wa">' +
+    '<div class="wa-tag"><span class="live"></span>' + w.tag + '</div>' +
+    '<div class="wa-top"><span class="av">' + w.initials + '</span>' +
+      '<span><span class="nm">' + w.who + '</span>' +
+      '<span class="st">' + w.status + '</span></span></div>' +
+    '<div class="wa-body">' +
+      w.lines.map((l) =>
+        '<div class="wb ' + (l.out ? 'out' : 'in') + '">' +
+          (l.link
+            ? '<span class="wlink"><span class="lt"><span class="cfl">' + CX_ICON.cf + '</span>' +
+              l.link.title + '</span><span class="lu">' + l.link.url + '</span></span>'
+            : '') +
+          l.t +
+          '<span class="t">' + l.at + (l.out ? ' <span class="rr">\u2713\u2713</span>' : '') + '</span>' +
+        '</div>').join('') +
+    '</div>' +
+  '</div>';
+}
+
 /* --- Relay Calling -------------------------------------------------------- */
 
 const HANDSET =
@@ -4301,6 +4377,10 @@ async function playScene(sc, animate) {
   if (!sc) return;
   if (sc.kind === 'brk') { add(brkHTML(sc), 'msg'); if (animate) await sleep(420); return; }
   if (sc.kind === 'buy') { add(buyscrHTML(sc), 'msg'); if (animate) await sleep(560); return; }
+  if (sc.kind === 'wa') { add(waHTML(sc), 'msg'); if (animate) await sleep(620); return; }
+  if (sc.kind === 'gate') { add(gateHTML(sc), 'msg'); if (animate) await sleep(520); return; }
+  // not a new card: the gate already in the thread is the one that gets signed
+  if (sc.kind === 'approve') { approveGate(sc); if (animate) await sleep(420); return; }
   if (sc.kind === 'call') { if (animate) await runCall(sc); return; }
 }
 
@@ -4406,6 +4486,8 @@ function openDemo(key) {
 
 document.getElementById('card-builders').addEventListener('click', (e) => { e.stopPropagation(); goTier2(); });
 document.getElementById('card-relay').addEventListener('click', (e) => { e.stopPropagation(); goAgents(); });
+// Spark is one agent, not a shelf and not a tier, so its tile opens the run itself
+document.getElementById('card-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
 
 document.querySelectorAll('.acard').forEach((card) => {
   card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.agent); });
@@ -4434,6 +4516,7 @@ backEl.addEventListener('click', (e) => {
   // picked from, the three builder demos to tier 2, everything else to home.
   if (mode === 'demo') {
     if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goAgents(); return; }
+    if (DEMO_KEY === 'spark') { goHome(); return; }
     goTier2();
     return;
   }

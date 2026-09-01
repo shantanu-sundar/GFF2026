@@ -17,20 +17,23 @@ blob bleeding out of one corner. The product icons are glassmorphic: a transluce
 with a specular top edge, an inner bloom and a coloured glow, built in CSS rather than
 shipped as art.
 
-Two cards on that grid are live. **Relay** opens straight from home, because it is a
+Three cards on that grid are live. **Relay** opens straight from home, because it is a
 Merchant Dashboard product rather than a builder tool — but it opens a *shelf* rather than a
 demo, because Relay is a set of agents with one payment operation each. Pick an agent and its
-own conversation runs. **Cashfree For Builders** sits in the hero slot (where Checkout360 sits
-in the reference) and opens **three more**. Each demo has its own steps, its own bottom panel
-and its own status chips:
+own conversation runs. **Cashfree Spark** also opens straight from home, and straight into its
+run: Spark is one agent, not a shelf and not a tier, so a picker in front of it would be a
+door with nothing behind it. It sits in the slot the SecureID tile used to hold. **Cashfree
+For Builders** sits in the hero slot (where Checkout360 sits in the reference) and opens
+**three more**. Each demo has its own steps, its own bottom panel and its own status chips:
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
 | **Relay · Cart Recovery** *(from home → shelf)* | **spoken** prompt → the month in a table → Relay builds trigger/condition/action → test run → activate → the buyer's own screen leaves a ₹2,598 cart → **Relay calls Priya** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Payment Recovery** *(from the shelf)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Subscription Dunning** *(from the shelf)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Cashfree Spark** *(from home)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
 | **Agent Toolkit** | 6 tool calls: customer → ₹500 order → UPI → status → ₹200 refund → list | Merchant ledger, net position | **Real** captured sandbox run |
-| **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + backend verification → validation skill → ShirtShop takes a payment | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
+| **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + verification → the v3 checkout SDK → validation skill → ShirtShop → Proceed to Pay → the Cashfree drop-in pays | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
 | **MCP Server** | unsettled → next settlement → withdrawal cost → recon report → download → payment link | Account: settlement, report, link | Illustrative |
 
 **Provenance is shown on screen, per demo.** Only the Toolkit demo is a recording of
@@ -57,6 +60,7 @@ For **Agent Skills** the connect turn is the install itself — the real termina
 | demo | host | connects to | via |
 |---|---|---|---|
 | Relay · any agent | Merchant Dashboard | that agent | Agents · Runs · Connections |
+| Cashfree Spark | Merchant Dashboard | Cashfree Spark | same login · same permissions |
 | Agent Toolkit | Your app | Cashfree Sandbox | `@cashfreepayments/agent-toolkit` |
 | Agent Skills | Claude Code + Cursor | Cashfree Skills | `npx @cashfreepayments/agent-skills add skills` |
 | MCP Server | Claude | Cashfree MCP | `mcp.cashfree.com/mcp` · OAuth |
@@ -140,13 +144,62 @@ Three set pieces carry the parts a chat bubble cannot:
 A fourth, `.brk`, answers the opening prompt: "the agent lists failed transactions with reasons
 for failure" is five reasons and five amounts, which a sentence cannot hold, so it is a table.
 
-Steps declare these with `scene: { kind: 'brk' | 'buy' | 'call', … }`. `playScene()` runs them
-in `runStep()`; `rebuild()` repaints `brk` and `buy` statically, and repaints the call **only
-if you landed on that beat**, because a call is a moment rather than a state.
+Steps declare these with `scene: { kind: 'brk' | 'buy' | 'call' | 'gate' | 'approve' | 'wa', … }`
+— the last three belong to Spark. `playScene()` runs them in `runStep()`; `rebuild()` repaints
+the static ones and repaints the call **only if you landed on that beat**, because a call is a
+moment rather than a state.
 
 > One trap worth remembering: the section subtitle up top is a bare `.sub { margin: 18px 0 0 }`,
 > and it leaked into the call scene's caption spans and pushed them off their node. Those are
 > `.cwho` now. Bare single-class rules in this file are shared ground — scope new ones.
+
+## Spark stops before it moves money
+
+Spark's run is the demo flow doc end to end (`../Cashfree Spark - Narrative (1).docx`), with the
+claims it is meant to prove taken from the positioning doc (`Narrative (2).docx`).
+
+| segment | what happens | who is on screen |
+|---|---|---|
+| **1 · open it** | the merchant opens Spark from the dashboard they were already in | the merchant |
+| **2 · four prompts** | a settlement question **asked and answered in Hindi**, a customer's payment status, a refund that stops and asks, a ₹500 payment link | the merchant |
+| **3 · tell the customer** | the merchant leaves Spark and messages the buyer; the new order is paid | **the buyer** |
+
+There is no connect-a-key beat, because there is nothing to install: "same dashboard, same
+login, same permissions". The first turn is opening it.
+
+**The refund is two steps, not one, and that is the point.** The doc's control section says
+reading is free and anything that moves money stops and asks; the demo would be claiming that
+in a bubble if the refund happened on the turn the merchant asked for it. So the ask raises an
+approval card and stops, and the money moves on the *next* turn, when the merchant says yes.
+The card then stays in the thread wearing who signed it — *Approved by you · logged in the
+audit trail* — which is the doc's other line ("a person approved it, so a person did it")
+rendered as an interaction rather than asserted.
+
+That card is also the only one in the section that renders **after** its own answer bubble
+rather than before it, via `sceneLast: true` on the step. Otherwise the Yes/No buttons sit
+above the sentence they are answering.
+
+Two set pieces are new here; the other two are borrowed:
+
+- **`.gate` — the approval card.** Amount, what it does, three facts to check it against, and
+  two buttons. `playScene` adds it on the asking turn; the next step's
+  `scene: { kind: 'approve' }` does **not** add a second card — `approveGate()` finds the one
+  already in the thread and flips it. A second card would read as a second refund.
+- **`.wa` — the buyer's WhatsApp.** Segment 3 is deliberately not a Cashfree surface: the
+  merchant takes what Spark gave them and tells the customer. Drawn as its own labelled device
+  for the same reason `.buyscr` is, and the payment link rides in it as a link chip.
+- **`.brk`** carries the Hindi settlement answer, because a date, an amount, a cycle and a bank
+  account are a table, not a sentence — and **`.buyscr` in its green `ok` tone** is the last
+  beat, the doc's "screen cuts to payment successful".
+
+**The tool rows name capability areas, not endpoints** — *Settlements*, *Payments and orders*,
+*Refunds*, *Links and offers*. Those are the rows of the capability table in the positioning
+doc. That doc names areas and names no API, so inventing endpoint names would have been the
+one thing on screen with nothing behind it.
+
+The Hindi is the doc's own prompt (`मेरा अगला सेटलमेंट कब आएगा?`) answered in Hindi, because the
+doc's note on that beat is that Spark replies in the merchant's language — an English answer to
+a Hindi question would have shown the opposite of the claim.
 
 ## Agent Skills is a terminal, on a laptop
 
@@ -171,13 +224,31 @@ So that demo swaps the device. `surface: 'terminal'` on the demo does three thin
   line (`$ cmd` + ✔ output) or an assistant tool line (`● Read(path)` + `└ result`), plus a
   syntax-coloured code block where the assistant generated code.
 
-**The last beat leaves the terminal.** The script's outro is the browser, not the console
-("Visual: Website check out - payments"), so `term.kind: 'store'` lifts a browser over the
-whole laptop screen: **ShirtShop** — the same store as the recording, with its indigo nav,
-Our Collection grid, size chips and Add to Cart buttons — and then a *Paid with Cashfree*
-confirmation. `killStore` tears it down on Back, on a dot-jump and on any chassis change,
-so it cannot outlive its step. Under a phone-width lid the grid row is only ~130px, so the
-mobile rules drop the section heading, the size chips and the second and third cards.
+**The last three beats leave the terminal.** The script's outro is the browser, not the
+console ("Visual: Website check out - payments"), so `term.kind: 'store'` lifts a browser
+over the whole laptop screen and `term.view` says which page it is on:
+
+| `view` | what is on screen |
+|---|---|
+| `collection` | **ShirtShop** — indigo nav, Our Collection, size chips, Add to Cart |
+| `payment` | the Address ✓ / Review ✓ / **Payment** stepper, "Pay securely with Cashfree", the order summary and **Proceed to Pay** |
+| `checkout` | the same page dimmed under the **Cashfree drop-in** — business panel, ₹1,042, offers and coupon, favourites, the UPI QR, other payment options — then the success card |
+
+`showStore(view, cap, amt)` rebuilds the overlay per beat but skips the entrance animation
+when one is already up, so the browser chrome does not blink between the three. The
+`checkout` beat animates the whole gesture in sequence: `.pressing` on the CTA → `.cfopen`
+raises the drop-in and its dim → `.paid` swaps it for the confirmation and flips the caption
+strip green. `killStore` tears it all down on Back, on a dot-jump and on any chassis change.
+
+**The caption strip exists because the overlay covers the transcript.** `.store` is
+`inset: 0`, so the beat's `say` would otherwise be hidden behind it — `.st-cap` puts it back
+at the bottom of the browser, and turns green with the amount once the payment lands.
+
+**₹799 + ₹99 shipping + ₹144 GST = ₹1,042**, which is the figure the summary, the drop-in and
+`PGCreateOrder({order_amount: 1042})` all carry. If you change the product price, change all
+four. Under a phone-width lid the store's grid row is only ~130px, so the mobile rules drop
+the section heading, the size chips, cards two and three, the summary's line items (the total
+survives), the drop-in's left panel and its QR block.
 
 **It is the same `.screen` element throughout.** Nothing is swapped in the DOM, so
 tap-to-advance, the dots, Back, auto-play, the guided tour and the connect turn all carry
@@ -190,7 +261,7 @@ it generated the code and running it is still yours.
 
 ## The Skills beats follow the recorded script
 
-The nine beats are cut from the voiceover script in
+The twelve beats are cut from the voiceover script in
 `../Checkout Screen/Tutorial Video Scripts.docx` ("Cashfree Agent Skills + Claude Code"), so
 the section and the tutorial video tell the same story in the same order:
 
@@ -204,8 +275,16 @@ the section and the tutorial video tell the same story in the same order:
 | "Add Cashfree Payments checkout to my app." | 5 · The prompt |
 | API keys, install the SDK | 6 · Keys and SDK |
 | create an order, verify it on your backend | 7 · Order, then verify |
-| it pulls the validation skill → checklist + sandbox data | 8 · Testing checklist |
-| outro: "Website check out - payments" | 9 · See it work — ShirtShop takes a payment |
+| — | 8 · Checkout in the browser (the v3 SDK half) |
+| it pulls the validation skill → checklist + sandbox data | 9 · Testing checklist |
+| outro: "Website check out - payments" | 10 · See it work — ShirtShop |
+| — | 11 · Proceed to Pay |
+| — | 12 · Pay with Cashfree — the drop-in, then SUCCESS |
+
+**Three beats are not in the script** (8, 11, 12). The script ends on a single "website
+checkout" shot; the section carries the payment through instead, because a page that never
+shows the drop-in never shows the product taking money. Beat 8 is the front-end half that
+makes beats 11–12 possible — without it *Proceed to Pay* has no code behind it on screen.
 
 **The banner and the picker are two beats, not one.** They are one screen in a real terminal,
 but banner + a nine-item checkbox + a narration line is ~330px against a ~280px transcript,
@@ -238,16 +317,31 @@ the section shows nine. The section follows the package, since that is what a vi
 the command today gets. If you want them identical, drop the last picker item.
 
 **The skill paths are now the real ones** — `pg/backend-sdks/SKILL.md`,
-`pg/apis/references/SKILL.md`, `validation-and-testing/SKILL.md` all appear verbatim in
-`INSTALLED_TREE_LINES`. An earlier draft used a placeholder `cashfree-skills/SKILL.md`
-because nothing on hand named the checkout skill; that guess is no longer needed, so don't
-reintroduce one.
+`pg/apis/references/SKILL.md`, `pg/web-sdk/SKILL.md` and `validation-and-testing/SKILL.md`
+all appear verbatim in `INSTALLED_TREE_LINES`. An earlier draft used a placeholder
+`cashfree-skills/SKILL.md` because nothing on hand named the checkout skill; that guess is no
+longer needed, so don't reintroduce one.
 
-**The SDK calls are real**, checked against the installed `cashfree-pg`:
-`new Cashfree(CFEnvironment.SANDBOX, id, secret)`, `PGCreateOrder({order_amount,
-order_currency, customer_details})` and `PGFetchOrder(order_id)` all exist with those
-signatures. The demo is still badged amber, because the *session* is a reconstruction — but
-nobody can copy a call out of it that does not compile.
+**The code on screen is real**, and it is deliberately in two halves — the blocks are headed
+`generated · server` and `generated · browser` so the two `cashfree` bindings do not read as
+a contradiction:
+
+- **server**, checked against the installed `cashfree-pg`: `new Cashfree(CFEnvironment.SANDBOX,
+  id, secret)`, `PGCreateOrder({order_amount, order_currency, customer_details})` and
+  `PGOrderFetchPayments(order_id) → PaymentEntity[]` with `payment_status: "SUCCESS"` all
+  exist with those signatures.
+- **browser**, from Cashfree Dev Studio: `Cashfree({ mode: "sandbox" })` from
+  `sdk.cashfree.com/js/v3/cashfree.js`, then `cashfree.checkout({ paymentSessionId,
+  redirectTarget: "_self" })`.
+
+The demo is still badged amber, because the *session* is a reconstruction — but nobody can
+copy a call out of it that does not compile.
+
+**The drop-in is a rebuild, not a screenshot.** Layout, copy and colours follow the real
+sandbox checkout; the business name reads **ShirtShop** rather than the sandbox's
+"Business Name" placeholder, since the store next to it is ShirtShop. It is a static
+reconstruction — no `cashfree.js` is loaded and no session exists, which is the whole reason
+the badge stays amber.
 
 **The MCP demo wears Claude's skin.** That integration runs inside an AI client rather than
 inside a Cashfree surface, so for that demo the phone switches to a warm ivory ground with a
@@ -314,10 +408,14 @@ Buttons disable while a step is animating, so a click can't be swallowed mid-typ
 - **Terminal demos** — add `surface: 'terminal'` to the demo and `panel.kind: 'files'` (a row
   with `sum: true` renders under a rule, for a summary rather than a path). Each step then
   needs a `term`: either `{kind:'shell', ms, out:[{t:'ok'|'dim', s}]}` for a command,
-  `{fn, res, code?: {head, body}}` for an assistant tool line, or `{kind:'store', ms, out}`
-  to run the shell lines and then lift the storefront over the screen. `code.body` is HTML —
-  wrap tokens in `.k` (keyword), `.s` (string), `.n` (number), `.c` (comment). Omit a step's
-  `ask` to make it a continuation of the previous prompt.
+  `{fn, res, code?: {head, body}}` for an assistant tool line, or
+  `{kind:'store', view, ms, out?, amt?, paidCap?}` to run any shell lines and then put the
+  browser over the screen at that `view` (`collection` | `payment` | `checkout`). A shell step
+  may also carry `banner: true`, `setup` and `pick: {q, items:[{n, on?}]}` to reproduce an
+  installer screen. `code.body` is HTML — wrap tokens in `.k` (keyword), `.s` (string),
+  `.n` (number), `.c` (comment); `code.head` labels the block (`generated · server` /
+  `· browser`). Omit a step's `ask` to make it a continuation of the previous prompt — the
+  store beats after the first use that, because from there it is clicks, not commands.
 - **Connect turn** — `connectStep` on each demo (`{kind:'connect', label, tool, ask, say, patch, mono?}`)
   plus `connect` (`{host, hostIcon, target, via}`). It is prepended to `steps` at load, so a
   demo's step count is `steps.length + 1`. Set `mono: true` when the prompt is a command.
