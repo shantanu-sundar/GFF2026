@@ -516,6 +516,59 @@ narrates them separately.
 assistant working, which is the point of the product — so those beats print tool lines with
 no prompt line above them. `tAsk` and `runStepTerm` skip the typing when `ask` is absent.
 
+## The last Skills beat is a payment, not a screenshot
+
+Proceed to Pay used to cut straight to a drawn sheet and then to "paid". Two beats were
+missing, and both are what makes a payment feel like a payment:
+
+1. **Cashfree's own loading sheet.** Pressing pay puts it up while the SDK boots. It is the
+   real asset (`../Looped Loader.gif`, inlined as a data URI) rather than a redraw, so the
+   lockup and its timing are Cashfree's, not an approximation of them.
+2. **The moment between pay and paid.** The method rings, "Completing your payment" sits over
+   the sheet, and only then does the success card land.
+
+The full beat is now: **Proceed to Pay → loader → checkout → it scrolls to the method →
+completing → paid.**
+
+### The checkout is the OCC screen, and it lists the actual cart
+
+It follows `../Checkout Screen/OCC + AOV-1.png`: green header with the merchant and the
+amount, "Secured by" with the mark, the buyer's saved address and delivery promise, the cart,
+the paired upsell, an offer, the payment methods, and a black Pay Now bar.
+
+**One cart feeds the shop and the checkout.** `CART_ITEMS` and `PAIRED` are declared once and
+read by both, so the two can never quietly disagree about what is being bought. The cart holds
+a single ₹799 tee on purpose: 799 + 99 shipping + 144 GST is the ₹1,042 the step says out loud
+and the sandbox order was created for. The paired item is the AOV half of the reference —
+offered, not bought, so the total holds.
+
+**Products have pictures now.** A colour swatch does not answer "what am I buying", and that is
+the one question a cart exists to answer, so `ART` draws each item — the same call the
+glassmorphic product icons make, art built in CSS/SVG rather than shipped photography. The tee
+in the shop is the tee in the checkout.
+
+**And the sheet scrolls.** The reference is a full phone screen; this one sits in a 276px
+browser page. Every attempt to make it fit by deleting sections lost the thing worth copying,
+so instead it does what a buyer does: lands on the address, then glides down to the method it
+is about to pay with. `occScroll()` measures the overflow at run time, so editing the contents
+cannot leave it landing in the wrong place.
+
+## The sandbox is real, the drop-in in the demo is not
+
+`node scripts/check-sandbox.mjs` creates a live ₹1,042 order with the keys in `.env.local` and
+reports what came back. Run it before a shoot, or when someone questions whether the account
+behind these numbers exists.
+
+**The genuine drop-in was tried here and did not survive contact.** A `payment_session_id` is
+public by design — it is exactly what you hand the browser SDK — so one *can* be baked into a
+static page and opened with `Cashfree({mode:'sandbox'}).checkout(...)`. It rendered once, with
+the real ₹1,042, offers and UPI QR. Then the same code against freshly minted sessions started
+returning **"Something went wrong"** on the Cashfree page, in all three `redirectTarget` modes
+(element, `_blank`, `_self`), from both a `file://` and an `http://localhost` origin. A beat
+that works once and then does not is worse than a drawn one, so the sheet is drawn and the
+script stays as the health check. If you want to retry it, the session is the only thing you
+need and `check-sandbox.mjs` already mints one.
+
 ## The install screen is the package's own output
 
 Not a redraw from a screenshot. `npm pack @cashfreepayments/agent-skills` (0.2.6) into a
