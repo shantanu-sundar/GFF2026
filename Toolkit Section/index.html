@@ -3146,6 +3146,138 @@ const DEMOS = {
     ]
   },
 
+  /* ---------------------------------------------------------------- *
+   * Cashfree Spark. Opens straight off the home grid, in the slot the
+   * SecureID tile used to hold, because Spark is not a builder tool --
+   * it is the agentic layer ON the merchant dashboard. Same login, same
+   * permissions, nothing to install, so there is no connect-a-key beat:
+   * the first turn is simply opening it.
+   *
+   * The run is the demo flow doc end to end
+   * (../Cashfree Spark - Narrative (1).docx), all three segments:
+   *
+   *   SEGMENT 1  log in, open Spark.
+   *   SEGMENT 2  four prompts -- a settlement question asked in Hindi and
+   *              answered in Hindi, a customer's payment status, a refund
+   *              that STOPS and asks before it moves money, and a payment
+   *              link. The refund is deliberately two beats, because the
+   *              approval is the product claim, not a formality.
+   *   SEGMENT 3  the merchant tells the customer. Not a Cashfree screen:
+   *              WhatsApp, then the new order paid.
+   *
+   * The tool-row names are the capability areas from the positioning doc
+   * (../Cashfree Spark - Narrative (2).docx) -- Settlements, Payments and
+   * orders, Refunds, Links and offers -- rather than invented API names,
+   * because that doc names the areas and does not name any endpoints.
+   * Amounts, order ids and the buyer are plausible stand-ins, which is
+   * what the amber provenance badge is saying.
+   * ---------------------------------------------------------------- */
+  spark: {
+    connectStep: {"kind":"connect","label":"Open Spark","tool":"Merchant Dashboard","ask":"Open Spark","say":"Spark is open. Same login, same permissions, nothing installed \u2014 ask in English or your own language."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Spark","via":"same login \u00b7 same permissions","ok":"your live account"},
+    title: 'Cashfree <span class="thin">Spark</span>',
+    blurb: 'The agentic layer on the dashboard you already use. Ask in any language \u2014 and anything that moves money stops and asks first.',
+    provenance: { kind: 'illustrative', text: 'Illustrative \u2014 flow and prompts from the Spark narrative doc, capability names from the Spark brief' },
+    chips: { left: ['LIVE ACCOUNT'], right: '\u0939\u093f\u0928\u094d\u0926\u0940 \u00b7 English', dot: true },
+    panel: {
+      title: 'Account',
+      headline: { label: 'unsettled', value: '\u2014' },
+      rows: [
+        { key: 'settle', label: 'Next settle' },
+        { key: 'order', label: 'Order' },
+        { key: 'refund', label: 'Refund' },
+        { key: 'link', label: 'Link' }
+      ]
+    },
+    steps: [
+      /* --- segment 2: managing payments with Spark --- */
+      {
+        label: 'Ask in Hindi', tool: 'Settlements',
+        ask: '\u092e\u0947\u0930\u093e \u0905\u0917\u0932\u093e \u0938\u0947\u091f\u0932\u092e\u0947\u0902\u091f \u0915\u092c \u0906\u090f\u0917\u093e?',
+        call: { name: 'Settlements', summary: '\u20b94,82,650 unsettled \u00b7 next Wed 2 Sep', ms: 640 },
+        scene: {
+          kind: 'brk', title: '\u0905\u0917\u0932\u093e \u0938\u0947\u091f\u0932\u092e\u0947\u0902\u091f', total: '2 \u0938\u093f\u0924\u0902\u092c\u0930',
+          rows: [
+            { k: '\u0905\u0928\u0938\u0947\u091f\u0932\u094d\u0921 \u0930\u093e\u0936\u093f', n: '1,284 \u0911\u0930\u094d\u0921\u0930', v: '\u20b94,82,650', hot: 1 },
+            { k: '\u0938\u0947\u091f\u0932\u092e\u0947\u0902\u091f \u0938\u093e\u0907\u0915\u0932', n: 'T+1', v: '\u092c\u0941\u0927\u0935\u093e\u0930' },
+            { k: '\u092c\u0948\u0902\u0915 \u0916\u093e\u0924\u093e', n: 'HDFC', v: '\u2022\u20224471' }
+          ]
+        },
+        say: '\u0906\u092a\u0915\u093e \u0905\u0917\u0932\u093e \u0938\u0947\u091f\u0932\u092e\u0947\u0902\u091f \u092c\u0941\u0927\u0935\u093e\u0930, 2 \u0938\u093f\u0924\u0902\u092c\u0930 \u0915\u094b \u0906\u090f\u0917\u093e \u2014 \u20b94,82,650 \u0906\u092a\u0915\u0947 HDFC \u2022\u20224471 \u0916\u093e\u0924\u0947 \u092e\u0947\u0902 \u0915\u094d\u0930\u0947\u0921\u093f\u091f \u0939\u094b\u0902\u0917\u0947\u0964',
+        patch: { __headline: '\u20b94,82,650', settle: 'Wed 2 Sep' }
+      },
+      {
+        label: 'A customer\u2019s payment', tool: 'Payments and orders',
+        ask: 'What\u2019s the payment status on Aarav\u2019s order?',
+        call: { name: 'Payments and orders', summary: 'ORD-7741 \u00b7 \u20b91,299 \u00b7 PAID', ms: 520 },
+        say: 'Aarav\u2019s order ORD-7741 is PAID \u2014 \u20b91,299 by UPI at 4:12 pm on 29 August. It is in Wednesday\u2019s settlement.',
+        patch: { order: 'ORD-7741 PAID' }
+      },
+      {
+        label: 'It stops and asks', tool: 'Refunds',
+        ask: 'Initiate a refund for that order.',
+        call: { name: 'Refunds', summary: 'eligible \u00b7 balance ok \u00b7 awaiting approval', ms: 580 },
+        scene: {
+          kind: 'gate', amount: '\u20b91,299', what: 'refund to Aarav',
+          rows: [
+            { k: 'Order', v: 'ORD-7741' },
+            { k: 'Paid by', v: 'UPI \u00b7 29 Aug' },
+            { k: 'Unsettled after', v: '\u20b94,81,351' }
+          ],
+          yes: 'Yes, refund', no: 'Not now'
+        },
+        say: 'Refund of \u20b91,299 for Aarav\u2019s order ORD-7741. Shall I go ahead?',
+        patch: { refund: 'awaiting your yes', refund__warn: true }
+      },
+      {
+        label: 'You say yes', tool: 'Audit trail',
+        ask: 'Yes, go ahead.',
+        call: { name: 'Refunds', summary: 'rfnd_ORD7741_01 \u00b7 \u20b91,299 \u00b7 PENDING', ms: 410 },
+        scene: { kind: 'approve', who: 'Approved by you', trail: 'logged in the audit trail' },
+        say: 'Refund initiated. Refund ID rfnd_ORD7741_01 \u2014 Aarav has it in 3 to 5 working days. A person approved it, so the trail says a person did it.',
+        patch: { refund: '\u20b91,299 PENDING', refund__warn: true, __headline: '\u20b94,81,351' }
+      },
+      {
+        label: 'A \u20b9500 link', tool: 'Links and offers',
+        ask: 'Create a payment link for \u20b9500 to share with Aarav.',
+        call: { name: 'Links and offers', summary: 'PL-8842 \u00b7 \u20b9500 \u00b7 live 24h', ms: 700 },
+        say: 'Here is the link for Aarav \u2014 \u20b9500, live for 24 hours. Four questions, no tab, no filter, no report.',
+        patch: { link: '\u20b9500 live' }
+      },
+
+      /* --- segment 3: the merchant reports back to the customer --- */
+      {
+        label: 'Tell the customer', tool: 'WhatsApp',
+        call: { name: 'WhatsApp', summary: 'refund + link shared with Aarav', ms: 260 },
+        scene: {
+          kind: 'wa', tag: 'Buyer\u2019s phone \u00b7 WhatsApp',
+          who: 'Aarav', initials: 'A', status: 'online',
+          lines: [
+            { out: 1, t: 'Hi Aarav, your refund is on the way \u2014 \u20b91,299 back to the UPI you paid with, in 3 to 5 working days.', at: '10:42' },
+            { out: 1, link: { title: 'Cashfree payment link \u00b7 \u20b9500', url: '\u2026/links/PL-8842' },
+              t: 'And here\u2019s the link for your new order.', at: '10:42' },
+            { t: 'Thank you so much! Paying now.', at: '10:43' }
+          ]
+        },
+        say: 'Sent. The refund has moved to SUCCESS on Aarav\u2019s side, and the \u20b9500 link is live until tomorrow morning.',
+        patch: { refund: '\u20b91,299 SUCCESS', refund__warn: false }
+      },
+      {
+        label: 'And he pays', tool: 'Payments and orders',
+        call: { name: 'Payments and orders', summary: 'ORD-7752 \u00b7 \u20b9500 \u00b7 PAID', ms: 330 },
+        scene: {
+          kind: 'buy', tone: 'ok', tag: 'Buyer\u2019s screen \u00b7 live',
+          store: 'Aarav\u2019s payment', amount: '\u20b9500',
+          head: 'Payment successful',
+          reason: 'Paid by UPI against the link Spark created a minute ago.',
+          meta: 'Order ORD-7752 \u00b7 link PL-8842 \u00b7 settles Wed 2 Sep'
+        },
+        say: 'That is the whole loop \u2014 a settlement answered in Hindi, a customer found, a refund approved and a link paid \u2014 without opening a single tab.',
+        patch: { link: '\u20b9500 paid', __headline: '\u20b94,81,851' }
+      }
+    ]
+  },
+
   mcp: {
     connectStep: {"kind":"connect","label":"Connect the server","tool":"mcp.cashfree.com/mcp","ask":"Connect to the Cashfree MCP server","say":"Connected to your merchant account over OAuth."},
     skin: 'claude',
