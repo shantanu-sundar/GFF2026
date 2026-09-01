@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cashfree Checkout — Figma artboards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   Cashfree Checkout — Figma artboards
+   ---------------------------------------------------------------------
+   Every frame in here is a real artboard: a fixed-pixel box with nothing
+   outside it that can reflow it. That is the whole point of the file. The
+   section next door (index.html) draws these same screens INSIDE a
+   596x376 laptop lid, so its type bottoms out at 8px and its paddings are
+   tuned to that lid — import that and you get a postage stamp. These are
+   drawn at the size the design is actually specified at.
+
+   Sizes are not invented:
+     mobile  360 x 800  — ../Checkout Screen/*.png are all 720x1600, a 2x
+                          export, so 360x800 is the native frame.
+     desktop 1280 x 800 — the ShirtShop browser from index.html, lifted
+                          off the lid and onto a real viewport.
+
+   RULES FOR EDITING THIS FILE (they are what keep the import clean):
+     - px only. No vh/vw/%, no clamp(), no calc() against the viewport.
+     - No backdrop-filter, no filter, no mix-blend-mode, and no transform
+       on a frame or anything inside one. Importers rasterise or drop all
+       four, and you lose the layer you cared about.
+     - Solid fills and plain linear-gradients only.
+     - Icons are inline svg with explicit width/height — no sprites, no
+       use elements, no icon fonts.
+     - Photography is a data: URI so the file stays self-contained and the
+       importer never has to resolve a relative path.
+     - DM Sans only, because it is on Google Fonts and therefore present
+       in Figma. Do not reach for a font the importer cannot resolve.
+   ===================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 56px 48px 96px;
+  background: #14171A;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  color: #E8E6E1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet-head { max-width: 880px; margin: 0 0 56px; }
+.sheet-head h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.sheet-head p  { margin: 13px 0 0; font-size: 14px; line-height: 1.65; color: rgba(232,230,225,0.62); }
+.sheet-head b  { color: rgba(232,230,225,0.92); font-weight: 600; }
+.sheet-head code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px; color: #CEF993;
+}
+
+.flow { margin: 0 0 76px; }
+.flow > h2 {
+  margin: 0 0 7px; font-size: 12.5px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; color: #CEF993;
+}
+.flow > .note {
+  margin: 0 0 30px; font-size: 13.5px; line-height: 1.65;
+  color: rgba(232,230,225,0.5); max-width: 800px;
+}
+.rail { display: flex; flex-wrap: wrap; gap: 44px; align-items: flex-start; }
+
+figure.art { margin: 0; }
+figure.art figcaption {
+  display: flex; align-items: baseline; gap: 10px;
+  margin: 0 0 13px; font-size: 13px; font-weight: 600; color: #E8E6E1;
+}
+figure.art figcaption span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px; font-weight: 400; color: rgba(232,230,225,0.36);
+}
+figure.art figcaption em {
+  font-style: normal; font-size: 11px; font-weight: 500; color: #CEF993;
+}
+
+/* THE ARTBOARD. Fixed box, clipped, nothing outside it can reflow it. */
+.frame { position: relative; overflow: hidden; background: #FFFFFF; }
+.frame.mob  { width: 360px;  height: 800px; }
+.frame.desk { width: 1280px; height: 800px; }
+
+/* ============================ MOBILE CHECKOUT ========================
+   Colours sampled off ../Checkout Screen/OCC + AOV.png rather than
+   eyeballed: header #035D32, promo strip #1C6D46, secured band #0B6339,
+   ground #F8F7F7, pay bar #1F1E1E, offer tint #F4FCF8, green #008547.
+   ==================================================================== */
+.co { display: flex; flex-direction: column; width: 360px; height: 800px; background: #F8F7F7; }
+
+.co-promo {
+  flex: none; height: 28px; background: #1C6D46;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 10.5px; font-weight: 500; color: #FFFFFF;
+}
+.co-head { flex: none; background: #035D32; border-radius: 0 0 18px 18px; overflow: hidden; }
+.co-head-row { height: 80px; padding: 0 14px; display: flex; align-items: center; gap: 9px; }
+.co-back { flex: none; color: #FFFFFF; display: flex; }
+.co-logo { flex: none; width: 48px; height: 48px; border-radius: 12px; background: #FFFFFF; overflow: hidden; display: flex; }
+.co-logo img { width: 48px; height: 48px; display: block; object-fit: cover; }
+/* nowrap is load-bearing: the merchant name is one line in the reference, and
+   a two-line name shoves the whole header 20px taller than the artboard plans
+   for. 17px is the largest size that clears the amount pill at 360 wide. */
+.co-biz { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: #FFFFFF; white-space: nowrap; }
+.co-amt {
+  flex: none; margin-left: auto; display: flex; align-items: center; gap: 4px;
+  padding: 6px 8px; border-radius: 8px; background: #14683F;
+  font-size: 14px; font-weight: 600; color: #FFFFFF; white-space: nowrap;
+}
+.co-secure {
+  height: 28px; background: #0B6339;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.82);
+}
+.co-secure b { display: flex; align-items: center; gap: 4px; color: #FFFFFF; font-weight: 700; font-size: 12.5px; }
+
+.co-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.co-addr {
+  margin: 18px 16px 0; padding: 13px 12px 0;
+  background: #FFFFFF; border: 1px solid #E8E7E7; border-radius: 14px;
+}
+.co-addr-top { display: flex; gap: 6px; }
+.co-addr-txt { flex: 1; min-width: 0; }
+/* 12px, not 12.5: the address is two authored lines in the reference and at
+   12.5 the first one wraps into a third, which pushes the card 18px taller. */
+.co-addr-txt .l1 { font-size: 12px; line-height: 1.45; color: #1F1E1E; white-space: nowrap; }
+.co-addr-txt .l1 b { font-weight: 700; }
+.co-addr-txt .l2 { margin-top: 4px; font-size: 12px; color: #6D6969; }
+.co-addr-edit { flex: none; color: #1F1E1E; display: flex; }
+.co-addr-rule { height: 1px; background: #DFDDDD; margin-top: 12px; }
+/* 36, not 40: the address card measures 118px tall in the reference and the
+   eta row is the only slack in it. At 40 the whole column runs 7px past the
+   bottom of the artboard, which an importer turns into a clipped frame. */
+.co-addr-eta { height: 36px; display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #1F1E1E; }
+.co-addr-eta .free { color: #008547; font-weight: 600; }
+.co-addr-eta .chev { margin-left: auto; color: #1F1E1E; display: flex; }
+
+.co-tabs { display: flex; gap: 20px; padding: 16px 16px 0; }
+.co-tab { font-size: 13px; font-weight: 700; color: #9A9898; padding-bottom: 6px; }
+.co-tab.on { color: #1F1E1E; border-bottom: 2px solid #1F1E1E; }
+
+.co-cars { display: flex; gap: 9px; padding: 11px 0 0 16px; }
+.co-prod {
+  flex: none; width: 242px; height: 102px; display: flex; gap: 11px;
+  padding: 11px; background: #FFFFFF; border: 1px solid #EFEFEF; border-radius: 12px;
+}
+.co-prod.peek { width: 90px; }
+.co-prod img { flex: none; width: 78px; height: 78px; border-radius: 10px; display: block; object-fit: cover; }
+.co-prod-r { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.co-prod-nm { font-size: 12.5px; font-weight: 700; line-height: 1.22; color: #1F1E1E; }
+.co-prod-pr { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+.co-prod-pr .now { font-size: 12.5px; font-weight: 700; color: #1F1E1E; }
+.co-prod-pr .was { font-size: 11px; color: #9A9898; text-decoration: line-through; }
+.co-prod-pr .sv  { padding: 2px 6px; border-radius: 6px; background: #EFFBF5; color: #008547; font-size: 10px; font-weight: 600; }
+.co-prod-add {
+  margin-top: auto; width: 94px; height: 22px; border: 1px solid #DFDDDD; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-size: 11.5px; font-weight: 500; color: #1F1E1E;
+}
+
+.co-secrow { display: flex; align-items: center; padding: 15px 16px 0; }
+.co-secrow .lbl { font-size: 12.5px; color: #6D6969; }
+.co-secrow .more { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 600; color: #1F1E1E; }
+.co-offs { display: flex; gap: 9px; padding: 10px 0 0 16px; }
+.co-off {
+  flex: none; width: 242px; height: 57px; display: flex; align-items: center; gap: 10px;
+  padding: 0 11px; background: #F4FCF8; border: 1px solid #E4EFE9; border-radius: 10px;
+}
+.co-off.peek { width: 90px; overflow: hidden; }
+.co-off.peek .co-off-txt { white-space: nowrap; }
+.co-off-l { flex: 1; min-width: 0; }
+.co-off-code { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 500; color: #6D6969; }
+.co-off-txt { margin-top: 3px; font-size: 12.5px; font-weight: 700; color: #1F1E1E; }
+.co-off-btn {
+  flex: none; width: 82px; height: 30px; border: 1px solid #008547; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #008547; background: #FFFFFF;
+}
+
+.co-pay { margin-top: auto; padding-bottom: 20px; }
+.co-opt { margin: 10px 16px 0; background: #FFFFFF; border: 1px solid #DFDDDD; border-radius: 12px; overflow: hidden; }
+.co-opt.on { border: 2px solid #2C2A2A; }
+.co-opt-row { height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+.co-radio { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #9A9898; }
+.co-radio.on { border: 5px solid #1F1E1E; }
+.co-opt-ic {
+  flex: none; width: 26px; height: 26px; border-radius: 6px; background: #FFFFFF;
+  border: 1px solid #E6E9EE; display: flex; align-items: center; justify-content: center;
+}
+.co-opt-nm { font-size: 13px; font-weight: 600; color: #1F1E1E; }
+.co-opt-amt { margin-left: auto; font-size: 13px; font-weight: 600; color: #1F1E1E; }
+.co-opt-sub {
+  height: 19px; background: #F0EFEF; display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; color: #757171;
+}
+.co-bar { margin: 12px 16px 0; height: 40px; border-radius: 12px; background: #1F1E1E; display: flex; align-items: center; padding: 0 14px; }
+.co-bar .t { font-size: 14px; font-weight: 700; color: #FFFFFF; }
+.co-bar .g { margin-left: auto; font-size: 15px; font-weight: 700; font-style: italic; color: #FFFFFF; }
+
+/* ------------------------- the feature callout ----------------------
+   Four of the reference exports are the same base screen with everything
+   dimmed except one element, a green heading, a line of body copy, a
+   curved arrow and a Next pill. That is a prototype flow drawn as
+   stills — so it is rebuilt as one overlay you move, not four screens.
+
+   The dim is not plain black: sampling a #2C2A2A pixel under it gives
+   #111111, which resolves to roughly 86% of a near-black with a faint
+   green cast. The lifted element is the SAME markup re-emitted above the
+   dim at its measured coordinates, so it reads at full brightness.
+   -------------------------------------------------------------------- */
+.co-dim { position: absolute; inset: 0; background: rgba(6,10,7,0.86); }
+.co-lift { position: absolute; }
+/* the lifted copy sits at its own measured box, so the margin/padding that
+   placed it inside the scroll has to come off or it lands twice-offset */
+.co-lift > .co-addr { margin: 0; }
+.co-lift > .co-opt  { margin: 0; }
+.co-lift > .co-cars, .co-lift > .co-offs { padding-top: 0; }
+.co-note { position: absolute; width: 296px; }
+.co-note .h { font-size: 20px; font-weight: 700; line-height: 1.2; color: #93DD80; letter-spacing: -0.01em; }
+.co-note .b { margin-top: 9px; font-size: 13.5px; line-height: 1.45; color: #FFFFFF; }
+.co-next {
+  margin-top: 15px; width: 106px; height: 42px; border-radius: 999px; background: #90D97E;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 14px; font-weight: 700; color: #1F1E1E;
+}
+.co-arrow { position: absolute; color: #90D97E; }
+
+/* the success frame the Pay Now tap lands on */
+.co-done { position: absolute; inset: 0; background: #F8F7F7; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.co-done .disc { width: 84px; height: 84px; border-radius: 50%; background: #008547; display: flex; align-items: center; justify-content: center; }
+.co-done .t { margin-top: 22px; font-size: 21px; font-weight: 700; color: #1F1E1E; }
+.co-done .a { margin-top: 8px; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: #008547; }
+.co-done .m { margin-top: 6px; font-size: 12.5px; color: #6D6969; }
+.co-done .card {
+  margin-top: 30px; width: 296px; background: #FFFFFF; border: 1px solid #E8E7E7;
+  border-radius: 14px; padding: 14px 16px;
+}
+.co-done .card .r { display: flex; align-items: center; font-size: 12.5px; color: #6D6969; padding: 5px 0; }
+.co-done .card .r b { margin-left: auto; color: #1F1E1E; font-weight: 600; }
+.co-done .sec { margin-top: 26px; display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #6D6969; }
+
+/* ============================ DESKTOP STOREFRONT =====================
+   The ShirtShop outro from index.html, lifted off the 596x376 lid onto a
+   1280x800 viewport. Same indigo, same copy, same four beats — but at
+   sizes a designer can actually work with.
+   ==================================================================== */
+.br { display: flex; flex-direction: column; width: 1280px; height: 800px; background: #FFFFFF; }
+.br-chrome {
+  flex: none; height: 48px; background: #E6E3DC; border-bottom: 1px solid rgba(29,34,31,0.1);
+  display: flex; align-items: center; gap: 14px; padding: 0 20px;
+}
+.br-lights { display: flex; gap: 7px; }
+.br-lights i { width: 11px; height: 11px; border-radius: 50%; background: #C9C4BA; display: block; }
+.br-lights i:nth-child(1) { background: #E9A09A; }
+.br-lights i:nth-child(2) { background: #E9CE9A; }
+.br-lights i:nth-child(3) { background: #A7CDA6; }
+.br-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+  color: rgba(29,34,31,0.5); background: #FBFAF7; border: 1px solid rgba(29,34,31,0.08);
+  border-radius: 999px; padding: 7px 18px; display: flex; align-items: center; gap: 7px;
+}
+.br-url .lock { color: #00AD6C; }
+.br-body { flex: 1; min-height: 0; position: relative; background: #FFFFFF; display: flex; flex-direction: column; overflow: hidden; }
+
+.sh-nav { flex: none; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 32px; border-bottom: 1px solid rgba(17,24,39,0.08); }
+.sh-logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(140deg, #6366F1, #7C3AED); display: flex; align-items: center; justify-content: center; }
+.sh-brand { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.sh-brand .thin { color: #4F46E5; }
+.sh-links { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 14px; color: #6B7280; }
+.sh-links span { padding: 8px 14px; border-radius: 9px; }
+.sh-links span.on { background: #4F46E5; color: #FFFFFF; font-weight: 700; }
+.sh-av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(140deg, #6366F1, #7C3AED); color: #FFFFFF; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-left: 10px; }
+
+.sh-head { flex: none; padding: 26px 32px 0; }
+.sh-head .h { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.sh-head .c { margin-top: 4px; font-size: 14px; color: #9CA3AF; }
+.sh-grid { display: flex; gap: 22px; padding: 22px 32px 0; }
+.sh-card { flex: 1; background: #FFFFFF; border: 1px solid #EEF0F3; border-radius: 16px; overflow: hidden; }
+.sh-shot { height: 220px; position: relative; display: block; }
+.sh-shot.a { background: linear-gradient(150deg, #E7EEFB, #C9D8F5); }
+.sh-shot.b { background: linear-gradient(150deg, #FBEFE7, #F3D8C9); }
+.sh-shot.c { background: linear-gradient(150deg, #E9F6EC, #CCE7D5); }
+.sh-new { position: absolute; top: 14px; left: 14px; background: #4F46E5; color: #FFFFFF; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; padding: 5px 9px; border-radius: 6px; }
+.sh-info { padding: 16px 18px 18px; }
+.sh-name { font-size: 16px; font-weight: 700; color: #111827; letter-spacing: -0.01em; }
+.sh-sizes { display: flex; gap: 7px; margin-top: 11px; }
+.sh-sizes i { font-style: normal; font-size: 12px; color: #6B7280; border: 1px solid #E5E7EB; border-radius: 7px; padding: 5px 11px; }
+.sh-sizes i.on { background: #111827; color: #FFFFFF; border-color: #111827; font-weight: 600; }
+.sh-row { display: flex; align-items: center; margin-top: 14px; }
+.sh-price { font-size: 19px; font-weight: 700; color: #111827; }
+.sh-stock { margin-left: auto; font-size: 12px; font-weight: 600; color: #047857; }
+.sh-btn { margin-top: 14px; height: 44px; border-radius: 11px; background: #4F46E5; color: #FFFFFF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* --- the payment step --- */
+.sh-pay { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 30px 32px 0; }
+.sh-steps { flex: none; display: flex; justify-content: center; gap: 12px; }
+.sh-stp { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #9CA3AF; border: 1px solid #E5E7EB; border-radius: 999px; padding: 8px 16px; }
+.sh-stp.done { color: #047857; border-color: #A7E7C6; background: #F0FBF5; }
+.sh-stp.on { color: #FFFFFF; background: #111827; border-color: #111827; }
+.sh-cols { display: flex; gap: 32px; margin-top: 34px; }
+.sh-colL { flex: 1; }
+.sh-h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.sh-method { display: flex; align-items: center; gap: 13px; margin-top: 18px; border: 2px solid #4F46E5; border-radius: 13px; padding: 17px 18px; background: #F7F7FE; }
+.sh-method .ic { flex: none; width: 40px; height: 40px; border-radius: 11px; background: #4F46E5; display: flex; align-items: center; justify-content: center; }
+.sh-method b { display: block; font-size: 15px; font-weight: 700; color: #111827; }
+.sh-method i { display: block; font-style: normal; font-size: 12.5px; color: #6B7280; margin-top: 3px; }
+.sh-secure { display: flex; align-items: center; gap: 7px; margin-top: 14px; font-size: 12.5px; color: #047857; }
+.sh-cta { margin-top: 24px; height: 52px; border-radius: 12px; background: #4F46E5; color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.sh-sum { flex: none; width: 356px; background: #FAFAFB; border: 1px solid #EEF0F3; border-radius: 15px; padding: 20px 22px; }
+.sh-sum .r { display: flex; align-items: center; font-size: 14px; color: #6B7280; padding: 6px 0; }
+.sh-sum .r b { margin-left: auto; color: #374151; font-weight: 600; }
+.sh-sum .r.tot { border-top: 1px solid rgba(17,24,39,0.1); margin-top: 9px; padding-top: 13px; font-size: 16px; color: #111827; font-weight: 700; }
+.sh-sum .r.tot b { color: #4F46E5; font-size: 21px; }
+
+/* --- the Cashfree drop-in, over a dimmed payment step --- */
+.cf-dim { position: absolute; inset: 0; background: rgba(17,24,39,0.55); }
+.cf {
+  position: absolute; left: 190px; top: 96px; width: 900px; height: 560px;
+  display: flex; border-radius: 18px; overflow: hidden; background: #FFFFFF;
+  box-shadow: 0 28px 70px rgba(17,24,39,0.3);
+}
+.cfL { flex: none; width: 320px; background: linear-gradient(165deg, #0E7A4E, #04502F); color: #FFFFFF; padding: 30px 26px; display: flex; flex-direction: column; }
+.cf-mark { width: 54px; height: 54px; border-radius: 14px; background: #FFFFFF; color: #04502F; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+.cf-biz { text-align: center; font-size: 18px; font-weight: 700; margin-top: 14px; }
+.cf-trust { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.72); }
+.cf-amt { text-align: center; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin-top: 22px; }
+.cf-panel { margin-top: 26px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16); border-radius: 13px; overflow: hidden; }
+.cf-off { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.14); }
+.cf-off span { display: block; font-size: 12px; color: rgba(255,255,255,0.7); }
+.cf-off b { display: block; font-size: 13.5px; font-weight: 700; margin-top: 4px; }
+.cf-cp { padding: 14px 15px; display: flex; align-items: center; }
+.cf-cp span { font-size: 12.5px; color: rgba(255,255,255,0.7); }
+.cf-cp b { margin-left: auto; font-size: 12.5px; font-weight: 700; color: #CEF993; }
+.cf-sec { margin-top: auto; padding-top: 26px; text-align: center; font-size: 11.5px; color: rgba(255,255,255,0.6); }
+.cf-sec b { color: #FFFFFF; font-weight: 700; }
+.cfR { flex: 1; padding: 26px 28px; background: #FFFFFF; }
+.cf-note { background: #FFF7E8; border: 1px solid #F5E2BC; border-radius: 10px; padding: 11px 14px; font-size: 12px; color: #8A6516; }
+.cf-po { display: flex; align-items: center; margin-top: 18px; font-size: 13px; color: #6B7280; }
+.cf-po b { margin-left: auto; font-size: 12.5px; font-weight: 700; color: #00AD6C; }
+.cf-lbl { margin-top: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #9CA3AF; }
+.cf-fav { display: flex; gap: 12px; margin-top: 11px; }
+.cf-fav .fav { flex: 1; display: flex; align-items: center; gap: 11px; border: 1px solid #E5E7EB; border-radius: 12px; padding: 13px 14px; }
+.cf-fav .fav.on { border: 2px solid #00AD6C; background: #F2FBF7; }
+.cf-fav .fi { flex: none; width: 34px; height: 34px; border-radius: 9px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; color: #374151; }
+.cf-fav b { display: block; font-size: 13.5px; font-weight: 700; color: #111827; }
+.cf-fav i { display: block; font-style: normal; font-size: 10.5px; letter-spacing: 0.08em; color: #9CA3AF; margin-top: 3px; }
+.cf-qr { display: flex; align-items: center; gap: 15px; margin-top: 14px; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px; }
+.cf-qr .qr { flex: none; width: 76px; height: 76px; border-radius: 9px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; font-weight: 600; color: #6B7280; padding: 0 8px; }
+.cf-qr .qt b { display: block; font-size: 14px; font-weight: 700; color: #111827; }
+.cf-qr .qt span { display: block; font-size: 12px; color: #6B7280; margin-top: 3px; }
+.cf-row { display: flex; align-items: center; border: 1px solid #E5E7EB; border-radius: 11px; padding: 13px 15px; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: #111827; }
+.cf-row i { margin-left: auto; font-style: normal; color: #9CA3AF; }
+
+/* --- the desktop paid state --- */
+.sh-done { position: absolute; inset: 0; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.sh-done .disc { width: 96px; height: 96px; border-radius: 50%; background: #00AD6C; display: flex; align-items: center; justify-content: center; }
+.sh-done .t { margin-top: 26px; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.sh-done .a { margin-top: 10px; font-size: 44px; font-weight: 700; letter-spacing: -0.03em; color: #00AD6C; }
+.sh-done .m { margin-top: 10px; font-size: 14px; color: #6B7280; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.sh-done .card { margin-top: 34px; width: 460px; border: 1px solid #EEF0F3; border-radius: 16px; padding: 20px 24px; }
+.sh-done .card .r { display: flex; align-items: center; font-size: 14px; color: #6B7280; padding: 7px 0; }
+.sh-done .card .r b { margin-left: auto; color: #111827; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="sheet-head">
+  <h1>Cashfree Checkout — Figma artboards</h1>
+  <p>Ten frames, laid out as artboards so they import into Figma as frames rather than as one long page. Two flows: the <b>mobile Cashfree checkout</b> rebuilt from the 720&times;1600 exports in <code>../Checkout Screen/</code>, and the <b>desktop ShirtShop</b> storefront lifted out of the laptop lid in <code>index.html</code>.</p>
+  <p>Each frame carries a <code>data-frame</code> name and each tappable element carries <code>data-goto</code> naming the frame it should advance to — that is the prototype wiring, written down, so it survives the import and can be reconnected in one pass.</p>
+</div>
+
+<section class="flow">
+  <h2>Flow A · Cashfree Checkout — mobile</h2>
+  <p class="note">Rebuilt from the 720&times;1600 exports in <code>../Checkout Screen/</code>. Frames 02&ndash;05 are the same base screen with one element lifted out of a dim — that is how the reference stills were made, and it is why they are a prototype rather than four designs. Wire <code>Next</code> straight down the row; wire <code>Pay Now</code> on 05 to 06.</p>
+  <div class="rail">
+
+  <!-- ============================ 01 ============================ -->
+  <figure class="art">
+    <figcaption>01 · Checkout — Base <span>360 × 800</span></figcaption>
+    <div class="frame mob" data-frame="01 Checkout — Base">
+      <!--CO:START--><div class="co">
+        <div class="co-promo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Last purchase made 10 mins ago</div>
+        <div class="co-head">
+          <div class="co-head-row">
+            <span class="co-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="co-logo"><img src="data:image/jpeg;base64,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" alt="Copper Kettle Co."></span>
+            <span class="co-biz">Copper Kettle Co.</span>
+            <span class="co-amt">₹ 1,530<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="co-secure">Secured by <b><svg width="17" height="12" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg>Cashfree</b></div>
+        </div>
+        <div class="co-body">
+          <div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div>
+          <div class="co-tabs"><span class="co-tab on">Frequently Paired</span><span class="co-tab">Deals for you</span></div>
+          <div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,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" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div>
+          <div class="co-secrow"><span class="lbl">Offers And Coupons</span><span class="more">9 More Offers<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+          <div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div>
+          <div class="co-pay">
+            <div class="co-secrow"><span class="lbl">Payment Options</span><span class="more">See more<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+            <div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div>
+            <div class="co-opt">
+              <div class="co-opt-row">
+                <span class="co-radio"></span>
+                <span class="co-opt-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="co-opt-nm">Partial COD</span>
+                <span class="co-opt-amt">₹1,780</span>
+              </div>
+              <div class="co-opt-sub">Pay ₹250 now and remaining on delivery</div>
+            </div>
+            <div class="co-bar" data-goto="06 Payment Successful"><span class="t">₹1,530</span><span class="g">Pay Now</span></div>
+          </div>
+        </div>
+      </div><!--CO:END-->
+    </div>
+  </figure>
+<!--GEN:START-->
+  <!-- ============================ 02 ============================ -->
+  <figure class="art">
+    <figcaption>02 · Pre-filled Delivery Address <span>360 × 800</span><em>overlay on 01</em></figcaption>
+    <div class="frame mob" data-frame="02 Pre-filled Delivery Address">
+      <div class="co">
+        <div class="co-promo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Last purchase made 10 mins ago</div>
+        <div class="co-head">
+          <div class="co-head-row">
+            <span class="co-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="co-logo"><img src="data:image/jpeg;base64,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" alt="Copper Kettle Co."></span>
+            <span class="co-biz">Copper Kettle Co.</span>
+            <span class="co-amt">₹ 1,530<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="co-secure">Secured by <b><svg width="17" height="12" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg>Cashfree</b></div>
+        </div>
+        <div class="co-body">
+          <div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div>
+          <div class="co-tabs"><span class="co-tab on">Frequently Paired</span><span class="co-tab">Deals for you</span></div>
+          <div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,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" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div>
+          <div class="co-secrow"><span class="lbl">Offers And Coupons</span><span class="more">9 More Offers<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+          <div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div>
+          <div class="co-pay">
+            <div class="co-secrow"><span class="lbl">Payment Options</span><span class="more">See more<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+            <div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div>
+            <div class="co-opt">
+              <div class="co-opt-row">
+                <span class="co-radio"></span>
+                <span class="co-opt-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="co-opt-nm">Partial COD</span>
+                <span class="co-opt-amt">₹1,780</span>
+              </div>
+              <div class="co-opt-sub">Pay ₹250 now and remaining on delivery</div>
+            </div>
+            <div class="co-bar"><span class="t">₹1,530</span><span class="g">Pay Now</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="co-dim"></div>
+      <div class="co-lift" style="left:16px;top:154px;width:328px"><div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div></div>
+      <svg class="co-arrow" style="left:48px;top:296px" width="30" height="66" viewBox="0 0 30 66" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 62C7 45 3 26 11 5"/><path d="M4 15L11 4L19 10"/></svg>
+      <div class="co-note" style="left:80px;top:322px;width:272px">
+        <div class="h">Pre-filled Delivery Address</div>
+        <div class="b">Pre-fills saved shipping details to eliminate typing and speed up checkout.</div>
+        <div class="co-next" data-goto="03 Contextual Cross-selling">Next<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 03 ============================ -->
+  <figure class="art">
+    <figcaption>03 · Contextual Cross-selling <span>360 × 800</span><em>overlay on 01</em></figcaption>
+    <div class="frame mob" data-frame="03 Contextual Cross-selling">
+      <div class="co">
+        <div class="co-promo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Last purchase made 10 mins ago</div>
+        <div class="co-head">
+          <div class="co-head-row">
+            <span class="co-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="co-logo"><img src="data:image/jpeg;base64,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" alt="Copper Kettle Co."></span>
+            <span class="co-biz">Copper Kettle Co.</span>
+            <span class="co-amt">₹ 1,530<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="co-secure">Secured by <b><svg width="17" height="12" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg>Cashfree</b></div>
+        </div>
+        <div class="co-body">
+          <div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div>
+          <div class="co-tabs"><span class="co-tab on">Frequently Paired</span><span class="co-tab">Deals for you</span></div>
+          <div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,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" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div>
+          <div class="co-secrow"><span class="lbl">Offers And Coupons</span><span class="more">9 More Offers<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+          <div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div>
+          <div class="co-pay">
+            <div class="co-secrow"><span class="lbl">Payment Options</span><span class="more">See more<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+            <div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div>
+            <div class="co-opt">
+              <div class="co-opt-row">
+                <span class="co-radio"></span>
+                <span class="co-opt-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="co-opt-nm">Partial COD</span>
+                <span class="co-opt-amt">₹1,780</span>
+              </div>
+              <div class="co-opt-sub">Pay ₹250 now and remaining on delivery</div>
+            </div>
+            <div class="co-bar"><span class="t">₹1,530</span><span class="g">Pay Now</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="co-dim"></div>
+      <div class="co-lift" style="left:0px;top:326px;width:360px"><div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,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" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div></div>
+      <svg class="co-arrow" style="left:272px;top:448px" width="58" height="72" viewBox="0 0 58 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 68C22 57 42 40 51 9"/><path d="M40 13L52 4L55 17"/></svg>
+      <div class="co-note" style="left:36px;top:466px;width:292px">
+        <div class="h">Contextual Cross-selling</div>
+        <div class="b">Drives higher basket size with instant, single-click product recommendations.</div>
+        <div class="co-next" data-goto="04 Instant Coupons & Discount">Next<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 04 ============================ -->
+  <figure class="art">
+    <figcaption>04 · Instant Coupons & Discount <span>360 × 800</span><em>overlay on 01</em></figcaption>
+    <div class="frame mob" data-frame="04 Instant Coupons & Discount">
+      <div class="co">
+        <div class="co-promo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Last purchase made 10 mins ago</div>
+        <div class="co-head">
+          <div class="co-head-row">
+            <span class="co-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="co-logo"><img src="data:image/jpeg;base64,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" alt="Copper Kettle Co."></span>
+            <span class="co-biz">Copper Kettle Co.</span>
+            <span class="co-amt">₹ 1,530<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="co-secure">Secured by <b><svg width="17" height="12" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg>Cashfree</b></div>
+        </div>
+        <div class="co-body">
+          <div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div>
+          <div class="co-tabs"><span class="co-tab on">Frequently Paired</span><span class="co-tab">Deals for you</span></div>
+          <div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEBAQFBQQFBwsHBwYGBw4KCggLEA4RERAOEA8SFBoWEhMYEw8QFh8XGBsbHR0dERYgIh8cIhocHRz/2wBDAQUFBQcGBw0HBw0cEhASHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBz/wAARCACcAJwDASIAAhEBAxEB/8QAHQAAAAYDAQAAAAAAAAAAAAAAAAECBAUGAwcICf/EAEAQAAEDAwEGAQoEAwYHAAAAAAEAAgMEBREGBxIhMUFRkQgTFFJhcXKBscEiMjOhI2JjFRhCU4KyJEOiwtHS8P/EABkBAQEBAQEBAAAAAAAAAAAAAAACAQMEBf/EACARAQEAAgIBBQEAAAAAAAAAAAABAhEhMUEDEhMiUTL/2gAMAwEAAhEDEQA/AO+Jp/NndH5vomxle7m4onu3nuPcpGVxuVqbSi93rHxRb57lFnKJSwe871j4obzvWPiiQQGXH1j4pO871j4oykoFbzvWPii33esfFEiKA993rHxRb7vWPiiQQAucP8R8UN93rHxRFEgVvu9Y+KSXu9Z3igiKAt93rO8UYmkbykd4pJRIHcNc9hAk/E3v1CkwQQCORUCpaidvU7fZwXTC+FSmhKLKPHFEVzSCCCCAiUaGEEAKSlFJQBBBBAkoIyiQJQQQQBEUaIhAkokZCJAFJ2/9A/EVGKTt36Lvi+wVYdthvxQwjQUsJQRlEgCIkNBJIAHUqm7RtXz6Ws8poGsfc5I3uhY4j8RAOAMkDJPAZ4LzQ2m7c9oN4vNTT3mpuVIQSPQ6lz2hn+jgP2ScpuXh6hXLXOmLQS2v1DaqZw5tlq42kfIlVqs27bOKEkTavtgP8jy//aCvIyr1feKhx3q6UZ6MO79FEy3KpmdvSTyPPdziVXtrN3w9e/7xmzAnA1bSn3RS/wDonNPt82c1RAi1RTOJ/pSD/tXj0ytmBH8Z/ipGlutWwjdqXj5rLjU3LKPZKj2j6VuLQ6nvlI5p6ucWj9wFM0d6ttwdu0lwpKh3aKZrj+xXkFZNcagtRBorvVQn+nK5v3WwLZtp1fEGiouArMcvSWNkI+ZGVKPns7j1KKC4e2UeUFqJ90ho6h9Q6nc4b7yS+GEdyHcGt+YXY2k9S02rLLDcqVwLHEsdu8t4c8ezr80l26YepM+k2iKNBa6EpKUeaIoCUnbv0HfF9goxSdu/Qd8X2CvDtsYEEEFDARYRoIOb9vF09L1BBRsdxgAA9/X6qqwC119E2lu9jobhE4YcJYwcrDtKr3VusKuYHI844/umtNVBkWcjgFzl5eHLL72qxqbZlsoqGSPfpeSle7n6NIWAe4DktG6i0BoSind6JTXHzfQGY8Pmcre2o7oHRPyO+Fpa/wBQ4yvBxgqvdW++/qiVOmtLRHLILkG+yob92JobZpqHiymuD/inb9mqVrHYyoiU8eHJN39Jlb5SNuisZmG5b37vUSSuP0IVxoYrezddBQ07fewO/wB2SqHb5MTNGOGVdaF/4W46qpF4yXtaGTGppywk7oHAZ4N9w6LaWz/ylI9mFk/sqW2Gsg3t5z9/dLHEfuOC1LSOO6cLLo/ZncNpl+FtoKiGN0k4Y8TAkNbzL+HPA6I6Ti8Ojrd5aNrqHNM1jcIz1ZNg/RbP0b5RWidYTx0ra11BVv4BlUN1pPYO5eOFr+h8irSMFC2Kpvl2kqcYMkTYo2Z9jS13D5las2meS3f9ntDNetOVhvNspwXzRti3KiFo5u3ASHgdcYPsWN+85d1gh7Q5pBBGQR1RELkvyY9tc0tTBpK91Rlin4Ucr3ZMbjyZk82nkOx4dV1oVrpjlubJKk7d+g74vsFHYUjb/wBF3xfYK8O1RgQSsJKhgLDWS+ZpKiT1I3O8AsyYXs4s9eR/kP8AoUHGmr5j/bUzzyLj9VFtuG4zB4hSer2k1sjh3KqE03m24JXGPm3tgv8AWh0Z7gLVl3n33u3uvRXO9VDnNLd75qhXNxe4gqmoKrPAqKlPRSdUCVGyN4qouDpXFsjVc6B+GNwqZA0747K225/4WqnTFZqSTHvwtqeTbWeibS6ZuceclLT/AKgR91qKmfghbF2Dyea2n28Z4+ejP/UEXO49CCMIiAQQQCD0SykkYR3ed22DTzdl222tjtX/AA9LJJHcaUN4CJsh/E0ewPGQu/7Fcm3qyW24t4NrKeOcDtvNB+64Q8qm9QXfbYKWmcHmioo6d5HR29khdwaFo5LfovT9LKCJIaGFrgeh3BlZHPH+rE/hSNB+i74vsFHqQoP0XfF9gumHbrGNERwR5ScqGCKYXlhfaK5o5mF/0Kf5WOWMSxSRnk9pafmg4x1ZGPSpQe5VBrGcytm67pHUlyqY3AgteRj5rWla7JIXF87Kcqtc494EdFULhCSSMK63AZaVWqxgdnuqipNqhVQnlhMHwceRVlngGDwTJ9OB0VR0mKJip8O5KeoWYATVsIBCkqZuMcFS5NJSkHELYOxHJ2wWWFv/ADHt/YgrX1McHirXsv1badEbXtP3i+1Ho9rgbIZZQ0uwSxwbwHtwjfMekxWuNsW1u0bKtMVNdWVEZuD2EU1Pn8TndDjtnx8Vo7aR5cmmrXTS0+koZLhWEYbPI3DQfYP/AD4LmGhptdeUVrNkssdRW1czt5rM/wAOFvrOJ4ADueHQdluv11uWulr2K6Vue2Pau2vuLXvbNUemVrzxDIgc4z7eDfeV6UBoaA0DAHAALXWx3ZTbtk2mWW+n3J7lOA6sqwP1HdAP5Rnh8z1Ww9/2hYY46LUhQfou+L7BRhdnqpK3nMLvi+wV4drjBlBBBQwEEEWUHPO27Tj6W5urWM/g1I3wQOTuo/8Au655uA3XuHVd56n09TantM1DUYBcMskxxY7uuP8AaDoS46YrpIqiBwbklrwPwuHcFc7OXl9X09XcaqrcYKr1U3iVYq6J7c7wPDooCpYSStiMYiZm5BTR0fccSpCVnFNJMAcVbrDcMwVnY4NWB8gbyWIzZ5c0LUvTy5eAs120JqLVFbBSWiy3CuMsQG/TU7ntZnu7GG8O5Vz2T7NK3WtxjqJ2ugtELv4s5H5v5W9z9F2fbBTW2hgoqNjYaaBoYxjeQASLxw3zXKuzXyKquWaKt1fWR0FNneNHTuEs5HYu/I35by7F0dpHTugbYLdp+3Q0cHAvLeL5T3c48XH3po2rdj8yyNq3d1rpMZFqFW09UfpQPVVptW5Zm1bvasasAqB3U1aXb9M4/wA5+gVMZUuKtenXl9DIT/mH6BXh22MqCCChgiUXJGQiwgQ44CgdR2umvNG6nqqeOeM9Hj6HopyXgMJu5mUY5O2g7J66knlmtlEamm4ndY4CRvswcA/I/JaDv0MlpkfHV0VZTEdJqd7fthekk1DHMCHsB96hK7RltrgRLTMOfYs0n45XmDV6ioIyf47c+1Q8+p6RzsMk3j7AvSi5bEdM3BxdLb4iT1LQoR/k9aaacx0TGn2BbGfG89aR1ddXgUlFUyA/4hGQ3xOAtj6R0MGyx1VzjErwQRADlo+Ijn7h4rsWPYbZqc5ZTt4exP4tlNBT/liHgtbMZFH0jdRLTxUoiZD5sbrGRt3WgdgByV7pxIQOBT+k0JT0jgWMAI9in4LX5vALAVi4goYnnoU/ipyeYKnorcw9MJw23tHRG7Q0dN7E5ZTexSjaMDosgph2RiPbTexWewM3KN4/qH6BRghwpq0t3adw/nP0CvDtsY0EDwJCChgIHkgiPJBhfxKSWpTuaJAjdRJZSEBEIt0FKRFAkxhIdEOyyokGHzQRiAOKyYS2DBQYDBu9EtoxwKcc1jezqgLdR7qNqNAjdUpbhiB3xfYKOUnQjEHvJV4dtjHOwskJ6HisSkS0OGCMhYXUzMEjITLDyWGiIlZnQtHUpPmgepU6Yau5ok5MLT1KLzDe5TQb5SSE59Hb3KHo7e5TQaFBOjTt7lF6O3uU0GyIp16O3uUPR29ymg1Sm8049GZ3KAp29ymhiSTxCc+Yb3KBp2jqU0aMweKXnCzimZnm5Z46KN/Mu8U03RiGlzgGjJPJTMMfmoms7BFFBHF+VvHv1WRdMcdNkf/Z" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div>
+          <div class="co-secrow"><span class="lbl">Offers And Coupons</span><span class="more">9 More Offers<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+          <div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div>
+          <div class="co-pay">
+            <div class="co-secrow"><span class="lbl">Payment Options</span><span class="more">See more<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+            <div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div>
+            <div class="co-opt">
+              <div class="co-opt-row">
+                <span class="co-radio"></span>
+                <span class="co-opt-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="co-opt-nm">Partial COD</span>
+                <span class="co-opt-amt">₹1,780</span>
+              </div>
+              <div class="co-opt-sub">Pay ₹250 now and remaining on delivery</div>
+            </div>
+            <div class="co-bar"><span class="t">₹1,530</span><span class="g">Pay Now</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="co-dim"></div>
+      <div class="co-lift" style="left:0px;top:470px;width:360px"><div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div></div>
+      <svg class="co-arrow" style="left:26px;top:348px" width="34" height="92" viewBox="0 0 34 92" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4C0 34 7 63 29 85"/><path d="M17 80L30 87L25 74"/></svg>
+      <div class="co-note" style="left:66px;top:338px;width:290px">
+        <div class="h">Instant Coupons &amp; Discount</div>
+        <div class="b">Drives higher conversion with eligible offers and discounts applicable at checkout.</div>
+        <div class="co-next" data-goto="05 Smart Preferred paymode">Next<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 05 ============================ -->
+  <figure class="art">
+    <figcaption>05 · Smart Preferred paymode <span>360 × 800</span><em>overlay on 01</em></figcaption>
+    <div class="frame mob" data-frame="05 Smart Preferred paymode">
+      <div class="co">
+        <div class="co-promo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Last purchase made 10 mins ago</div>
+        <div class="co-head">
+          <div class="co-head-row">
+            <span class="co-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+            <span class="co-logo"><img src="data:image/jpeg;base64,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" alt="Copper Kettle Co."></span>
+            <span class="co-biz">Copper Kettle Co.</span>
+            <span class="co-amt">₹ 1,530<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="co-secure">Secured by <b><svg width="17" height="12" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg>Cashfree</b></div>
+        </div>
+        <div class="co-body">
+          <div class="co-addr">
+            <div class="co-addr-top">
+              <div class="co-addr-txt">
+                <div class="l1"><b>Ashok</b>, KL-123, 3rd Cross Road Kavi Nagar layout</div>
+                <div class="l1">Near Silkboard, BTM Layou… Bangalore, 560068</div>
+                <div class="l2">9876543210 • ashok.ku@gmail.com</div>
+              </div>
+              <span class="co-addr-edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            </div>
+            <div class="co-addr-rule"></div>
+            <div class="co-addr-eta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v11H1z"/><path d="M14 8h4l3 3v4h-7z"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>Get it in 24 Hours • <span class="free">Free</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+          </div>
+          <div class="co-tabs"><span class="co-tab on">Frequently Paired</span><span class="co-tab">Deals for you</span></div>
+          <div class="co-cars">
+            <div class="co-prod">
+              <img src="data:image/jpeg;base64,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" alt="Green Pondi Glazed Ceramic Mug">
+              <div class="co-prod-r">
+                <div class="co-prod-nm">Green Pondi Glazed Ceramic Mug</div>
+                <div class="co-prod-pr"><span class="now">₹150</span><span class="was">200</span><span class="sv">Save ₹50</span></div>
+                <div class="co-prod-add">ADD<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="co-prod peek"><img src="data:image/jpeg;base64,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" alt="Terracotta mug"></div>
+          </div>
+          <div class="co-secrow"><span class="lbl">Offers And Coupons</span><span class="more">9 More Offers<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+          <div class="co-offs">
+            <div class="co-off">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6" stroke-linecap="round"/><circle cx="9.6" cy="9.6" r="1.1"/><circle cx="14.4" cy="14.4" r="1.1"/></svg>FESTIVE10</div>
+                <div class="co-off-txt">5% off entire order</div>
+              </div>
+              <span class="co-off-btn">Apply</span>
+            </div>
+            <div class="co-off peek">
+              <div class="co-off-l">
+                <div class="co-off-code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg>GPAY</div>
+                <div class="co-off-txt">Flat ₹150 off</div>
+              </div>
+            </div>
+          </div>
+          <div class="co-pay">
+            <div class="co-secrow"><span class="lbl">Payment Options</span><span class="more">See more<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></div>
+            <div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div>
+            <div class="co-opt">
+              <div class="co-opt-row">
+                <span class="co-radio"></span>
+                <span class="co-opt-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="co-opt-nm">Partial COD</span>
+                <span class="co-opt-amt">₹1,780</span>
+              </div>
+              <div class="co-opt-sub">Pay ₹250 now and remaining on delivery</div>
+            </div>
+            <div class="co-bar"><span class="t">₹1,530</span><span class="g">Pay Now</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="co-dim"></div>
+      <div class="co-lift" style="left:16px;top:587px;width:328px"><div class="co-opt on">
+              <div class="co-opt-row">
+                <span class="co-radio on"></span>
+                <span class="co-opt-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="4.2" stroke-linecap="round"><path d="M12 4a8 8 0 0 1 6.93 4" stroke="#EA4335"/><path d="M18.93 8a8 8 0 0 1 0 8" stroke="#FBBC04"/><path d="M18.93 16A8 8 0 0 1 12 20" stroke="#34A853"/><path d="M12 20A8 8 0 0 1 12 4" stroke="#4285F4"/></svg></span>
+                <span class="co-opt-nm">Google Pay</span>
+                <span class="co-opt-amt">₹1,530</span>
+              </div>
+            </div></div>
+      <svg class="co-arrow" style="left:272px;top:452px" width="58" height="104" viewBox="0 0 58 104" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M50 4C56 38 44 74 24 97"/><path d="M14 86L21 100L34 94"/></svg>
+      <div class="co-note" style="left:36px;top:438px;width:292px">
+        <div class="h">Smart Preferred paymode</div>
+        <div class="b">Auto-selects saved and preferred payment instrument to drive faster payment completion.</div>
+        <div class="co-next" data-goto="06 Payment Successful">Next<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 06 ============================ -->
+  <figure class="art">
+    <figcaption>06 · Payment Successful <span>360 × 800</span><em>end of flow</em></figcaption>
+    <div class="frame mob" data-frame="06 Payment Successful">
+      <div class="co-done">
+        <div class="disc"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="t">Payment successful</div>
+        <div class="a">₹1,530</div>
+        <div class="m">Copper Kettle Co. · Google Pay</div>
+        <div class="card">
+          <div class="r"><span>Order</span><b>order_CK_88213</b></div>
+          <div class="r"><span>Paid with</span><b>Google Pay · UPI</b></div>
+          <div class="r"><span>Delivery</span><b>Get it in 24 Hours</b></div>
+        </div>
+        <div class="sec"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Secured by Cashfree Payments</div>
+      </div>
+    </div>
+  </figure>
+<!--GEN:END-->
+  </div>
+</section>
+
+<section class="flow">
+  <h2>Flow B · ShirtShop — desktop</h2>
+  <p class="note">The storefront outro from <code>index.html</code>, lifted off the 596&times;376 laptop lid onto a real 1280&times;800 viewport. Same indigo, same copy, same four beats — the ₹1,042 is still 799 + 99 shipping + 144 GST, so the drop-in charges what the summary says. Frame 09 is frame 08 with the drop-in over a dim, which is what actually happens when <code>cashfree.checkout()</code> opens.</p>
+  <div class="rail">
+
+  <!-- ============================ 07 ============================ -->
+  <figure class="art">
+    <figcaption>07 · ShirtShop — Our Collection <span>1280 × 800</span></figcaption>
+    <div class="frame desk" data-frame="07 ShirtShop — Our Collection">
+      <div class="br">
+        <div class="br-chrome">
+          <span class="br-lights"><i></i><i></i><i></i></span>
+          <span class="br-url"><span class="lock">●</span>localhost:3000</span>
+        </div>
+        <div class="br-body">
+          <div class="sh-nav">
+            <span class="sh-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></span>
+            <span class="sh-brand">Shirt<span class="thin">Shop</span></span>
+            <span class="sh-links"><span class="on">Shop</span><span>Cart</span><span>Orders</span><span>Profile</span></span>
+            <span class="sh-av">AS</span>
+          </div>
+          <div class="sh-head">
+            <div class="h">Our Collection</div>
+            <div class="c">6 products</div>
+          </div>
+          <div class="sh-grid">
+            <div class="sh-card">
+              <div class="sh-shot a"><span class="sh-new">NEW</span></div>
+              <div class="sh-info">
+                <div class="sh-name">Classic Cotton T-Shirt</div>
+                <div class="sh-sizes"><i>S</i><i class="on">M</i><i>L</i><i>XL</i></div>
+                <div class="sh-row"><span class="sh-price">₹799</span><span class="sh-stock">In Stock</span></div>
+                <div class="sh-btn" data-goto="08 ShirtShop — Payment"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Add to Cart</div>
+              </div>
+            </div>
+            <div class="sh-card">
+              <div class="sh-shot b"><span class="sh-new">NEW</span></div>
+              <div class="sh-info">
+                <div class="sh-name">Premium Striped Shirt</div>
+                <div class="sh-sizes"><i>S</i><i class="on">M</i><i>L</i><i>XL</i></div>
+                <div class="sh-row"><span class="sh-price">₹1,299</span><span class="sh-stock">In Stock</span></div>
+                <div class="sh-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Add to Cart</div>
+              </div>
+            </div>
+            <div class="sh-card">
+              <div class="sh-shot c"><span class="sh-new">NEW</span></div>
+              <div class="sh-info">
+                <div class="sh-name">Vintage Graphic Tee</div>
+                <div class="sh-sizes"><i>S</i><i class="on">M</i><i>L</i><i>XL</i></div>
+                <div class="sh-row"><span class="sh-price">₹999</span><span class="sh-stock">In Stock</span></div>
+                <div class="sh-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Add to Cart</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 08 ============================ -->
+  <figure class="art">
+    <figcaption>08 · ShirtShop — Payment <span>1280 × 800</span></figcaption>
+    <div class="frame desk" data-frame="08 ShirtShop — Payment">
+      <div class="br">
+        <div class="br-chrome">
+          <span class="br-lights"><i></i><i></i><i></i></span>
+          <span class="br-url"><span class="lock">●</span>localhost:3000/checkout</span>
+        </div>
+        <div class="br-body">
+          <div class="sh-nav">
+            <span class="sh-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></span>
+            <span class="sh-brand">Shirt<span class="thin">Shop</span></span>
+            <span class="sh-links"><span>Shop</span><span class="on">Cart</span><span>Orders</span><span>Profile</span></span>
+            <span class="sh-av">AS</span>
+          </div>
+          <div class="sh-pay">
+            <div class="sh-steps">
+              <span class="sh-stp done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Address</span>
+              <span class="sh-stp done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Review</span>
+              <span class="sh-stp on">Payment</span>
+            </div>
+            <div class="sh-cols">
+              <div class="sh-colL">
+                <div class="sh-h2">Payment</div>
+                <div class="sh-method">
+                  <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.9"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg></span>
+                  <span><b>Pay securely with Cashfree</b><i>UPI · Cards · Net Banking · Wallets</i></span>
+                </div>
+                <div class="sh-secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Your payment is secured by Cashfree</div>
+                <div class="sh-cta" data-goto="09 Cashfree Drop-in">Proceed to Pay</div>
+              </div>
+              <div class="sh-sum">
+                <div class="r"><span>Subtotal</span><b>₹799</b></div>
+                <div class="r"><span>Shipping</span><b>₹99</b></div>
+                <div class="r"><span>GST (18%)</span><b>₹144</b></div>
+                <div class="r tot"><span>Total</span><b>₹1,042</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 09 ============================ -->
+  <figure class="art">
+    <figcaption>09 · Cashfree Drop-in <span>1280 × 800</span><em>overlay on 08</em></figcaption>
+    <div class="frame desk" data-frame="09 Cashfree Drop-in">
+      <div class="br">
+        <div class="br-chrome">
+          <span class="br-lights"><i></i><i></i><i></i></span>
+          <span class="br-url"><span class="lock">●</span>localhost:3000/checkout</span>
+        </div>
+        <div class="br-body">
+          <div class="sh-nav">
+            <span class="sh-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></span>
+            <span class="sh-brand">Shirt<span class="thin">Shop</span></span>
+            <span class="sh-links"><span>Shop</span><span class="on">Cart</span><span>Orders</span><span>Profile</span></span>
+            <span class="sh-av">AS</span>
+          </div>
+          <div class="sh-pay">
+            <div class="sh-steps">
+              <span class="sh-stp done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Address</span>
+              <span class="sh-stp done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Review</span>
+              <span class="sh-stp on">Payment</span>
+            </div>
+            <div class="sh-cols">
+              <div class="sh-colL">
+                <div class="sh-h2">Payment</div>
+                <div class="sh-method">
+                  <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.9"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg></span>
+                  <span><b>Pay securely with Cashfree</b><i>UPI · Cards · Net Banking · Wallets</i></span>
+                </div>
+                <div class="sh-secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Your payment is secured by Cashfree</div>
+                <div class="sh-cta">Proceed to Pay</div>
+              </div>
+              <div class="sh-sum">
+                <div class="r"><span>Subtotal</span><b>₹799</b></div>
+                <div class="r"><span>Shipping</span><b>₹99</b></div>
+                <div class="r"><span>GST (18%)</span><b>₹144</b></div>
+                <div class="r tot"><span>Total</span><b>₹1,042</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="cf-dim"></div>
+          <div class="cf">
+            <div class="cfL">
+              <div class="cf-mark"><svg width="31" height="23" viewBox="-9 28 232 169" fill="currentColor"><path d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z"/><path d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z"/></svg></div>
+              <div class="cf-biz">ShirtShop</div>
+              <div class="cf-trust"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Trusted by Cashfree</div>
+              <div class="cf-amt">₹1,042</div>
+              <div class="cf-panel">
+                <div class="cf-off"><span>Offers and Coupons</span><b>3 Offers Available ›</b></div>
+                <div class="cf-cp"><span>Have a coupon? Paste here</span><b>APPLY</b></div>
+              </div>
+              <div class="cf-sec">Secured by <b>Cashfree Payments</b></div>
+            </div>
+            <div class="cfR">
+              <div class="cf-note">Convenience fee applies for payments made using Card</div>
+              <div class="cf-po"><span>Payment Options for +91 98••••10</span><b>Change</b></div>
+              <div class="cf-lbl">Favourites</div>
+              <div class="cf-fav">
+                <div class="fav">
+                  <span class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M16 12.5h3"/></svg></span>
+                  <span><b>Test Wallet</b><i>WALLET</i></span>
+                </div>
+                <div class="fav on" data-goto="10 Payment Successful">
+                  <span class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10h18M5 10V20M19 10V20M3 20h18M12 3l9 5H3z"/></svg></span>
+                  <span><b>State Bank</b><i>NET BANKING</i></span>
+                </div>
+              </div>
+              <div class="cf-qr">
+                <span class="qr">Click to see QR</span>
+                <span class="qt"><b>Scan and pay</b><span>with any UPI app</span></span>
+              </div>
+              <div class="cf-lbl">Other Payment Options</div>
+              <div class="cf-row">Cashfree Pay<i>›</i></div>
+              <div class="cf-row">Cardless EMI<i>›</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ============================ 10 ============================ -->
+  <figure class="art">
+    <figcaption>10 · Payment Successful <span>1280 × 800</span><em>end of flow</em></figcaption>
+    <div class="frame desk" data-frame="10 Payment Successful">
+      <div class="br">
+        <div class="br-chrome">
+          <span class="br-lights"><i></i><i></i><i></i></span>
+          <span class="br-url"><span class="lock">●</span>localhost:3000/checkout/success</span>
+        </div>
+        <div class="br-body">
+          <div class="sh-done">
+            <div class="disc"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="t">Payment successful</div>
+            <div class="a">₹1,042</div>
+            <div class="m">payment_status: SUCCESS</div>
+            <div class="card">
+              <div class="r"><span>Order</span><b>order_shirtshop_1042</b></div>
+              <div class="r"><span>Paid with</span><b>State Bank · Net Banking</b></div>
+              <div class="r"><span>Merchant</span><b>ShirtShop</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  </div>
+</section>
+
+</body>
+</html>
