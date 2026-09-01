@@ -2536,20 +2536,8 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   .st-sum .r:not(.tot) { display: none; }
   .st-sum .r.tot { border-top: 0; margin-top: 0; padding-top: 0; }
 
-  /* the drop-in goes single-column: the blue panel collapses to a header strip,
-     and the QR block is the first thing to go */
-  .cf {
-    width: calc(100% - 18px); height: calc(100% - 26px);
-    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr);
-  }
-  .cfL { flex-direction: row; align-items: center; gap: 8px; padding: 7px 9px; }
-  .cf-mark { width: 20px; height: 20px; margin: 0; }
-  .cf-mark svg { width: 12px; height: 12px; }
-  .cf-biz { font-size: 10px; margin: 0; }
-  .cf-amt { margin: 0 0 0 auto; padding: 5px 9px; font-size: 10px; }
-  .cf-trust, .cf-panel, .cf-sec { display: none; }
-  .cfR { padding: 8px 9px; }
-  .cf-note, .cf-qr { display: none; }
+  /* the sheet is already phone-shaped, so it only has to fit the lid */
+  .cf { width: calc(100% - 18px); max-height: calc(100% - 26px); }
   .cf-done { width: 190px; padding: 14px 12px; }
   .cf-done .amt { font-size: 17px; }
 }
@@ -2567,6 +2555,249 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   .phone.as-laptop { aspect-ratio: 4 / 3; }
   .phone.as-laptop::after { width: 100%; }
 }
+
+/* =====================================================================
+   BOOTH -- the section as one 360x800 vertical screen
+   ---------------------------------------------------------------------
+   The booth is an Android Large display stood on its end, and what runs
+   on it is the DEVICE, not the page that explains the device. So booth
+   mode keeps `.screen` and throws the rest away: the headline, the bento,
+   the step list, the controls, the dots. Everything they said is already
+   said on screen, and a booth crowd reads the screen.
+
+   Two ways in, because there are two things to look at this on:
+     - the booth display, which is 360 CSS px wide, or
+     - `?booth` on a laptop, to check it without one.
+
+   NO BEZEL, and this is the same rule the Figma frames follow: a phone
+   body drawn around a 360x800 frame eats ~40px a side and shrinks the
+   thing it frames, so the booth would show a SMALLER design, not a
+   bigger one. Figma draws the phone at Present time; a real booth
+   display IS the phone.
+   ===================================================================== */
+body.booth {
+  margin: 0; padding: 0;
+  min-height: 100vh;
+  display: grid; place-items: center;
+  background: #0a0a0c;
+  overflow: hidden;
+}
+body.booth .wrap { max-width: none; margin: 0; padding: 0; }
+
+/* the page talking about itself; on a booth the screen does that */
+body.booth .eyebrow,
+body.booth h1,
+body.booth .wrap > .sub,
+body.booth .card:not(.demo),
+body.booth .demo-copy,
+body.booth .dots { display: none; }
+
+body.booth .bento { margin: 0; display: block; }
+body.booth .card.demo {
+  display: block; padding: 0; min-height: 0;
+  background: none; border: 0; border-radius: 0; box-shadow: none;
+}
+body.booth .phone-wrap { min-height: 0; }
+
+/* The chassis in BOTH shapes is now just the frame. Skills still gets
+   `.as-laptop` from setChassis() -- the JS is untouched -- it just has
+   nowhere to widen to, and `.screen.term` carries the terminal on its
+   own (see the portrait terminal rules below). */
+body.booth .phone,
+body.booth .phone.as-laptop {
+  width: 360px; height: 800px;
+  padding: 0; border-radius: 0;
+  background: none; box-shadow: none;
+  transition: none;
+}
+body.booth .phone::before,
+body.booth .phone::after,
+body.booth .phone.as-laptop::before,
+body.booth .phone.as-laptop::after,
+body.booth .notch { display: none; }
+/* `overflow: clip` rather than the inherited `hidden`: the four level
+   panels sit under `transform: scale(1.05)` while they are `.gone`, which
+   overhangs 9px a side and makes `.screen` a scroll container it has no
+   business being. `clip` clips without ever becoming one. */
+body.booth .screen,
+body.booth .phone.as-laptop .screen { border-radius: 0; overflow: clip; }
+/* no notch to clear any more */
+body.booth .ph-top { padding-top: 14px; }
+body.booth .backbtn { top: 12px; }
+
+/* 800px is 100px more than the phone was ever drawn for, and on the home
+   grid that landed as dead black under the third tile. The tiles take it:
+   more room for the art, which is the only thing on that screen doing any
+   selling. */
+body.booth .home { display: flex; flex-direction: column; padding: 34px 11px 16px; }
+body.booth .hgrid { flex: 1; min-height: 0; }
+body.booth .hcard { flex: 1; min-height: 0; }
+
+/* --- the store, as a phone storefront --------------------------------
+ *
+ * The `max-width: 700px` rules were written for a phone-WIDE laptop lid
+ * about 270px tall: they delete the section heading, the size chips and
+ * two of the three products because nothing else fits in that band. A
+ * booth screen inverts the problem -- 360 wide but 800 tall, height to
+ * spare -- so booth mode puts all of it back and lets the grid run down
+ * the page the way a phone shop actually does.
+ *
+ * The type goes up with it. Every size in here was picked against a 596px
+ * lid sitting inside a 1440px page; on a screen that IS 360px the same
+ * numbers read as a picture of a website rather than as a website.
+ */
+body.booth .st-chrome { padding: 9px 12px 9px 46px; }
+body.booth .st-url { font-size: 11px; padding: 5px 13px; }
+body.booth .st-nav { padding: 11px 14px; }
+body.booth .st-logo { width: 24px; height: 24px; }
+body.booth .st-logo svg { width: 13px; height: 13px; }
+body.booth .st-brand { font-size: 15px; }
+body.booth .st-links { font-size: 11px; gap: 3px; }
+body.booth .st-links span { padding: 5px 9px; }
+body.booth .st-av { width: 22px; height: 22px; font-size: 9px; }
+
+body.booth .st-head { display: block; padding: 13px 14px 0; }
+body.booth .st-head .h { font-size: 16px; }
+body.booth .st-head .c { font-size: 11px; margin-top: 2px; }
+
+/* flex, not a one-column grid: with a definite height the grid divided it
+   into three equal rows and clipped 58px off the bottom of every card --
+   the price, the stock pill and Add to Cart, i.e. the whole product. A
+   flex column sizes each card to its own content and scrolls. */
+body.booth .st-grid {
+  display: flex; flex-direction: column; gap: 11px;
+  padding: 11px 14px 14px;
+  overflow-y: auto;
+}
+body.booth .st-card { display: flex; flex: none; }   /* two and three are back */
+body.booth .st-shot { height: 122px; }
+body.booth .st-shot svg { width: 74px; height: 74px; }
+body.booth .st-new { font-size: 8px; padding: 3px 7px; top: 7px; right: 7px; }
+body.booth .st-info { padding: 10px 11px 11px; }
+body.booth .st-name { font-size: 13px; }
+body.booth .st-sizes { display: flex; margin: 8px 0 7px; }
+body.booth .st-sizes i { font-size: 9.5px; padding: 5px 0; }
+body.booth .st-price { font-size: 16px; }
+body.booth .st-stock { font-size: 8.5px; padding: 3px 7px; }
+body.booth .st-btn { font-size: 11.5px; padding: 9px; margin-top: 8px; }
+body.booth .st-btn svg { width: 12px; height: 12px; }
+
+/* The payment step reorders, because a column is not a two-column layout
+   stacked. On a phone the order is what you are buying, what it costs, how
+   you are paying, then the button -- so the summary side comes first and
+   Proceed to Pay stays last, where a thumb expects it. */
+body.booth .st-pay { padding: 14px 14px 12px; }
+body.booth .stp { font-size: 10.5px; padding: 6px 12px; }
+body.booth .stp svg { width: 10px; height: 10px; }
+body.booth .st-cols {
+  display: flex; flex-direction: column; gap: 15px;
+  margin-top: 14px; overflow-y: auto;
+}
+body.booth .st-cols > div:first-child { order: 2; }
+body.booth .st-side { order: 1; align-self: stretch; }
+body.booth .st-h2 { font-size: 15px; }
+body.booth .st-method { display: flex; padding: 11px 12px; margin-top: 10px; }
+body.booth .st-method .ic { width: 24px; height: 24px; }
+body.booth .st-method .ic svg { width: 13px; height: 13px; }
+body.booth .st-method b { font-size: 12.5px; }
+body.booth .st-method i { font-size: 10.5px; }
+body.booth .st-secure { display: flex; font-size: 10.5px; margin-top: 10px; }
+body.booth .st-secure svg { width: 12px; height: 12px; }
+body.booth .st-cta { font-size: 14px; padding: 13px; margin-top: 13px; border-radius: 11px; }
+body.booth .st-cart .hd { font-size: 10px; padding-bottom: 7px; }
+body.booth .st-cline { padding: 9px 10px; }
+body.booth .st-cline .pic { width: 40px; height: 40px; }
+body.booth .st-cline .pic svg { width: 30px; height: 30px; }
+body.booth .st-cline .tx b { font-size: 12px; }
+body.booth .st-cline .tx i { font-size: 10px; }
+body.booth .st-cline .pz { font-size: 13px; }
+body.booth .st-sum { padding: 11px 12px; }
+body.booth .st-sum .r { display: flex; font-size: 11.5px; padding: 4px 0; }
+body.booth .st-sum .r.tot {
+  font-size: 13px; border-top: 1px solid rgba(17, 24, 39, 0.1);
+  margin-top: 6px; padding-top: 8px;
+}
+body.booth .st-sum .r.tot b { font-size: 16px; }
+
+body.booth .st-cap { padding: 11px 14px 13px; font-size: 12px; }
+body.booth .st-cap .tick { width: 19px; height: 19px; }
+body.booth .st-cap .tick svg { width: 11px; height: 11px; }
+body.booth .st-cap .amt { font-size: 11px; }
+
+/* --- the drop-in, as the bottom sheet it is on a phone ----------------
+ *
+ * On the lid it is a narrow panel floated in the middle of a browser page,
+ * which is how Cashfree's checkout arrives on a desktop site. On a 360-wide
+ * screen the page IS a phone, so the same sheet comes up from the bottom
+ * edge at full width. It slides rather than scales: a sheet that zooms out
+ * of the centre of a phone reads as a modal, not as a checkout.
+ */
+body.booth .cf {
+  left: 0; right: 0; top: auto; bottom: 0;
+  width: 360px; height: 568px;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(22px);
+}
+body.booth .store.cfopen .cf { transform: none; }
+body.booth .store.paid .cf { transform: translateY(22px); }
+
+body.booth .occ-strip { font-size: 10px; padding: 5px 0; gap: 6px; }
+body.booth .occ-strip svg { width: 12px; height: 12px; }
+body.booth .occ-head { padding: 10px 13px 8px; gap: 9px; }
+body.booth .occ-head .bk { font-size: 17px; }
+body.booth .occ-head .logo { width: 34px; height: 34px; border-radius: 9px; }
+body.booth .occ-head .logo svg { width: 19px; height: 19px; }
+body.booth .occ-head .nm { font-size: 15px; }
+body.booth .occ-head .amt { font-size: 13px; padding: 5px 9px; }
+body.booth .occ-sec { font-size: 9.5px; padding-bottom: 8px; }
+body.booth .occ-sec .cfl { width: 17px; height: 17px; }
+
+body.booth .occ-body { padding: 10px 11px; }
+body.booth .occ-card { padding: 9px 11px; border-radius: 11px; margin-bottom: 8px; }
+body.booth .occ-addr { font-size: 10.5px; }
+body.booth .occ-ship { font-size: 10.5px; margin-top: 7px; padding-top: 7px; gap: 7px; }
+body.booth .occ-ship svg { width: 15px; height: 15px; }
+
+body.booth .occ-lbl { padding: 9px 2px 5px; }
+body.booth .occ-lbl .l { font-size: 11px; }
+body.booth .occ-lbl .r { font-size: 10.5px; }
+body.booth .occ-item { padding: 9px; border-radius: 11px; gap: 9px; }
+body.booth .occ-item .pic { width: 46px; height: 46px; border-radius: 8px; }
+body.booth .occ-item .pic svg { width: 35px; height: 35px; }
+body.booth .occ-item .nm { font-size: 11px; }
+body.booth .occ-item .pr { margin-top: 5px; gap: 5px; }
+body.booth .occ-item .pr b { font-size: 12.5px; }
+body.booth .occ-item .pr s { font-size: 10px; }
+body.booth .occ-item .pr i { font-size: 9px; padding: 2px 7px; }
+body.booth .occ-item .add { font-size: 10px; padding: 5px 12px; margin-top: 6px; }
+
+body.booth .occ-off { padding: 8px 10px; gap: 8px; border-radius: 9px; }
+body.booth .occ-off .cd, body.booth .occ-off .ds { font-size: 10.5px; }
+body.booth .occ-off .ap { font-size: 9.5px; padding: 4px 10px; }
+
+body.booth .occ-pm { padding: 8px 10px; margin-top: 7px; border-radius: 11px; gap: 9px; }
+body.booth .occ-pm .rd { width: 14px; height: 14px; }
+body.booth .occ-pm.on .rd { box-shadow: inset 0 0 0 3.5px #111827; }
+body.booth .occ-pm .ic { width: 27px; height: 27px; border-radius: 7px; }
+body.booth .occ-pm .ic svg { width: 16px; height: 16px; }
+body.booth .occ-pm .nm { font-size: 11.5px; }
+body.booth .occ-pm .nm i { font-size: 9px; margin-top: 2px; }
+body.booth .occ-pm .vl { font-size: 12px; }
+body.booth .occ-pm-note { font-size: 9.5px; padding-top: 7px; }
+
+body.booth .occ-bar { margin: 8px 11px 11px; padding: 11px 14px; border-radius: 11px; }
+body.booth .occ-bar .t, body.booth .occ-bar .go { font-size: 15px; }
+
+body.booth .cf-load .lgif { width: 240px; }
+body.booth .cf-load .lnote { font-size: 11px; }
+body.booth .cf-pay { font-size: 12px; }
+body.booth .cf-done { width: 292px; padding: 24px 20px; border-radius: 16px; }
+body.booth .cf-done .big { width: 42px; height: 42px; margin-bottom: 12px; }
+body.booth .cf-done .big svg { width: 21px; height: 21px; }
+body.booth .cf-done .t { font-size: 16px; }
+body.booth .cf-done .amt { font-size: 26px; }
+body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
+
 @media (prefers-reduced-motion: reduce) {
   .rise, .caret { animation: none !important; }
   .phone, .demo { transition: none !important; }
@@ -2692,7 +2923,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                   <span class="nm">Cart <span class="thin">Recovery</span></span>
                 </div>
                 <p class="desc">Calls the buyer with a personalised offer. You only pay for recovered orders.</p>
-                <div class="foot"><span class="stat">20% carts recovered</span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2703,7 +2934,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                   <span class="nm">Payment <span class="thin">Recovery</span></span>
                 </div>
                 <p class="desc">Calls with the specific failure reason and a new link. Suggests the method that will work.</p>
-                <div class="foot"><span class="stat">Relay template</span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2714,7 +2945,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                   <span class="nm">Subscription <span class="thin">Dunning</span></span>
                 </div>
                 <p class="desc">Calls to retry the renewal, and offers to pause or switch plans instead of churning.</p>
-                <div class="foot"><span class="stat">Relay template</span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
             </div>
@@ -5128,6 +5359,22 @@ document.getElementById('tour').addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tourAt >= 0) endTour(); });
+
+/* --- booth mode ------------------------------------------------------
+ *
+ * On by viewport, because the booth display is simply 360 px wide and
+ * nobody is going to type a query string into a kiosk at 9am. `?booth`
+ * forces it on a laptop so the layout can be checked without the screen,
+ * and `?booth=0` forces it off on a narrow one.
+ */
+function applyBooth() {
+  const q = new URLSearchParams(location.search);
+  const forced = q.has('booth') ? q.get('booth') !== '0' : null;
+  const on = forced === null ? window.innerWidth <= 420 : forced;
+  document.body.classList.toggle('booth', on);
+}
+applyBooth();
+window.addEventListener('resize', applyBooth);
 </script>
 
 </body>

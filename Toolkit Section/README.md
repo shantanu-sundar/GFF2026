@@ -213,6 +213,85 @@ anywhere advances. `CR7` returns to the shelf; `back` returns from anywhere.
 **Set `Prototype → Device → Android Large` by hand.** `prototypeDevice` is not writable
 from the plugin API, and neither is the document name.
 
+## Booth mode — the section as one 360x800 screen
+
+The booth is an Android Large display stood on its end. What runs on it is the
+**device**, not the page that explains the device, so `body.booth` keeps `.screen`
+and throws the rest away: the eyebrow, the headline, the deck, the other bento
+cards, the step list, the controls and the dots. Everything they said is already
+said on screen, and a booth crowd reads the screen.
+
+**Two ways in**, because there are two things to look at this on:
+
+| | |
+|---|---|
+| the booth display | on automatically at **≤420 CSS px** — nobody types a query string into a kiosk at 9am |
+| a laptop | **`index.html?booth`** forces it; `?booth=0` forces it off on a narrow window |
+
+**No bezel** — the same rule the Figma frames follow. A phone body drawn around a
+360x800 frame eats ~40px a side and shrinks the thing it frames, so the booth would
+show a *smaller* design, not a bigger one. Figma draws the phone at Present time; a
+booth display **is** the phone.
+
+**The desktop section is untouched.** Every rule is scoped `body.booth`, so at 1440
+the lid is still 596x376 and the terminal still has its file rail. Both were
+verified in the same pass, and any change here should be.
+
+### Agent Skills has no laptop on a booth screen
+
+`setChassis()` still adds `.as-laptop` — **the JS is not branched** — it simply has
+nowhere to widen to, and booth mode collapses both chassis shapes to the same 360x800
+frame. The terminal then rides the stacked layout the `max-width: 700px` rules already
+had: title bar, transcript, workspace rail under it, `$` prompt at the foot.
+
+This does give up the one gesture the section made for Skills: the phone visibly
+*widening* into a laptop when you tap in. What survives is the grammar — traffic
+lights, JetBrains Mono, a `$` prompt, `~/ecommerce-app` and `claude code` in the
+chrome, a light paper ground — and that is what says "this is a developer surface".
+A 596px lid on a 360px screen would say it at 60% scale, which says nothing.
+
+### The store had to be rebuilt, not reflowed
+
+The `max-width: 700px` rules were written for a phone-**wide** laptop lid about 270px
+tall, where the store's grid row is ~130px. They delete the section heading, the size
+chips and **two of the three products** because nothing else fits in that band. A booth
+screen inverts the problem — 360 wide but 800 tall, with height to spare — so booth
+mode puts all of it back and lets the grid run down the page the way a phone shop does.
+
+The type goes up with it. Every size in the store was picked against a 596px lid inside
+a 1440px page; on a screen that *is* 360px the same numbers read as a picture of a
+website rather than as a website.
+
+**Proceed to Pay reorders.** A column is not a two-column layout stacked: `.st-side`
+takes `order: 1` so the cart and the total come first and the button stays last, where
+a thumb expects it.
+
+**The drop-in becomes a bottom sheet** — full width, anchored to the bottom edge,
+sliding up rather than scaling out of the centre. On the lid it is a narrow panel
+floated over a browser page, because that is how Cashfree's checkout arrives on a
+desktop site; on a 360-wide screen the page *is* a phone and the sheet behaves like
+one. At that size the whole sheet fits, so the `.occ-scroll` glide has nothing left
+to travel — which is the runtime measurement doing its job, not a bug.
+
+> Three traps, all found by measuring rather than by looking.
+>
+> **A one-column grid with a definite height is not a stack.** `.st-grid` is `flex: 1`,
+> so setting `grid-template-columns: 1fr` gave three implicit rows that the browser
+> sized to 190px each out of the 617px available — against 247px of content. Every card
+> lost 58px off the bottom: the price, the stock pill and Add to Cart, i.e. the entire
+> product. `align-content: start` does not help. It is `display: flex` now, and cards
+> are `flex: none`.
+>
+> **The other bento cards are children of `.wrap`, not of `.bento`.** `body.booth
+> .bento > .card:not(.demo)` matched nothing and five 382px-wide cards stayed on screen,
+> stretching the centred grid to 384 and giving the whole document a horizontal scroll.
+> The selector is `body.booth .card:not(.demo)`.
+>
+> **`.screen` was a scroll container it had no business being.** The four level panels
+> carry `transform: scale(1.05)` while they are `.gone`, which overhangs 9px a side. The
+> screen's `overflow: hidden` clipped it but still scrolled programmatically; booth mode
+> uses `overflow: clip`, which clips without ever becoming a scroller.
+
 ## Three levels
 
 The phone boots to a **home screen of three tiles — Relay, Spark, Cashfree For Builders —
