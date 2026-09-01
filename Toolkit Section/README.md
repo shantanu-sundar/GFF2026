@@ -57,9 +57,16 @@ prompts follow in the same scroll.
 For **Agent Skills** the connect turn is the install itself — the real terminal command,
 `npx @cashfreepayments/agent-skills add skills`, typed at a `$` prompt.
 
+**Every agent connects to the sandbox, not to a tab.** The three Relay agents used to connect to
+"Cart Recovery" / "Payment Recovery" / "Subscription Dunning", which is a screen you open rather
+than a thing you connect to — and it quietly undersold the point. An agent is only interesting
+because it is wired to a real Cashfree account, so all three now land on **Cashfree Sandbox**,
+the same node the Agent Toolkit demo connects to. Which agent you are in is carried by the
+header chip and its face, so nothing is lost by taking the name off that node.
+
 | demo | host | connects to | via |
 |---|---|---|---|
-| Relay · any agent | Merchant Dashboard | that agent | Agents · Runs · Connections |
+| Relay · any agent | Merchant Dashboard | **Cashfree Sandbox** | Agents · Runs · Connections |
 | Cashfree Spark | Merchant Dashboard | Cashfree Spark | same login · same permissions |
 | Agent Toolkit | Your app | Cashfree Sandbox | `@cashfreepayments/agent-toolkit` |
 | Agent Skills | Claude Code + Cursor | Cashfree Skills | `npx @cashfreepayments/agent-skills add skills` |
@@ -149,9 +156,23 @@ Steps declare these with `scene: { kind: 'brk' | 'buy' | 'call' | 'gate' | 'appr
 the static ones and repaints the call **only if you landed on that beat**, because a call is a
 moment rather than a state.
 
-> One trap worth remembering: the section subtitle up top is a bare `.sub { margin: 18px 0 0 }`,
-> and it leaked into the call scene's caption spans and pushed them off their node. Those are
-> `.cwho` now. Bare single-class rules in this file are shared ground — scope new ones.
+### The mark
+
+`CX_ICON.cf` was a hand-drawn green chevron standing in for the Cashfree logo. It is the real
+mark now (`../Default.png`), inlined as a base64 data URI so the section stays the **one
+self-contained file** the top of this README promises — a relative `<img src>` would break the
+moment anyone moved or emailed the file. One constant feeds every connect card, so replacing the
+logo again is a one-line change. It renders through `img.cfmark`, which carries
+`max-width/max-height: 100%` so it can never outgrow whatever box a call site hands it; the two
+call sites that need a specific size (the 38px connect tile, the 14px WhatsApp link) set it.
+
+> One trap worth remembering, and it has now bitten twice: the section subtitle up top is a bare
+> `.sub { margin: 18px 0 0 }`, and it leaked into the call scene's caption spans and pushed them off their node. Those are
+> `.cwho` now. The second time was the mark inside the WhatsApp link, on a `<span class="cf">`
+> — which is also the bare class on the Cashfree drop-in modal in the store view, so it was
+> inheriting `position: absolute`, `opacity: 0` and a `172px` grid track. That mark had never
+> actually been visible; swapping in a real image is what made the 172px box obvious. It is
+> `.cfl` now. Bare single-class rules in this file are shared ground — scope new ones.
 
 ## Spark stops before it moves money
 
