@@ -125,12 +125,17 @@ is identical.)
 
 | frame | what it is |
 |---|---|
-| `N01 Index` | the black bento. Checkout360 → `B01`, Relay → `N02`, For Builders → `N03`; the rest are the `locked` tiles from the section's own home grid |
+| `N01 Index` | the black bento. Checkout360 → `B01`, Relay → `N02`, For Builders → `N03`; the rest are `locked` tiles |
 | `N02 L3 · Relay` | Cart Recovery, Payment Recovery, Subscription Dunning |
 | `N03 L3 · Cashfree For Builders` | Agent Toolkit, Agent Skills, MCP Server |
 
 **The copy on those six cards is lifted verbatim from the `DEMOS` blurbs in `index.html`,**
 so the booth says exactly what the section says. Do not paraphrase it in one place only.
+
+> **This Index has diverged from the section's home grid and has not been re-cut.** That grid
+> is now three tiles (Relay, Spark, Builders) with no locked cards; this one still carries the
+> full bento. Deliberate for now — the booth deck is a different surface with different needs —
+> but it is no longer true that one mirrors the other, and Spark is missing here entirely.
 
 **The other tiles have no L3, on purpose.** Payouts, Subscriptions, AutoCollect, EasySplit,
 CrossBorder and Settlements have no sub-items or descriptions anywhere in this repo, and a
@@ -152,21 +157,31 @@ has native angular and radial fills, so these survive as editable gradients.
 
 ## Three levels
 
-The phone boots to a **home screen replicating `../Checkout Screen/Screen 1.png`** — the
-same bento rhythm (wide+square, narrow+wide, full-width hero, full, two-up, two-up), the
-same near-black cards with hairline borders, two-weight lockups, pill tags and a gradient
-blob bleeding out of one corner. The product icons are glassmorphic: a translucent tile
-with a specular top edge, an inner bloom and a coloured glow, built in CSS rather than
-shipped as art.
+The phone boots to a **home screen of three tiles — Relay, Spark, Cashfree For Builders —
+drawn to the Figma index frame.** Pure black cards, a white line glyph, a two-weight wordmark,
+a grey pill at the foot, and vivid gradient art bleeding off the right edge.
 
-Three cards on that grid are live. **Relay** opens straight from home, because it is a
+**Everything on that grid opens.** An earlier version carried nine more tiles — Checkout360,
+Payouts, SecureID, Subscriptions, AutoCollect, EasySplit, CrossBorder, Settlements — all
+locked "Live product" cards you could not tap. On a tap-through prototype that trains the
+viewer that most of the screen is dead, and it buried the three cards that do something under
+eight that do not. Three products, three tiles, nothing else.
+
+The art is CSS, because this section ships as one self-contained file with no image assets:
+
+- **`.art.blades`** — the Checkout 360 treatment, on Spark. Five narrow leaves fanned from one
+  pivot below the card, tips pointing up and out, with a cyan bloom behind the cluster. The
+  outer blades are darker than the inner ones; **that ordering, not a shadow, is what makes the
+  overlaps read as depth**.
+- **`.art.mesh`** — the treatment the wider reference tiles use, on Relay (`gold`) and Builders
+  (`spectrum`). Overlapping colour fields blurred until the seams disappear.
+
+All three cards on that grid are live. **Relay** opens straight from home, because it is a
 Merchant Dashboard product rather than a builder tool — but it opens a *shelf* rather than a
 demo, because Relay is a set of agents with one payment operation each. Pick an agent and its
-own conversation runs. **Cashfree Spark** sits in the slot the SecureID tile used to hold, and
-opens the **merchant dashboard** — the real Payments home, navy bar and welcome hero and product
+own conversation runs. **Cashfree Spark** opens the **merchant dashboard** — the real Payments home, navy bar and welcome hero and product
 cards — with a Spark button floating on it. Tapping that button starts the chat. **Cashfree
-For Builders** sits in the hero slot (where Checkout360 sits in the reference) and opens
-**three more**. Each demo has its own steps, its own bottom panel and its own status chips:
+For Builders** opens **three more**. Each demo has its own steps, its own bottom panel and its own status chips:
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
@@ -253,6 +268,8 @@ names and ids are plausible stand-ins — which is exactly what the amber proven
 
 Adding the other two agents from the landing page (Dispute Responder, COD Confirmation) is a
 `DEMOS` entry plus one `.acard` in `#agents`, with the orb recipe copied from the beta form.
+Adding a fourth *product* is one `.hcard` in `#hgrid` plus an `.art` recipe — but think twice:
+the grid earns its clarity from having nothing on it that does not open.
 
 ## A Relay run is three segments, and two of them are not a chat
 

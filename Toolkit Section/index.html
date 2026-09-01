@@ -495,43 +495,96 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 }
 .home-head .sub { font-size: 11px; color: rgba(244,245,244,0.28); margin-left: auto; }
 
-.hgrid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+/* ----------------------------------------------------------------------
+ * The home tiles, rebuilt to the Figma index frame.
+ *
+ * Three products, three tiles, nothing else. The earlier grid carried nine
+ * more that were locked "Live product" cards -- scenery you cannot tap, which
+ * on a tap-through prototype trains the viewer that most of the screen is
+ * dead. Everything on this grid now opens.
+ *
+ * The card language is the reference's, not the old bento's: a pure black
+ * card, a white line glyph, a two-weight wordmark that wraps under itself, a
+ * grey pill at the foot, and vivid gradient art bleeding off the right edge.
+ * The art is CSS -- blades for one, blurred mesh for the others -- because
+ * this section ships as one self-contained file with no image assets.
+ * -------------------------------------------------------------------- */
+
+.hgrid { display: flex; flex-direction: column; gap: 10px; }
 
 .hcard {
   position: relative; overflow: hidden;
-  border: 1px solid #2a2a2a;
-  border-radius: 22px;
-  background: #0a0a0b;
-  padding: 13px;
-  min-height: 116px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 21px;
+  background: #000;
+  padding: 15px 16px 14px;
+  min-height: 168px;
   display: flex; flex-direction: column; justify-content: space-between;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease;
 }
-.hcard:hover { transform: translateY(-2px); border-color: #3d3d3d; }
-.hcard.locked { cursor: default; }
-.hcard.locked:hover { transform: none; border-color: #2a2a2a; }
+.hcard:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.16); }
 
-/* the two-weight wordmark lockup */
-.hlock { position: relative; z-index: 3; display: flex; align-items: center; gap: 9px; min-width: 0; }
+/* icon and wordmark share a line; the wordmark wraps under itself, not under
+   the glyph, which is what gives the reference its stacked look */
+.hlock { position: relative; z-index: 3; display: flex; align-items: flex-start; gap: 11px; min-width: 0; }
+.hlock .hg { flex: none; width: 27px; height: 27px; color: #fff; margin-top: -1px; }
+.hlock .hg svg { width: 100%; height: 100%; display: block; }
 .hlock .name {
-  font-size: 13.5px; font-weight: 700; letter-spacing: -0.02em; color: #f4f5f4; line-height: 1.15;
-  min-width: 0; overflow-wrap: anywhere;
+  font-size: 22px; font-weight: 800; letter-spacing: -0.035em; color: #fff;
+  line-height: 1.14; min-width: 0; overflow-wrap: anywhere;
 }
-.hlock .name .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
-.hcard.wide .hlock .name { font-size: 17px; }
+.hlock .name .thin { font-weight: 300; color: rgba(255, 255, 255, 0.9); }
 
 .htag {
   position: relative; z-index: 3;
   align-self: flex-start;
-  padding: 4px 10px; border-radius: 999px;
-  background: rgba(58,58,58,0.92); backdrop-filter: blur(3px);
-  font-size: 10.5px; color: rgba(244,245,244,0.8);
+  padding: 6px 13px; border-radius: 999px;
+  background: rgba(118, 118, 118, 0.42); backdrop-filter: blur(6px);
+  font-size: 11.5px; color: rgba(255, 255, 255, 0.86);
   white-space: nowrap;
 }
-.hcard.locked .htag { background: rgba(255,174,21,0.14); color: #ffce7a; }
-/* the reference has one card whose tag sits under the title instead of at the foot */
-.hcard.tagtop { justify-content: flex-start; gap: 9px; }
+
+/* ---- the art, bleeding off the right edge ---- */
+.art { position: absolute; z-index: 1; pointer-events: none; }
+
+/* blades: the Checkout 360 treatment. Five narrow leaves fanned from one pivot
+   below the card, tips pointing up and out, with a cyan bloom behind the
+   cluster. The outer blades are darker than the inner ones -- that ordering,
+   not a shadow, is what makes the overlaps read as depth. */
+.art.blades { right: -44px; bottom: -52px; width: 196px; height: 206px; }
+.art.blades::before {
+  content: ''; position: absolute; right: 14px; top: 2px;
+  width: 118px; height: 118px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(86, 246, 214, 0.55) 0%, rgba(12, 140, 92, 0) 70%);
+  filter: blur(18px);
+}
+.art.blades i {
+  position: absolute; bottom: 0; left: 50%;
+  width: 40px; border-radius: 50% 50% 44% 44% / 66% 66% 34% 34%;
+  transform-origin: 50% 100%;
+}
+.art.blades .b1 { height: 132px; transform: translateX(-50%) rotate(-46deg); background: linear-gradient(160deg, #3fd8a8 0%, #12a06a 46%, #056b46 100%); }
+.art.blades .b2 { height: 168px; transform: translateX(-50%) rotate(-29deg); background: linear-gradient(170deg, #7df0cf 0%, #16bd82 48%, #06714a 100%); }
+.art.blades .b3 { height: 182px; transform: translateX(-50%) rotate(-7deg);  background: linear-gradient(176deg, #a8f7e0 0%, #22d195 44%, #067d52 100%); }
+.art.blades .b4 { height: 158px; transform: translateX(-50%) rotate(16deg);  background: linear-gradient(184deg, #6fe9d6 0%, #12b98c 50%, #056048 100%); }
+.art.blades .b5 { height: 124px; transform: translateX(-50%) rotate(33deg);  background: linear-gradient(192deg, #9df6ec 0%, #2ccfae 46%, #0a8168 100%); }
+
+/* mesh: the treatment the wider reference tiles use -- overlapping colour
+   fields, blurred until the seams disappear */
+.art.mesh { right: -52px; bottom: -56px; width: 216px; height: 206px; filter: blur(24px); }
+.art.mesh i { position: absolute; border-radius: 50%; }
+
+.art.mesh.gold .m1 { right: 6px;  bottom: 10px; width: 128px; height: 128px; background: #ffc23d; }
+.art.mesh.gold .m2 { right: 62px; bottom: 62px; width: 108px; height: 108px; background: #ff7a45; opacity: 0.92; }
+.art.mesh.gold .m3 { right: 0;    bottom: 74px; width: 92px;  height: 92px;  background: #ffe89a; opacity: 0.8; }
+
+.art.mesh.spectrum .m1 { right: 4px;  bottom: 4px;  width: 122px; height: 122px; background: #14d19a; }
+.art.mesh.spectrum .m2 { right: 58px; bottom: 56px; width: 112px; height: 112px; background: #f0655f; opacity: 0.9; }
+.art.mesh.spectrum .m3 { right: 4px;  bottom: 78px; width: 96px;  height: 96px;  background: #ffbf3c; opacity: 0.88; }
+.art.mesh.spectrum .m4 { right: 94px; bottom: 6px;  width: 88px;  height: 88px;  background: #7b5cf0; opacity: 0.82; }
+
+@media (prefers-reduced-motion: reduce) { .hcard { transition: none } }
 
 /* ---------------- level 2c: the merchant dashboard ----------------
  *
@@ -784,10 +837,6 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   color: rgba(244,245,244,0.58); max-width: 30ch;
 }
 .t2card .foot { position: relative; z-index: 3; display: flex; align-items: center; gap: 7px; }
-.t2card .steps-n {
-  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-  color: rgba(244,245,244,0.36);
-}
 .t2card .go {
   margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
   display: grid; place-items: center;
@@ -873,10 +922,6 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
   background: rgba(0,173,108,0.16); color: #9ce6bf; border: 1px solid rgba(0,173,108,0.24);
   white-space: nowrap;
-}
-.acard .steps-n {
-  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-  color: rgba(244,245,244,0.36);
 }
 .acard .go {
   margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
@@ -2176,6 +2221,63 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   color: #fff; padding: 12px 11px 10px;
   display: flex; flex-direction: column;
 }
+/* --- Proceed to Pay, the way the real one behaves ---------------------------
+ *
+ * The real checkout does not cut from a button straight to a drop-in. Pressing
+ * Proceed to Pay puts up Cashfree's own loading sheet -- white ground, the mark,
+ * a sweeping bar, "do not press back or refresh" -- while the SDK boots. Then
+ * the drop-in lands, the method clears, and only then is it paid. Skipping
+ * those two beats is what made this step feel like a screenshot instead of a
+ * payment, so both are here.
+ */
+.cf-load {
+  position: absolute; inset: 0; z-index: 6;
+  background: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.store.cfload .cf-load { opacity: 1; }
+.cf-load .lmark { width: 42px; height: 42px; animation: cfPulse 1.15s ease-in-out infinite; }
+.cf-load .lbar {
+  width: 146px; height: 3px; border-radius: 999px;
+  background: rgba(17, 24, 39, 0.1); overflow: hidden;
+}
+.cf-load .lbar i {
+  display: block; width: 38%; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #00ad6c, #0b2f6b);
+  animation: cfSweep 1.05s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+}
+.cf-load .lnote { font-size: 9px; color: #9ca3af; letter-spacing: 0.01em; }
+@keyframes cfPulse { 0%, 100% { transform: scale(1); opacity: 1 } 50% { transform: scale(0.9); opacity: 0.55 } }
+@keyframes cfSweep { from { transform: translateX(-100%) } to { transform: translateX(262%) } }
+
+/* the moment between "pay" and "paid", which a real payment always has */
+.store.paying .cf { filter: saturate(0.85); }
+.store.paying .fav.on { box-shadow: 0 0 0 2px rgba(11, 47, 107, 0.35); }
+.cf-pay {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.97);
+  z-index: 7;
+  display: flex; align-items: center; gap: 9px;
+  padding: 11px 16px; border-radius: 12px; background: #fff;
+  box-shadow: 0 22px 50px rgba(17, 24, 39, 0.38);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 11.5px; font-weight: 600; color: #111827;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store.paying .cf-pay { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.cf-pay .sp {
+  width: 15px; height: 15px; border-radius: 50%; flex: none;
+  border: 2px solid rgba(11, 47, 107, 0.16); border-top-color: #0b2f6b;
+  animation: cfSpin 0.7s linear infinite;
+}
+@keyframes cfSpin { to { transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce) {
+  .cf-load .lmark, .cf-load .lbar i, .cf-pay .sp { animation: none }
+}
+
 .cf-mark { width: 30px; height: 30px; border-radius: 8px; background: #fff; color: #4f46e5; display: grid; place-items: center; margin: 0 auto; }
 .cf-mark svg { width: 17px; height: 17px; }
 .cf-biz { text-align: center; font-size: 11px; font-weight: 700; margin-top: 7px; }
@@ -2424,76 +2526,28 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
               </div>
 
               <div class="hgrid">
-                <div class="hcard wide locked" style="grid-column:span 7">
-                  <span class="hblob br b-mesh"></span>
-                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10l1 12H6L7 8Z"/><path d="M9.5 8V6.5a2.5 2.5 0 0 1 5 0V8"/></svg></span>
-                    <span class="name">Checkout<span class="thin">360</span></span></div>
-                  <span class="htag">Live product</span>
-                </div>
 
-                <div class="hcard tagtop" id="card-relay" style="grid-column:span 5">
-                  <span class="hblob tr b-gold"></span>
-                  <div class="hlock"><span class="gicon ic-gold"><svg class="relaymark" viewBox="-6 24 226 176" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl0)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl1)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl2)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl3)"/><defs><linearGradient id="rl0" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse"><stop stop-color="#00B438"/><stop offset="1" stop-color="#5AD6A0"/></linearGradient><linearGradient id="rl1" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse"><stop stop-color="#00ADA1"/><stop offset="0.668269" stop-color="#00AD5B"/></linearGradient><linearGradient id="rl2" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse"><stop stop-color="#FFBE0C"/><stop offset="1" stop-color="#FFDD7F"/></linearGradient><linearGradient id="rl3" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse"><stop stop-color="#FBB016"/><stop offset="1" stop-color="#FF8FA7"/></linearGradient></defs></svg></span>
-                    <span class="name">Relay</span></div>
+                <div class="hcard" id="card-relay">
+                  <span class="art mesh gold"><i class="m1"></i><i class="m2"></i><i class="m3"></i></span>
+                  <div class="hlock"><span class="hg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9l-2.5-2.5M20 16h-9l2.5 2.5"/><circle cx="17" cy="8" r="2"/><circle cx="7" cy="16" r="2"/></svg></span>
+                    <span class="name">Relay <span class="thin">Agents</span></span></div>
                   <span class="htag">No-code agents</span>
                 </div>
 
-                <div class="hcard locked" style="grid-column:span 5">
-                  <span class="hblob br b-cyan"></span>
-                  <div class="hlock"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M12 16V12M12 12l-2 2M12 12l2 2" transform="rotate(180 12 14)"/></svg></span>
-                    <span class="name">Payouts</span></div>
-                  <span class="htag">Live product</span>
-                </div>
-
-                <div class="hcard" id="card-spark" style="grid-column:span 7">
-                  <span class="hblob br b-mint"></span>
-                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg></span>
-                    <span class="name">Cashfree<span class="thin"> Spark</span></span></div>
+                <div class="hcard" id="card-spark">
+                  <span class="art blades"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></span>
+                  <div class="hlock"><span class="hg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg></span>
+                    <span class="name">Spark <span class="thin">Assistant</span></span></div>
                   <span class="htag">Ask. It&rsquo;s done.</span>
                 </div>
 
-                <!-- the hero slot: where Checkout360 sits in the reference -->
-                <div class="hcard wide" id="card-builders" style="grid-column:span 12;min-height:140px">
-                  <span class="hblob br b-mesh" style="width:170px;height:170px;right:-46px;bottom:-56px"></span>
-                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8M3 13h18M10.5 13v2.5h3V13"/></svg></span>
-                    <span class="name">Cashfree<span class="thin"> For Builders</span></span></div>
+                <div class="hcard" id="card-builders">
+                  <span class="art mesh spectrum"><i class="m1"></i><i class="m2"></i><i class="m3"></i><i class="m4"></i></span>
+                  <div class="hlock"><span class="hg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8M3 13h18M10.5 13v2.5h3V13"/></svg></span>
+                    <span class="name">Cashfree <span class="thin">For Builders</span></span></div>
                   <span class="htag">3 demos &middot; tap to open</span>
                 </div>
 
-                <div class="hcard locked" style="grid-column:span 12;min-height:96px">
-                  <span class="hblob br b-coral"></span>
-                  <div class="hlock"><span class="gicon ic-coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-13.7-5.6L4 7.5"/><path d="M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 13.7 5.6L20 16.5"/><path d="M20 20v-3.5h-3.5"/></svg></span>
-                    <span class="name">Subscriptions</span></div>
-                  <span class="htag">Live product</span>
-                </div>
-
-                <div class="hcard locked" style="grid-column:span 6">
-                  <span class="hblob br b-cyan"></span>
-                  <div class="hlock"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 12 4l8.5 5.5M5.5 10.5v7M10 10.5v7M14 10.5v7M18.5 10.5v7M3.5 20h17"/></svg></span>
-                    <span class="name">Auto<span class="thin">Collect</span></span></div>
-                  <span class="htag">Live</span>
-                </div>
-
-                <div class="hcard locked" style="grid-column:span 6">
-                  <span class="hblob br b-gold"></span>
-                  <div class="hlock"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h5M9 12l6-5M9 12l6 5"/><circle cx="17.5" cy="7" r="2"/><circle cx="17.5" cy="17" r="2"/><circle cx="4" cy="12" r="1.6"/></svg></span>
-                    <span class="name">Easy<span class="thin">Split</span></span></div>
-                  <span class="htag">Live</span>
-                </div>
-
-                <div class="hcard locked" style="grid-column:span 6">
-                  <span class="hblob br b-lime"></span>
-                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.6 12h16.8M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5Z"/></svg></span>
-                    <span class="name">Cross<span class="thin">Border</span></span></div>
-                  <span class="htag">Live</span>
-                </div>
-
-                <div class="hcard locked" style="grid-column:span 6">
-                  <span class="hblob br b-mint"></span>
-                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg></span>
-                    <span class="name">Settlements</span></div>
-                  <span class="htag">Live</span>
-                </div>
               </div>
             </div>
 
@@ -2509,7 +2563,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 <div class="row"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8M3 13h18M10.5 13v2.5h3V13"/></svg></span>
                   <span class="nm">Agent <span class="thin">Toolkit</span></span></div>
                 <p class="desc">40 payment tools an agent can call. Runs the whole money lifecycle on a real account.</p>
-                <div class="foot"><span class="steps-n" data-count="toolkit"></span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2518,7 +2572,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 <div class="row"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h9.5A2.5 2.5 0 0 1 17 7v13H7.5A2.5 2.5 0 0 1 5 17.5v-13Z"/><path d="M9 9h5M9 13h5"/><path d="M17 7h2v13h-2"/></svg></span>
                   <span class="nm">Agent <span class="thin">Skills</span></span></div>
                 <p class="desc">Cashfree product knowledge loaded straight into your coding assistant.</p>
-                <div class="foot"><span class="steps-n" data-count="skills"></span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2527,7 +2581,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 <div class="row"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6M15 3v6"/><path d="M6 9h12v3a6 6 0 0 1-12 0V9Z"/><path d="M12 18v3"/></svg></span>
                   <span class="nm">MCP <span class="thin">Server</span></span></div>
                 <p class="desc">Query and operate your account in plain English — Claude, ChatGPT or Cursor.</p>
-                <div class="foot"><span class="steps-n" data-count="mcp"></span>
+                <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
             </div>
@@ -2547,7 +2601,6 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 </div>
                 <p class="desc">Calls the buyer with a personalised offer. You only pay for recovered orders.</p>
                 <div class="foot"><span class="stat">20% carts recovered</span>
-                  <span class="steps-n" data-count="relayCart"></span>
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2559,7 +2612,6 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 </div>
                 <p class="desc">Calls with the specific failure reason and a new link. Suggests the method that will work.</p>
                 <div class="foot"><span class="stat">Relay template</span>
-                  <span class="steps-n" data-count="relayPay"></span>
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
@@ -2571,7 +2623,6 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
                 </div>
                 <p class="desc">Calls to retry the renewal, and offers to pause or switch plans instead of churning.</p>
                 <div class="foot"><span class="stat">Relay template</span>
-                  <span class="steps-n" data-count="relayDun"></span>
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
             </div>
@@ -3887,6 +3938,10 @@ function viewCheckout() {
   const row = (n) => '<div class="cf-row"><span>' + n + '</span><i>\u203a</i></div>';
   return viewPayment() +
     '<div class="st-dim"></div>' +
+    '<div class="cf-load"><span class="lmark">' + CX_ICON.cf + '</span>' +
+      '<span class="lbar"><i></i></span>' +
+      '<span class="lnote">Please do not press back or refresh</span></div>' +
+    '<div class="cf-pay"><span class="sp"></span>Completing your payment\u2026</div>' +
     '<div class="cf">' +
       '<div class="cfL">' +
         '<div class="cf-mark">' + CART + '</div>' +
@@ -3924,6 +3979,8 @@ function viewCheckout() {
 }
 
 const STORE_VIEWS = { collection: viewCollection, payment: viewPayment, checkout: viewCheckout };
+
+
 
 /** Swap the browser to a view. Rebuilt rather than mutated -- if one was already
  *  on screen the new element skips the entrance so the chrome does not blink. */
@@ -4012,17 +4069,28 @@ async function runStepTerm(i) {
     await sleep(60);
     el.classList.add('live');
     if (s.term.view === 'checkout') {
-      // press Proceed to Pay, let the drop-in come up, then settle
-      await sleep(460);
+      // Proceed to Pay -> Cashfree's loader -> the drop-in -> paying -> paid.
+      // Every hop checks it is still the live store: a Back or a dot-jump
+      // mid-sequence swaps the element out from under this.
+      const on = () => storeEl === el;
+      await sleep(420);
       el.classList.add('pressing');
-      await sleep(300);
+      await sleep(280);
+      if (!on()) return;
       el.classList.remove('pressing');
+      el.classList.add('cfload');
+      await sleep(1150);
+      if (!on()) return;
+      el.classList.remove('cfload');
       el.classList.add('cfopen');
-      await sleep(1900);
-      if (storeEl === el) {
-        el.classList.add('paid');
-        if (s.term.paidCap) el.querySelector('.st-cap .cap-t').textContent = s.term.paidCap;
-      }
+      await sleep(1500);
+      if (!on()) return;
+      el.classList.add('paying');
+      await sleep(1250);
+      if (!on()) return;
+      el.classList.remove('paying');
+      el.classList.add('paid');
+      if (s.term.paidCap) el.querySelector('.st-cap .cap-t').textContent = s.term.paidCap;
     }
   }
 
@@ -4739,19 +4807,6 @@ document.querySelectorAll('.acard').forEach((card) => {
 
 document.querySelectorAll('.t2card').forEach((card) => {
   card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.demo); });
-});
-
-// step counts on the tier-2 cards, straight from the data
-// scoped to the builder tier: an unrelated agent shelf also uses .steps-n
-document.querySelectorAll('.t2card .steps-n').forEach((el) => {
-  const k = el.dataset.count;
-  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + (DEMOS[k].connectStep ? 1 : 0)) + ' steps';
-});
-
-// and the same on the agent shelf, so a card says how long its run is
-document.querySelectorAll('.acard .steps-n').forEach((el) => {
-  const k = el.dataset.count;
-  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + (DEMOS[k].connectStep ? 1 : 0)) + ' steps';
 });
 
 backEl.addEventListener('click', (e) => {
