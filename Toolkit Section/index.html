@@ -573,6 +573,12 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   background: var(--ic, #00ad6c);
 }
 .gicon svg { position: relative; z-index: 3; width: 16px; height: 16px; color: #fff; }
+/* Relay is the one product here with a real logo rather than a drawn glyph, so
+   its tile carries the mark itself. It runs a little larger than the 16px
+   glyphs because it is two thin strokes rather than one solid shape, and it
+   keeps its own gradients instead of inheriting the white fill. */
+.gicon svg.relaymark { width: 21px; height: 21px; }
+.hcard.wide .gicon svg.relaymark { width: 25px; height: 25px; }
 .hcard.wide .gicon { width: 38px; height: 38px; border-radius: 12px; }
 .hcard.wide .gicon svg { width: 19px; height: 19px; }
 
@@ -2285,7 +2291,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 
                 <div class="hcard tagtop" id="card-relay" style="grid-column:span 5">
                   <span class="hblob tr b-gold"></span>
-                  <div class="hlock"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9l-2.5-2.5M20 16h-9l2.5 2.5"/><circle cx="17" cy="8" r="2"/><circle cx="7" cy="16" r="2"/></svg></span>
+                  <div class="hlock"><span class="gicon ic-gold"><svg class="relaymark" viewBox="-6 24 226 176" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl0)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl1)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl2)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl3)"/><defs><linearGradient id="rl0" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse"><stop stop-color="#00B438"/><stop offset="1" stop-color="#5AD6A0"/></linearGradient><linearGradient id="rl1" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse"><stop stop-color="#00ADA1"/><stop offset="0.668269" stop-color="#00AD5B"/></linearGradient><linearGradient id="rl2" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse"><stop stop-color="#FFBE0C"/><stop offset="1" stop-color="#FFDD7F"/></linearGradient><linearGradient id="rl3" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse"><stop stop-color="#FBB016"/><stop offset="1" stop-color="#FF8FA7"/></linearGradient></defs></svg></span>
                     <span class="name">Relay</span></div>
                   <span class="htag">No-code agents</span>
                 </div>
@@ -3156,14 +3162,20 @@ const DEMOS = {
   /* ---------------------------------------------------------------- *
    * Cashfree Spark. Opens straight off the home grid, in the slot the
    * SecureID tile used to hold, because Spark is not a builder tool --
-   * it is the agentic layer ON the merchant dashboard. Same login, same
-   * permissions, nothing to install, so there is no connect-a-key beat:
-   * the first turn is simply opening it.
+   * it is the agentic layer ON the merchant dashboard.
+   *
+   * The ONLY demo here with no connectStep. Every other one bridges two
+   * things that start apart -- your app to the sandbox, Claude to the MCP
+   * server, a repo to the skills -- and the wire filling is that bridge
+   * being built. Spark bridges nothing: same dashboard, same login, same
+   * permissions, nothing to install. Segment 1 of the flow doc is "log in,
+   * click Spark", and tapping the tile already IS that. So the run opens
+   * on the merchant's first real question.
    *
    * The run is the demo flow doc end to end
-   * (../Cashfree Spark - Narrative (1).docx), all three segments:
+   * (../Cashfree Spark - Narrative (1).docx):
    *
-   *   SEGMENT 1  log in, open Spark.
+   *   SEGMENT 1  tapping the tile. Not a step.
    *   SEGMENT 2  four prompts -- a settlement question asked in Hindi and
    *              answered in Hindi, a customer's payment status, a refund
    *              that STOPS and asks before it moves money, and a payment
@@ -3180,8 +3192,6 @@ const DEMOS = {
    * what the amber provenance badge is saying.
    * ---------------------------------------------------------------- */
   spark: {
-    connectStep: {"kind":"connect","label":"Open Spark","tool":"Merchant Dashboard","ask":"Open Spark","say":"Spark is open. Same login, same permissions, nothing installed \u2014 ask in English or your own language."},
-    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Spark","via":"same login \u00b7 same permissions","ok":"your live account"},
     title: 'Cashfree <span class="thin">Spark</span>',
     blurb: 'The agentic layer on the dashboard you already use. Ask in any language \u2014 and anything that moves money stops and asks first.',
     provenance: { kind: 'illustrative', text: 'Illustrative \u2014 flow and prompts from the Spark narrative doc, capability names from the Spark brief' },
@@ -3381,8 +3391,14 @@ const EYES = '<span class="eyes"><i></i><i></i></span>';
 /** Rebuild the step list, the dots and the panel for whichever demo is active. */
 function loadDemo(key) {
   DEMO_KEY = key;
-  // The connect beat is the first turn of the conversation, not a gate before it.
-  STEPS = [DEMOS[key].connectStep, ...DEMOS[key].steps];
+  // The connect beat is the first turn of the conversation, not a gate before it
+  // -- and a demo may have nothing to connect. Spark is an assistant inside the
+  // merchant dashboard: same login, same permissions, nothing to install. A wire
+  // filling and a switch throwing would be animating a step that does not exist,
+  // and contradicting the one claim the product leads with. Opening it IS the
+  // first prompt.
+  const cs = DEMOS[key].connectStep;
+  STEPS = cs ? [cs, ...DEMOS[key].steps] : [...DEMOS[key].steps];
   at = -1;
   panelState = {};
 
@@ -4501,13 +4517,13 @@ document.querySelectorAll('.t2card').forEach((card) => {
 // scoped to the builder tier: an unrelated agent shelf also uses .steps-n
 document.querySelectorAll('.t2card .steps-n').forEach((el) => {
   const k = el.dataset.count;
-  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + 1) + ' steps';
+  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + (DEMOS[k].connectStep ? 1 : 0)) + ' steps';
 });
 
 // and the same on the agent shelf, so a card says how long its run is
 document.querySelectorAll('.acard .steps-n').forEach((el) => {
   const k = el.dataset.count;
-  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + 1) + ' steps';
+  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + (DEMOS[k].connectStep ? 1 : 0)) + ' steps';
 });
 
 backEl.addEventListener('click', (e) => {

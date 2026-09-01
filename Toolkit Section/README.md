@@ -8,6 +8,89 @@ a phone in the middle you tap through.
 Double-click `index.html`. That's the whole setup — no server, no build, no npm,
 and no connection to the Next.js app on localhost. It is one self-contained file.
 
+## `checkout-frames.html` — the same screens as Figma artboards
+
+`index.html` is a website section; `checkout-frames.html` is a **sheet of artboards**
+of the checkout, for importing into Figma and wiring as a prototype. Ten frames, two
+flows, each a fixed-pixel box with nothing outside it that can reflow it.
+
+**Why it is a separate file rather than a switch on the section.** The section draws
+the storefront and the drop-in *inside* a 596×376 laptop lid, so its type bottoms out
+at 8px and every padding in it is tuned to that lid. Import that and you get a postage
+stamp — legible on screen only because it is 596px of a 1440px page. The artboards are
+drawn at the size the design is actually specified at.
+
+Neither size is invented. Every export in `../Checkout Screen/` is **720×1600** — a 2×
+export, so **360×800** is the native mobile frame. The desktop frames are the ShirtShop
+browser lifted off the lid onto **1280×800**.
+
+| # | frame | size | flow |
+|---|---|---|---|
+| 01 | Checkout — Base | 360×800 | A · Cashfree Checkout, mobile |
+| 02 | Pre-filled Delivery Address | 360×800 | A |
+| 03 | Contextual Cross-selling | 360×800 | A |
+| 04 | Instant Coupons & Discount | 360×800 | A |
+| 05 | Smart Preferred paymode | 360×800 | A |
+| 06 | Payment Successful | 360×800 | A |
+| 07 | ShirtShop — Our Collection | 1280×800 | B · ShirtShop, desktop |
+| 08 | ShirtShop — Payment | 1280×800 | B |
+| 09 | Cashfree Drop-in | 1280×800 | B |
+| 10 | Payment Successful | 1280×800 | B |
+
+**Frames 02–05 are one screen, not four designs.** The four reference stills
+(`Address.png`, `AOV.png`, `Offers.png`, `Preffered method.png`) are all the same base
+checkout with everything dimmed except one element, a green heading, a curved arrow and
+a Next pill. That is a prototype flow drawn as stills — so it is rebuilt as one overlay
+that moves, and the highlighted element is the *same markup* re-emitted above the dim at
+its measured box.
+
+**The wiring is written into the markup.** Every frame carries `data-frame` and every
+tappable element carries `data-goto` naming the frame it advances to, so the prototype
+links survive the import as text and can be reconnected in one pass. `Next` runs
+01→02→03→04→05, `Pay Now` on 05 lands on 06; on the desktop side Add to Cart → 08,
+Proceed to Pay → 09, State Bank → 10.
+
+**Nothing here was eyeballed.** The colours are sampled off `OCC + AOV.png` by scanning
+for boundaries — header `#035D32`, promo strip `#1C6D46`, secured band `#0B6339`, ground
+`#F8F7F7`, pay bar `#1F1E1E`, offer tint `#F4FCF8`. The dim is not plain black either: a
+`#2C2A2A` pixel under it reads `#111111`, which resolves to ~86% of a near-black with a
+faint green cast. The two mugs and the merchant logo are cropped out of the same export
+and inlined as data URIs, so the file resolves no relative paths.
+
+### Rules for editing it
+
+These are what keep the import clean, and every one of them is a lesson:
+
+- **px only.** No `vh`/`vw`/`%`, no `clamp()`, no `calc()` against the viewport.
+- **No `backdrop-filter`, `filter`, `mix-blend-mode` or `transform`** on a frame or
+  anything inside one. Importers rasterise or drop all four, and you lose the layer you
+  cared about. This is why the artboards do *not* inherit the section's liquid-glass.
+- **Solid fills and plain linear-gradients only.**
+- **Icons are inline `<svg>` with explicit width/height** — no sprites, no `<use>`, no
+  icon fonts.
+- **DM Sans only**, because it is on Google Fonts and therefore present in Figma. Do not
+  reach for a font the importer cannot resolve.
+
+### Edit frame 01, then re-run the generator
+
+The base screen exists **once**, in frame 01 between the `CO:START` / `CO:END` markers.
+`scripts/build-checkout-frames.py` stamps it into 02–06 between `GEN:START` / `GEN:END`
+and inlines the photography:
+
+```
+python scripts/build-checkout-frames.py
+```
+
+Edit frame 01 and re-run. **If you edit a generated frame instead, the next run silently
+overwrites you** — that is the whole reason the base is not written out five times by
+hand, since five hand-maintained copies are how they drift apart.
+
+Verified in Chromium (Playwright, real Chrome): all ten frames report their exact
+declared size, zero scroll overflow, zero elements past the artboard edge, zero clipped
+text, every image decoded, no console errors. A clipped-text check is worth keeping in
+any harness you write against this file — a caption one pixel wider than its box is
+invisible in a screenshot and arrives in Figma as a truncated layer.
+
 ## Three levels
 
 The phone boots to a **home screen replicating `../Checkout Screen/Screen 1.png`** — the
@@ -47,7 +130,7 @@ An adversarial fact-check pass against the docs removed, from earlier drafts: an
 the skills update your order state at runtime (they generate code, they do not run it), and
 two taglines that asserted more than the docs support.
 
-## Every demo opens by connecting
+## Most demos open by connecting — Spark does not
 
 Connecting is the **first turn of the conversation**, not a gate in front of it. You ask to
 connect, a card appears in the thread showing host on the left and Cashfree surface on the
@@ -56,6 +139,18 @@ prompts follow in the same scroll.
 
 For **Agent Skills** the connect turn is the install itself — the real terminal command,
 `npx @cashfreepayments/agent-skills add skills`, typed at a `$` prompt.
+
+**Cashfree Spark has no connect beat at all**, and that is the point rather than an omission.
+Every other demo bridges two things that start apart — your app to the sandbox, Claude to the
+MCP server, a repo to the skills — and the wire filling is that bridge being built. Spark
+bridges nothing: it is an assistant already inside the merchant dashboard, "same dashboard,
+same login, same permissions, nothing to install". Animating a connection would have staged a
+step that does not exist and contradicted the one line the product leads with. Segment 1 of the
+flow doc is "log in, click Spark", and tapping the tile already *is* that, so the run opens on
+the merchant's first real question.
+
+`connectStep` is therefore optional: `loadDemo()` prepends it when a demo has one and starts on
+`steps[0]` when it does not, and the step counters on the cards add the extra beat the same way.
 
 **Every agent connects to the sandbox, not to a tab.** The three Relay agents used to connect to
 "Cart Recovery" / "Payment Recovery" / "Subscription Dunning", which is a screen you open rather
@@ -67,10 +162,10 @@ header chip and its face, so nothing is lost by taking the name off that node.
 | demo | host | connects to | via |
 |---|---|---|---|
 | Relay · any agent | Merchant Dashboard | **Cashfree Sandbox** | Agents · Runs · Connections |
-| Cashfree Spark | Merchant Dashboard | Cashfree Spark | same login · same permissions |
 | Agent Toolkit | Your app | Cashfree Sandbox | `@cashfreepayments/agent-toolkit` |
 | Agent Skills | Claude Code + Cursor | Cashfree Skills | `npx @cashfreepayments/agent-skills add skills` |
 | MCP Server | Claude | Cashfree MCP | `mcp.cashfree.com/mcp` · OAuth |
+| Cashfree Spark | — | — | *nothing to connect; it is already in the dashboard* |
 
 ## Relay is a shelf, not a demo
 
@@ -181,12 +276,12 @@ claims it is meant to prove taken from the positioning doc (`Narrative (2).docx`
 
 | segment | what happens | who is on screen |
 |---|---|---|
-| **1 · open it** | the merchant opens Spark from the dashboard they were already in | the merchant |
+| **1 · open it** | tapping the tile. **Not a step** — see above | — |
 | **2 · four prompts** | a settlement question **asked and answered in Hindi**, a customer's payment status, a refund that stops and asks, a ₹500 payment link | the merchant |
 | **3 · tell the customer** | the merchant leaves Spark and messages the buyer; the new order is paid | **the buyer** |
 
-There is no connect-a-key beat, because there is nothing to install: "same dashboard, same
-login, same permissions". The first turn is opening it.
+So the run is seven steps and opens cold on `मेरा अगला सेटलमेंट कब आएगा?` — the merchant is
+mid-work in a dashboard they never left.
 
 **The refund is two steps, not one, and that is the point.** The doc's control section says
 reading is free and anything that moves money stops and asks; the demo would be claiming that
