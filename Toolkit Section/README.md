@@ -315,12 +315,20 @@ card already answers the hover, and a ball leaning away from the pointer fights 
 inviting. Only the blink is kept, because that is what makes an agent read as alive rather than
 as an icon.
 
-Names and one-liners follow the Relay landing page. **Only Cart Recovery carries a stat there**
-("20% Carts recovered", alongside "You only pay for recovered orders"), and only that one is
-reproduced. An earlier draft also showed "40% failed payments recovered" and "50% failed renewals
-recovered" — neither appears on the landing page or anywhere in the Relay docs, so both were
-removed and replaced with "Relay template" (both ARE documented template names). Do not reinstate
-a performance figure without a source you can point at.
+Names and one-liners follow the Relay landing page. **The shelf cards carry no stat pill at
+all** — the card is now name, one-liner and the chevron. "20% carts recovered" and the two
+"Relay template" pills were removed outright.
+
+That history is worth keeping, because it is the second time these pills have been wrong. An
+early draft showed "40% failed payments recovered" and "50% failed renewals recovered";
+neither appears on the Relay landing page or anywhere in the docs, so both were replaced with
+"Relay template" — accurate, but filler on a card that then read as though it were a metric.
+Now the whole row is gone. **Do not reinstate a performance figure without a source you can
+point at**, and do not add a pill just to balance the card.
+
+(The `.acard .stat` rule is left in the stylesheet, unused. It is scoped to a selector that no
+longer exists, so it costs nothing and it is the recipe if a sourced figure ever earns a place
+back.)
 The triggers, Connections and the Runs tab are the product's own vocabulary; the amounts, buyer
 names and ids are plausible stand-ins — which is exactly what the amber provenance badge says.
 
