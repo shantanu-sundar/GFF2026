@@ -2625,6 +2625,37 @@ body.booth .phone.as-laptop .screen { border-radius: 0; overflow: clip; }
 body.booth .ph-top { padding-top: 14px; }
 body.booth .backbtn { top: 12px; }
 
+/* --- the terminal stacks on the CLASS, not on a viewport media query ---
+ *
+ * This is the bug `?booth` on a laptop exposes. The `max-width: 700px` rules
+ * further down already know how to put the file rail under the transcript,
+ * and at a 360px viewport they fire, so booth mode looked correct on the
+ * kiosk and in a 360-wide test. But `?booth` sizes the SCREEN to 360x800
+ * while leaving the viewport at 1440 -- the media query never fires, the
+ * 186px rail stays beside a 174px transcript, and the install banner and
+ * every tool line are cut in half.
+ *
+ * A layout that depends on how big the screen is cannot be keyed to how big
+ * the window is. Booth mode is 360x800 by definition, so it carries its own
+ * copy and is self-sufficient at any window size.
+ */
+body.booth .screen.term {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto;
+  grid-template-areas:
+    "top"
+    "thread"
+    "panel"
+    "composer";
+}
+body.booth .screen.term .ledger {
+  border-right: 0;
+  border-top: 1px solid rgba(29, 34, 31, 0.09);
+  padding: 9px 12px 10px;
+  overflow: hidden;
+}
+body.booth .screen.term .ledger .rows { grid-template-columns: 1fr 1fr; margin-top: 7px; }
+
 /* 800px is 100px more than the phone was ever drawn for, and on the home
    grid that landed as dead black under the third tile. The tiles take it:
    more room for the art, which is the only thing on that screen doing any

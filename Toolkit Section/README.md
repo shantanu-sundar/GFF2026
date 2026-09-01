@@ -237,6 +237,14 @@ booth display **is** the phone.
 the lid is still 596x376 and the terminal still has its file rail. Both were
 verified in the same pass, and any change here should be.
 
+**Booth mode must never depend on a viewport media query** — this is the rule the
+whole section turns on. `?booth` sizes the *screen* to 360x800 while leaving the
+*window* at whatever it is, so the two sizes are decoupled and any layout keyed to
+`max-width` silently does the wrong thing on a laptop. Everything booth needs is
+scoped to `body.booth` and carries its own copy. The check that enforces it is
+running the same sweep at 360 and at 1440 and diffing the measurements: they must
+come out identical, surface for surface.
+
 ### Agent Skills has no laptop on a booth screen
 
 `setChassis()` still adds `.as-laptop` — **the JS is not branched** — it simply has
@@ -273,7 +281,16 @@ desktop site; on a 360-wide screen the page *is* a phone and the sheet behaves l
 one. At that size the whole sheet fits, so the `.occ-scroll` glide has nothing left
 to travel — which is the runtime measurement doing its job, not a bug.
 
-> Three traps, all found by measuring rather than by looking.
+> Four traps, all found by measuring rather than by looking.
+>
+> **The terminal stacked on the viewport, not on the screen.** The `max-width: 700px`
+> rules already knew how to put the file rail under the transcript, and at a 360px
+> viewport they fire — so booth mode looked right on the kiosk and in every 360-wide
+> test. Open `?booth` on a 1440px laptop and the media query never fires: the 186px
+> rail stays beside a **174px** transcript, and the install banner, the tool lines and
+> the generated code are all cut in half. A layout that depends on how big the screen
+> is cannot be keyed to how big the window is. `body.booth .screen.term` now carries
+> its own copy of the stacking.
 >
 > **A one-column grid with a definite height is not a stack.** `.st-grid` is `flex: 1`,
 > so setting `grid-template-columns: 1fr` gave three implicit rows that the browser
