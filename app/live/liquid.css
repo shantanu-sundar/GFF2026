@@ -1,0 +1,256 @@
+/*
+ * Cashfree 2026 "liquid glass" — scoped to the /live recording stage.
+ *
+ * Everything is namespaced under .liquid so the dark console at / is untouched.
+ * The direction is deliberately light: the brand system bans dark and black
+ * backgrounds outright, so this stage is mint -> oat -> amber atmospheric light
+ * with frosted glass surfaces and a faint blueprint layer underneath.
+ */
+
+.liquid {
+  --lg-evergreen: #00ad6c;
+  --lg-gold: #ffae15;
+  --lg-oat: #fce2b0;
+  --lg-mint: #cef993;
+  --lg-pine: #004325;
+  --lg-graphite: #1d221f;
+  --lg-sky: #9feaf9;
+  --lg-coral: #e64d73;
+
+  --lg-ink: #1d221f;
+  --lg-ink-2: rgba(29, 34, 31, 0.66);
+  --lg-ink-3: rgba(29, 34, 31, 0.44);
+  --lg-hair: rgba(29, 34, 31, 0.1);
+
+  color: var(--lg-ink);
+  position: relative;
+  isolation: isolate;
+
+  /* Light, not paint: directionless, out of focus, no banding. */
+  background:
+    radial-gradient(110% 80% at 6% 2%, rgba(206, 249, 147, 0.72) 0%, rgba(206, 249, 147, 0) 56%),
+    radial-gradient(65% 55% at 0% 0%, rgba(0, 173, 108, 0.2) 0%, rgba(0, 173, 108, 0) 60%),
+    radial-gradient(115% 90% at 100% 100%, rgba(255, 174, 21, 0.5) 0%, rgba(255, 174, 21, 0) 62%),
+    radial-gradient(70% 60% at 90% 88%, rgba(255, 141, 21, 0.16) 0%, rgba(255, 141, 21, 0) 58%),
+    linear-gradient(135deg, #f3fce6 0%, #fdf5e6 50%, #fdeecd 100%);
+}
+
+/* Blueprint layer — the "engineered, guarded" signal. Hairline dotted grid. */
+.liquid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, rgba(29, 34, 31, 0.055) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to bottom, rgba(29, 34, 31, 0.055) 0 1px, transparent 1px 64px);
+  mask-image: radial-gradient(120% 100% at 50% 40%, #000 30%, transparent 88%);
+}
+
+/* ---------------------------------------------------------------- */
+/* Glass surfaces — thick, soft-rounded, never razor-sharp edges.     */
+/* ---------------------------------------------------------------- */
+
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.62) 100%
+  );
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 12px 34px rgba(29, 34, 31, 0.1),
+    0 2px 8px rgba(29, 34, 31, 0.05);
+}
+
+/* Opaque white result card — the Spark UI kit's answer surface. */
+.card-solid {
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 10px 30px rgba(29, 34, 31, 0.09),
+    0 2px 6px rgba(29, 34, 31, 0.05);
+}
+
+/* The frosted capsule the merchant types into. */
+.pill-input {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 14px 40px rgba(29, 34, 31, 0.12),
+    0 3px 10px rgba(29, 34, 31, 0.06);
+}
+
+/* Mint glass — the merchant's own turn. */
+.glass-mint {
+  background: linear-gradient(
+    180deg,
+    rgba(206, 249, 147, 0.72) 0%,
+    rgba(0, 173, 108, 0.22) 100%
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 10px 26px rgba(0, 122, 76, 0.14);
+}
+
+/* Amber glass — money in flight. */
+.glass-amber {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 226, 176, 0.8) 0%,
+    rgba(255, 174, 21, 0.3) 100%
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 26px rgba(180, 116, 0, 0.14);
+}
+
+/* ---------------------------------------------------------------- */
+/* Motion                                                            */
+/* ---------------------------------------------------------------- */
+
+@keyframes lg-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.lg-rise {
+  animation: lg-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Words fading up one after another as the agent answers. */
+@keyframes lg-word {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.lg-word {
+  display: inline-block;
+  animation: lg-word 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  white-space: pre-wrap;
+}
+
+@keyframes lg-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+/* A terminal block cursor, not a hairline — it reads as a machine typing. */
+.lg-caret {
+  display: inline-block;
+  width: 0.58em;
+  height: 1.02em;
+  vertical-align: -0.16em;
+  border-radius: 2px;
+  background: var(--lg-evergreen);
+  animation: lg-caret 1.06s steps(1) infinite;
+}
+
+/* The working pill's breathing dot. */
+@keyframes lg-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+.lg-pulse {
+  animation: lg-pulse 1.5s ease-in-out infinite;
+}
+
+/* Caustic shimmer travelling across a settling progress bar. */
+@keyframes lg-sheen {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(320%); }
+}
+.lg-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.85),
+    transparent
+  );
+  animation: lg-sheen 1.7s ease-in-out infinite;
+}
+
+@keyframes lg-ring {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.lg-ring {
+  animation: lg-ring 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-rise,
+  .lg-word,
+  .lg-caret,
+  .lg-pulse,
+  .lg-ring,
+  .lg-sheen::after {
+    animation: none !important;
+  }
+  .lg-word { opacity: 1; transform: none; filter: none; }
+}
+
+.scroll-glass::-webkit-scrollbar { width: 8px; }
+.scroll-glass::-webkit-scrollbar-thumb {
+  background: rgba(29, 34, 31, 0.16);
+  border-radius: 99px;
+}
+.scroll-glass::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------- */
+/* Home state                                                        */
+/* ---------------------------------------------------------------- */
+
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); filter: blur(10px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+/* Sending the first question dissolves the home screen rather than cutting it. */
+@keyframes hero-out {
+  from { opacity: 1; transform: none; filter: blur(0); }
+  to   { opacity: 0; transform: translateY(-10px) scale(1.03); filter: blur(16px); }
+}
+.hero-in { animation: hero-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-out { animation: hero-out 0.52s cubic-bezier(0.4, 0, 1, 1) both; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-in, .hero-out { animation: none !important; }
+  .hero-out { opacity: 0; }
+}

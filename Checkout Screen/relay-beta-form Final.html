@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relay · Beta Access</title>
+<!--
+  ============================================================
+  RELAY BETA ACCESS FORM — setup
+  1) Create a Google Sheet with headers in row 1:
+     Timestamp | Type | Name | Phone | Email | LinkedIn | Website | Agents/Partner Types | Notes
+  2) In the Sheet: Extensions -> Apps Script. Delete everything, paste:
+
+     function doPost(e){
+       var s = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+       s.appendRow([new Date(), e.parameter.type, e.parameter.name, e.parameter.phone,
+                    e.parameter.email, e.parameter.linkedin, e.parameter.website,
+                    e.parameter.agents, e.parameter.custom_agent]);
+       return ContentService.createTextOutput("ok");
+     }
+
+  3) Deploy -> New deployment -> type: Web app
+     Execute as: Me · Who has access: Anyone
+     Authorize, copy the Web app URL.
+  4) Paste that URL into SCRIPT_URL below.
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mint:#CEF993; --green:#00AD6C; --oat:#FCE2B0; --amber:#FFAE15;
+  --pine:#004325; --ink:#1D221F; --muted:#6b716d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+button,input,select,textarea{font-family:'DM Sans',system-ui,-apple-system,sans-serif}
+html,body{height:100%}
+body{
+  font-family:'DM Sans',system-ui,-apple-system,sans-serif; color:var(--ink);
+  background:
+    radial-gradient(1200px 800px at 8% -10%, rgba(0,173,108,.28), transparent 60%),
+    radial-gradient(1000px 700px at 108% 112%, rgba(255,174,21,.38), transparent 60%),
+    linear-gradient(160deg,#eafad2 0%, #FCE2B0 55%, #ffd98f 100%);
+  min-height:100vh; overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(29,34,31,.12) 1px, transparent 1px);
+  background-size:26px 26px;}
+
+/* ---- partner mode: the whole canvas shifts to a greener shade ---- */
+body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:0;transition:opacity .9s ease;
+  pointer-events:none;
+  background:
+    radial-gradient(1200px 800px at 8% -10%, rgba(0,150,90,.42), transparent 60%),
+    radial-gradient(1000px 700px at 108% 112%, rgba(0,120,70,.34), transparent 60%),
+    linear-gradient(160deg,#e2f8cf 0%, #c9edb9 50%, #a9dfa0 100%)}
+body.partner::after{opacity:1}
+body.partner #progress{background:linear-gradient(90deg,var(--green),#0a8f5b)}
+body.partner .agent{background:
+  linear-gradient(165deg,
+    rgba(222,250,190,.48) 0%,
+    rgba(210,244,186,.42) 30%,
+    rgba(198,238,178,.40) 55%,
+    rgba(160,222,150,.40) 80%,
+    rgba(110,196,120,.34) 100%)}
+body.partner .agent{box-shadow:
+  inset 0 1.5px 0 rgba(255,255,255,.95),
+  inset 0 -12px 24px rgba(0,140,80,.12),
+  inset 0 10px 22px rgba(206,249,147,.16),
+  inset 0 0 0 1px rgba(255,255,255,.18),
+  0 10px 24px rgba(0,60,35,.10)}
+.btn.alt{background:transparent;color:var(--pine);box-shadow:inset 0 0 0 2px var(--pine)}
+.btn.alt:hover{background:rgba(0,67,37,.08)}
+
+#progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--green),var(--amber));box-shadow:0 0 8px rgba(0,173,108,.35);width:0%;transition:width .45s cubic-bezier(.22,1,.36,1);z-index:50;border-radius:0 4px 4px 0}
+.wrap{max-width:860px;margin:0 auto;padding:32px 24px;min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+header{display:flex;justify-content:center;padding:6px 0 0}
+.logofill{position:relative;height:46px;aspect-ratio:1.284}
+.logofill .lf{position:absolute;inset:0}
+.logofill .lf svg{height:100%;width:100%;display:block}
+.logofill .ghost{opacity:.16;filter:grayscale(1) brightness(.4)}
+.logofill .fillLayer{clip-path:inset(100% 0 0 0);transition:clip-path .7s cubic-bezier(.22,1,.36,1)}
+
+.stage{flex:1;display:flex;align-items:center;justify-content:center}
+.screen{display:none;width:100%;animation:in .5s cubic-bezier(.22,1,.36,1)}
+.screen.active{display:block}
+@keyframes in{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+.kicker{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.65);backdrop-filter:blur(6px);
+  border:1px solid rgba(29,34,31,.08);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:500;margin-bottom:22px}
+.kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(0,173,108,.18)}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.12;letter-spacing:-.02em;font-weight:700}
+h2{font-size:clamp(24px,3.6vw,34px);line-height:1.15;letter-spacing:-.015em;font-weight:700}
+.sub{color:var(--muted);font-size:17px;margin-top:14px;max-width:560px}
+/* stepper: five segments, filled as you progress */
+.stepper{display:flex;gap:7px;margin-bottom:16px}
+.stepper i{display:block;width:26px;height:5px;border-radius:99px;background:rgba(29,34,31,.14);transition:background .35s, width .35s}
+.stepper i.done{background:rgba(0,173,108,.45)}
+.stepper i.cur{background:var(--green);width:38px}
+
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;font-family:inherit;
+  background-color:#0d1410;
+  color:#fff;font-size:16px;font-weight:600;padding:16px 32px;border-radius:16px;isolation:isolate;overflow:hidden;
+  /* rest: green glow wrapped around every edge of the pill */
+  box-shadow:inset 0 0 0 1px rgba(200,245,185,.28), inset 0 1px 0 rgba(255,255,255,.10),
+             0 0 0 3px rgba(215,245,205,.30), 0 0 20px 5px rgba(150,225,135,.35),
+             0 10px 22px -8px rgba(0,40,22,.4);
+  transition:box-shadow .45s ease, transform .18s}
+/* inner rim light hugging all four edges */
+.btn::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;
+  background:radial-gradient(115% 135% at 50% 50%, rgba(0,0,0,0) 48%, rgba(120,205,125,.20) 74%, rgba(150,228,140,.55) 100%);
+  opacity:1;transition:opacity .45s ease}
+/* hover: the box goes plain — just a faint blur left around the edges */
+.btn:hover{transform:translateY(-1px);
+  box-shadow:inset 0 0 0 1px rgba(190,235,180,.14), inset 0 1px 0 rgba(255,255,255,.08),
+             0 0 12px 3px rgba(150,225,135,.16),
+             0 10px 22px -8px rgba(0,40,22,.4)}
+.btn:hover::before{opacity:0}
+.btn:disabled{opacity:.7;cursor:wait}
+.btn.ghost{background:rgba(255,255,255,.5);color:var(--ink);backdrop-filter:blur(10px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.8), inset 0 1px 0 rgba(255,255,255,.9), 0 8px 20px rgba(0,60,35,.10)}
+.btn.ghost::before{display:none}
+.btn.ghost:hover{background:rgba(255,255,255,.7)}
+.hint{font-size:13px;color:var(--muted);margin-top:14px}
+.hint kbd{background:rgba(255,255,255,.7);border:1px solid rgba(29,34,31,.15);border-radius:5px;padding:1px 7px;font-family:inherit}
+
+.field{margin-top:26px;max-width:560px}
+input[type=text],input[type=tel],input[type=email]{
+  width:100%;font-family:inherit;font-size:20px;color:var(--ink);
+  background:rgba(255,255,255,.45);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.75);border-radius:16px;padding:16px 18px;outline:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 4px 14px rgba(0,60,35,.05);
+  transition:box-shadow .2s, border-color .2s}
+input:focus{border-color:rgba(0,173,108,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 3px rgba(0,173,108,.10)}
+input::placeholder{color:rgba(29,34,31,.32)}
+textarea{
+  width:100%;font-family:inherit;font-size:19px;color:var(--ink);line-height:1.5;
+  background:rgba(255,255,255,.45);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.75);border-radius:16px;padding:16px 18px;outline:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 4px 14px rgba(0,60,35,.05);
+  transition:box-shadow .2s, border-color .2s;resize:vertical;min-height:140px}
+textarea:focus{border-color:rgba(0,173,108,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 3px rgba(0,173,108,.10)}
+textarea::placeholder{color:rgba(29,34,31,.32)}
+/* partner mode swaps the picker grid for the reason textarea */
+#partnerReason{display:none}
+body.partner #agentGrid, body.partner #customWrap{display:none}
+body.partner #partnerReason{display:block}
+.err{color:#c2452d;font-size:14px;margin-top:10px;min-height:18px;font-weight:500}
+.nav{display:flex;gap:12px;margin-top:30px;align-items:center;flex-wrap:wrap}
+
+/* ---------- agent picker ---------- */
+.agents{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:30px}
+.agent{position:relative;isolation:isolate;border-radius:24px;padding:22px 10px 18px;text-align:center;cursor:pointer;
+  /* liquid glass: one continuous mint-to-amber sweep across the whole card */
+  background:
+    linear-gradient(165deg,
+      rgba(206,249,147,.42) 0%,
+      rgba(228,248,196,.40) 22%,
+      rgba(250,244,214,.42) 45%,
+      rgba(253,232,186,.46) 68%,
+      rgba(255,205,120,.42) 88%,
+      rgba(255,174,21,.32) 100%);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.8);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,.95),            /* top edge light */
+    inset 0 -12px 24px rgba(255,174,21,.14),          /* warm glow pooling at the base */
+    inset 0 10px 22px rgba(206,249,147,.14),          /* mint bleed from the top */
+    inset 0 0 0 1px rgba(255,255,255,.18),
+    0 10px 24px rgba(0,60,35,.08);
+  transition:transform .18s, box-shadow .18s, border-color .18s}
+/* refraction streak across the glass */
+.agent::before{content:"";position:absolute;inset:0;border-radius:24px;pointer-events:none;z-index:1;
+  background:linear-gradient(115deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 26%),
+             linear-gradient(295deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 18%);
+  opacity:.8}
+.agent>*{position:relative;z-index:2}
+.agent:hover{transform:translateY(-3px);border-color:rgba(0,173,108,.35);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -14px 28px rgba(255,174,21,.20), inset 0 10px 22px rgba(206,249,147,.18),
+  0 16px 30px -10px rgba(255,174,21,.30), 0 12px 26px rgba(0,60,35,.10)}
+.agent.sel{border-color:rgba(0,173,108,.55);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -14px 30px rgba(255,174,21,.22), inset 0 0 22px rgba(0,173,108,.10),
+  0 0 0 2px rgba(0,173,108,.18), 0 16px 30px -10px rgba(255,174,21,.28)}
+.agent .tick{position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;background:var(--green);
+  color:#fff;font-size:12px;line-height:20px;opacity:0;transform:scale(.5);transition:.18s}
+.agent.sel .tick{opacity:1;transform:none}
+.agent{perspective:600px}
+.orb{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;position:relative;transform-style:preserve-3d;transition:transform .35s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 8px 16px rgba(0,77,45,.16);outline:1.5px solid rgba(255,255,255,.8);outline-offset:3px}
+/* the gradient artwork lives on ::before, slightly oversized + blurred to match the soft reference renders */
+.orb::before{content:"";position:absolute;inset:-4%;border-radius:50%;filter:blur(1.6px)}
+.orb .eyes{position:absolute;top:44%;left:50%;--ex:0px;--ey:0px;
+  transform:translate(calc(-50% + var(--ex)), calc(-50% + var(--ey)));
+  display:flex;gap:9px;z-index:1;transition:transform .12s ease-out}
+.orb .eyes i{width:6px;height:12px;background:#15191a;border-radius:4px;display:block;transform-origin:50% 50%}
+/* blink: quick squeeze of both pupils */
+.orb .eyes.blink i{animation:blink .28s ease-in-out both}
+@keyframes blink{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.08)}}
+@media (prefers-reduced-motion: reduce){.orb .eyes{transition:none}.orb .eyes.blink i{animation:none}}
+/* Cart Recovery · green with sky-blue crown, lime left glow, gold fleck bottom-right */
+.o1{background:#10ab50}
+.o1::before{background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 66%, rgba(8,70,45,.10) 88%, rgba(8,70,45,.16) 100%),
+  radial-gradient(70% 66% at 104% 100%, rgba(216,182,46,.95) 0%, rgba(216,182,46,.5) 38%, rgba(216,182,46,0) 62%),
+  radial-gradient(30% 36% at 106% 50%, rgba(228,246,240,.85) 0%, rgba(228,246,240,0) 60%),
+  radial-gradient(94% 64% at 66% -14%, #85cfee 0%, #7ac8de 24%, rgba(106,196,196,.85) 44%, rgba(120,200,205,.35) 60%, rgba(120,200,205,0) 74%),
+  radial-gradient(42% 48% at 108% 24%, rgba(122,202,224,.9) 0%, rgba(122,202,224,0) 62%),
+  radial-gradient(74% 100% at -10% 74%, #e4f8ac 0%, rgba(170,235,148,.9) 30%, rgba(170,235,148,.35) 54%, rgba(170,235,148,0) 68%),
+  radial-gradient(36% 36% at -4% 22%, rgba(150,225,175,.55) 0%, rgba(150,225,175,0) 62%),
+  radial-gradient(circle at 46% 54%, #1cb75a 0%, #10ab50 52%, #0a9846 100%)}
+/* Payment Recovery · bright yellow into olive, cream + peach left glow */
+.o2{background:#d5cd2b}
+.o2::before{background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(92,92,24,.10) 90%, rgba(92,92,24,.16) 100%),
+  radial-gradient(60% 50% at 62% 106%, rgba(58,80,20,.92) 0%, rgba(58,80,20,.45) 40%, rgba(58,80,20,0) 66%),
+  radial-gradient(36% 34% at 4% 8%, rgba(246,216,170,.95) 0%, rgba(246,216,170,0) 62%),
+  radial-gradient(30% 30% at 4% 92%, rgba(246,214,168,.85) 0%, rgba(246,214,168,0) 62%),
+  radial-gradient(52% 58% at -8% 55%, rgba(252,248,230,.95) 0%, rgba(235,235,198,.7) 40%, rgba(235,235,198,0) 68%),
+  radial-gradient(circle at 44% 14%, #f7e315 0%, #ecda1e 24%, #d5cd2b 44%, #b1b733 64%, #94a02f 84%, #8b9430 100%)}
+/* Dispute Responder · sky blue, gold-olive crescent left, teal crown + base, mint top-right */
+.o3{background:#5fb6e5}
+.o3::before{background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(24,64,84,.10) 90%, rgba(24,64,84,.16) 100%),
+  radial-gradient(66% 46% at 62% 112%, rgba(20,86,100,.95) 0%, rgba(20,86,100,.45) 42%, rgba(20,86,100,0) 66%),
+  radial-gradient(50% 46% at -4% 94%, rgba(178,150,52,.95) 0%, rgba(178,150,52,.45) 42%, rgba(178,150,52,0) 66%),
+  radial-gradient(46% 42% at 2% 8%, #f2cd48 0%, rgba(242,205,72,.55) 44%, rgba(242,205,72,0) 68%),
+  radial-gradient(56% 132% at -16% 48%, rgba(226,198,92,.9) 0%, rgba(218,206,142,.7) 30%, rgba(218,212,170,.35) 50%, rgba(218,212,170,0) 66%),
+  radial-gradient(70% 30% at 50% -12%, rgba(58,148,166,.85) 0%, rgba(58,148,166,0) 62%),
+  radial-gradient(38% 34% at 88% 0%, rgba(158,214,190,.85) 0%, rgba(158,214,190,0) 62%),
+  radial-gradient(26% 32% at 106% 54%, rgba(214,238,232,.6) 0%, rgba(214,238,232,0) 60%),
+  radial-gradient(circle at 56% 46%, #7ccaee 0%, #5fb6e5 50%, #48a0cf 100%)}
+/* Subscription Dunning · lilac with gold spot, mint + sage left rim, violet base, teal right sliver */
+.o4{background:#c8b4ee}
+.o4::before{background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(80,58,130,.10) 90%, rgba(80,58,130,.16) 100%),
+  radial-gradient(98% 84% at 50% 128%, #8a4be6 0%, rgba(142,84,232,.95) 28%, rgba(150,100,234,.6) 48%, rgba(158,116,236,.22) 62%, rgba(158,116,236,0) 72%),
+  radial-gradient(34% 32% at 6% 6%, #eec84e 0%, rgba(238,200,78,.55) 46%, rgba(238,200,78,0) 70%),
+  radial-gradient(28% 46% at -6% 40%, rgba(216,230,200,.95) 0%, rgba(216,230,200,0) 58%),
+  radial-gradient(26% 26% at 2% 78%, rgba(205,188,106,.85) 0%, rgba(205,188,106,0) 60%),
+  radial-gradient(26% 44% at 102% 26%, rgba(150,204,200,.8) 0%, rgba(150,204,200,0) 58%),
+  radial-gradient(56% 38% at 55% -8%, rgba(196,206,242,.85) 0%, rgba(196,206,242,0) 58%),
+  radial-gradient(circle at 52% 34%, #ddd4f4 0%, #cdbcee 48%, #b493ea 100%)}
+/* COD Confirmation · mint crown, sage-gold left, butter bottom-left, deep forest lower right */
+.o5{background:#1d7f40}
+.o5::before{background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 64%, rgba(8,48,20,.12) 86%, rgba(8,48,20,.2) 100%),
+  radial-gradient(56% 50% at 88% 94%, rgba(6,44,20,.95) 0%, rgba(6,44,20,.45) 42%, rgba(6,44,20,0) 66%),
+  radial-gradient(56% 64% at -8% 88%, #f0eba6 0%, rgba(224,220,136,.85) 36%, rgba(224,220,136,0) 62%),
+  radial-gradient(92% 76% at 54% 104%, rgba(16,80,36,.92) 0%, rgba(20,94,42,.55) 40%, rgba(20,94,42,0) 66%),
+  radial-gradient(36% 74% at -8% 26%, rgba(216,214,130,.75) 0%, rgba(192,202,112,.32) 42%, rgba(192,202,112,0) 62%),
+  radial-gradient(60% 36% at 38% -8%, #ddf4e0 0%, rgba(205,240,212,.6) 40%, rgba(205,240,212,0) 58%),
+  radial-gradient(50% 46% at 92% 6%, rgba(38,170,92,1) 0%, rgba(38,170,92,0) 64%),
+  radial-gradient(circle at 50% 22%, #4cb87a 0%, #2fa15e 40%, #1d7f40 66%, #124e24 100%)}
+.agent.sel .orb{animation:bob 2.4s ease-in-out infinite}
+.agent.sel .orb::after{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);
+  width:34px;height:7px;border-radius:50%;background:rgba(0,60,35,.18);filter:blur(2px);
+  animation:bobShadow 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotateY(-8deg) rotateX(3deg)}50%{transform:translateY(-8px) rotateY(8deg) rotateX(-3deg)}}
+@keyframes bobShadow{0%,100%{opacity:.75;width:34px}50%{opacity:.35;width:24px}}
+@media (prefers-reduced-motion: reduce){.agent.sel .orb,.agent.sel .orb::after{animation:none}}
+.agent b{display:block;font-size:14px;font-weight:700;line-height:1.25}
+.agent .tip{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%) translateY(6px);
+  width:210px;background:#fffdf8;border:1px solid rgba(29,34,31,.08);border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.45;color:var(--ink);
+  box-shadow:0 18px 40px rgba(0,60,35,.22), 0 2px 8px rgba(0,60,35,.10);opacity:0;pointer-events:none;transition:.2s;z-index:20;text-align:left}
+.agent .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:7px solid transparent;border-top-color:#fffdf8}
+.agent:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* thank you */
+.center{text-align:center}
+.chosen{display:flex;justify-content:center;gap:22px;margin-bottom:28px;flex-wrap:wrap}
+.chosen .co{text-align:center}
+.chosen .orb{width:84px;height:84px;margin-bottom:10px;animation:bob 2.6s ease-in-out infinite}
+.chosen .co:nth-child(2) .orb{animation-delay:.3s}.chosen .co:nth-child(3) .orb{animation-delay:.6s}
+.chosen .co:nth-child(4) .orb{animation-delay:.9s}.chosen .co:nth-child(5) .orb{animation-delay:1.2s}
+.chosen .orb .eyes i{width:7px;height:14px}
+.chosen small{font-size:12px;font-weight:600;color:var(--muted)}
+.agent.sel:hover .orb{animation:none}
+
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;justify-items:center;width:100%;max-width:1040px;margin:0 auto}
+.intro-logo{display:flex;justify-content:center;align-items:center;width:100%;overflow:visible}
+.intro-logo svg{width:100%;max-width:420px;height:auto;filter:drop-shadow(0 16px 34px rgba(0,60,35,.16));
+  animation:logoFloat 4.6s ease-in-out infinite;transform-origin:center}
+@media(min-width:761px){.intro-logo{transform:translate(-114px,-49px)}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(-1.2deg)}}
+@media (prefers-reduced-motion: reduce){.intro-logo svg{animation:none}}
+body.on-intro header{visibility:hidden}
+@media(max-width:760px){.intro-grid{grid-template-columns:1fr;gap:28px}.intro-logo svg{max-width:230px}}
+footer{display:flex;justify-content:center;padding:10px 0 4px;color:var(--muted);font-size:13px}
+/* ---- responsive hardening ---- */
+@media(min-width:761px) and (max-width:1080px){
+  .agents{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:420px){
+  .wrap{padding:22px 14px}
+  .btn{padding:13px 22px;font-size:15px}
+  .agents{gap:10px}
+  .agent{padding:16px 8px 12px;border-radius:18px}
+  .orb{width:54px;height:54px}
+  h1{font-size:28px} h2{font-size:23px}
+  .sub{font-size:15px}
+  input[type=text],input[type=tel],input[type=email]{font-size:17px;padding:14px 15px}
+  .corner{display:none}
+  .logofill{height:38px}
+}
+@media(min-width:1700px){
+  .wrap{max-width:1000px}
+  .intro-grid{max-width:1200px}
+  .intro-logo svg{max-width:500px}
+}
+@media(max-height:640px) and (min-width:761px){
+  .intro-logo svg{max-width:320px}
+}
+@media(max-width:760px){
+  .agents{grid-template-columns:repeat(2,1fr)}
+  .agent .tip{display:none}
+  .agent .oneline{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+}
+@media(min-width:761px){.agent .oneline{display:none}}
+</style>
+</head>
+<body class="on-intro">
+<div id="progress"></div>
+<div class="wrap">
+  <header><div class="logofill" aria-hidden="true"><div class="lf ghost"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 24 226 176" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#mkpaint0_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#mkpaint1_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#mkpaint2_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#mkpaint3_linear_4_13)"/><defs>
+<linearGradient id="mkpaint0_linear_4_13" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00B438"/>
+<stop offset="1" stop-color="#5AD6A0"/>
+</linearGradient>
+<linearGradient id="mkpaint1_linear_4_13" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00ADA1"/>
+<stop offset="0.668269" stop-color="#00AD5B"/>
+</linearGradient>
+<linearGradient id="mkpaint2_linear_4_13" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFBE0C"/>
+<stop offset="1" stop-color="#FFDD7F"/>
+</linearGradient>
+<linearGradient id="mkpaint3_linear_4_13" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBB016"/>
+<stop offset="1" stop-color="#FF8FA7"/>
+</linearGradient>
+</defs></svg></div><div class="lf fillLayer" id="markFill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 24 226 176" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#mkfpaint0_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#mkfpaint1_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#mkfpaint2_linear_4_13)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#mkfpaint3_linear_4_13)"/><defs>
+<linearGradient id="mkfpaint0_linear_4_13" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00B438"/>
+<stop offset="1" stop-color="#5AD6A0"/>
+</linearGradient>
+<linearGradient id="mkfpaint1_linear_4_13" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00ADA1"/>
+<stop offset="0.668269" stop-color="#00AD5B"/>
+</linearGradient>
+<linearGradient id="mkfpaint2_linear_4_13" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFBE0C"/>
+<stop offset="1" stop-color="#FFDD7F"/>
+</linearGradient>
+<linearGradient id="mkfpaint3_linear_4_13" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBB016"/>
+<stop offset="1" stop-color="#FF8FA7"/>
+</linearGradient>
+</defs></svg></div></div></header>
+  <div class="stage">
+
+    <!-- 0 · intro -->
+    <section class="screen active" data-step="0">
+      <div class="intro-grid">
+        <div class="intro-logo"><svg width="704" height="225" viewBox="0 0 704 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M153.357 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.357 190.645Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#paint0_linear_4_13)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#paint1_linear_4_13)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.7551 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#paint2_linear_4_13)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#paint3_linear_4_13)"/>
+<path d="M258.949 174V48H304.129C314.089 48 322.309 49.74 328.789 53.22C335.389 56.58 340.249 61.14 343.369 66.9C346.609 72.54 348.229 78.96 348.229 86.16C348.229 92.88 346.669 99.12 343.549 104.88C340.429 110.64 335.569 115.26 328.969 118.74C322.369 122.22 313.909 123.96 303.589 123.96H280.549V174H258.949ZM324.649 174L298.189 118.38H321.589L349.309 174H324.649ZM280.549 107.94H302.689C310.729 107.94 316.609 106.02 320.329 102.18C324.169 98.22 326.089 93.06 326.089 86.7C326.089 80.46 324.229 75.48 320.509 71.76C316.789 67.92 310.849 66 302.689 66H280.549V107.94ZM399.881 176.16C390.881 176.16 382.961 174.24 376.121 170.4C369.281 166.44 363.941 160.92 360.101 153.84C356.261 146.76 354.341 138.6 354.341 129.36C354.341 119.76 356.201 111.36 359.921 104.16C363.761 96.96 369.101 91.32 375.941 87.24C382.901 83.16 390.941 81.12 400.061 81.12C408.941 81.12 416.681 83.1 423.281 87.06C429.881 91.02 434.981 96.36 438.581 103.08C442.181 109.68 443.981 117.12 443.981 125.4C443.981 126.6 443.981 127.92 443.981 129.36C443.981 130.8 443.861 132.3 443.621 133.86H369.821V120H422.201C421.961 113.4 419.741 108.24 415.541 104.52C411.341 100.68 406.121 98.76 399.881 98.76C395.441 98.76 391.361 99.78 387.641 101.82C383.921 103.86 380.981 106.92 378.821 111C376.661 114.96 375.581 120 375.581 126.12V131.34C375.581 136.98 376.601 141.84 378.641 145.92C380.801 150 383.681 153.12 387.281 155.28C391.001 157.32 395.141 158.34 399.701 158.34C404.741 158.34 408.881 157.26 412.121 155.1C415.481 152.94 417.941 150.06 419.501 146.46H441.461C439.781 152.1 437.021 157.2 433.181 161.76C429.341 166.2 424.601 169.74 418.961 172.38C413.321 174.9 406.961 176.16 399.881 176.16ZM456.924 174V44.4H478.524V174H456.924ZM535.947 176.16C527.547 176.16 520.047 174.12 513.447 170.04C506.967 165.96 501.867 160.32 498.147 153.12C494.427 145.92 492.567 137.76 492.567 128.64C492.567 119.52 494.427 111.42 498.147 104.34C501.867 97.14 507.027 91.5 513.627 87.42C520.227 83.22 527.727 81.12 536.127 81.12C542.967 81.12 548.967 82.44 554.127 85.08C559.287 87.72 563.367 91.38 566.367 96.06L567.627 83.28H587.967V174H567.807L566.367 160.86C563.487 164.94 559.587 168.54 554.667 171.66C549.747 174.66 543.507 176.16 535.947 176.16ZM540.447 157.44C545.607 157.44 550.167 156.24 554.127 153.84C558.087 151.32 561.147 147.9 563.307 143.58C565.467 139.26 566.547 134.28 566.547 128.64C566.547 123 565.467 118.02 563.307 113.7C561.147 109.38 558.087 106.02 554.127 103.62C550.167 101.22 545.607 100.02 540.447 100.02C535.527 100.02 531.087 101.22 527.127 103.62C523.167 106.02 520.047 109.38 517.767 113.7C515.607 118.02 514.527 123 514.527 128.64C514.527 134.28 515.607 139.26 517.767 143.58C520.047 147.9 523.167 151.32 527.127 153.84C531.087 156.24 535.527 157.44 540.447 157.44ZM647.29 215.76C642.13 215.76 637.09 215.04 632.17 213.6C627.37 212.28 622.99 210.24 619.03 207.48C615.19 204.84 612.01 201.42 609.49 197.22C606.97 193.02 605.41 188.04 604.81 182.28H626.23C626.83 185.64 628.03 188.52 629.83 190.92C631.75 193.32 634.15 195.12 637.03 196.32C640.03 197.64 643.33 198.3 646.93 198.3C651.61 198.3 655.57 197.22 658.81 195.06C662.05 193.02 664.51 189.84 666.19 185.52C667.87 181.2 668.71 175.74 668.71 169.14V160.5C665.95 164.7 662.11 168.12 657.19 170.76C652.27 173.4 646.21 174.72 639.01 174.72C631.81 174.72 625.57 173.22 620.29 170.22C615.01 167.22 610.93 162.72 608.05 156.72C605.29 150.72 603.91 143.16 603.91 134.04V83.28H625.51V132.42C625.51 140.58 627.19 146.76 630.55 150.96C634.03 155.04 639.13 157.08 645.85 157.08C650.53 157.08 654.55 156 657.91 153.84C661.39 151.68 664.03 148.62 665.83 144.66C667.75 140.58 668.71 135.66 668.71 129.9V83.28H690.31V169.32C690.31 179.52 688.45 188.04 684.73 194.88C681.01 201.72 675.91 206.88 669.43 210.36C662.95 213.96 655.57 215.76 647.29 215.76Z" fill="black"/>
+<defs>
+<linearGradient id="paint0_linear_4_13" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00B438"/>
+<stop offset="1" stop-color="#5AD6A0"/>
+</linearGradient>
+<linearGradient id="paint1_linear_4_13" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00ADA1"/>
+<stop offset="0.668269" stop-color="#00AD5B"/>
+</linearGradient>
+<linearGradient id="paint2_linear_4_13" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFBE0C"/>
+<stop offset="1" stop-color="#FFDD7F"/>
+</linearGradient>
+<linearGradient id="paint3_linear_4_13" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBB016"/>
+<stop offset="1" stop-color="#FF8FA7"/>
+</linearGradient>
+</defs>
+</svg></div>
+        <div>
+          <div class="kicker"><span class="dot"></span>Private beta · Limited seats</div>
+          <h1>Get beta access to Relay.</h1>
+          <p class="sub">Your AI teammate for payment operations. Agents own every follow-up. Nothing moves without your approval.</p>
+          <div class="nav">
+            <button class="btn" onclick="startFlow('beta')">Get access to Relay &nbsp;→</button>
+            <button class="btn alt" onclick="startFlow('partner')">Partner with us &nbsp;→</button>
+          </div>
+          <p class="hint">Either way, takes under 2 minutes</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 · name -->
+    <section class="screen" data-step="1">
+      <div class="stepper" aria-label="Step 1 of 5"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2>First, what's your name?</h2>
+      <div class="field"><input type="text" id="f_name" placeholder="Aarav Sharma" autocomplete="name"></div>
+      <p class="err" id="e_name"></p>
+      <div class="nav">
+        <button class="btn" onclick="next()">Next</button>
+        <button class="btn ghost" onclick="back()">Back</button>
+      </div>
+      <p class="hint">Press <kbd>Enter</kbd> to continue</p>
+    </section>
+
+    <!-- 2 · phone -->
+    <section class="screen" data-step="2">
+      <div class="stepper" aria-label="Step 2 of 5"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2>Your phone number?</h2>
+      <p class="sub" id="t_phoneSub">Our team will reach out on WhatsApp to set up your first agent.</p>
+      <div class="field"><input type="tel" id="f_phone" placeholder="98765 43210" autocomplete="tel"></div>
+      <p class="err" id="e_phone"></p>
+      <div class="nav">
+        <button class="btn" onclick="next()">Next</button>
+        <button class="btn ghost" onclick="back()">Back</button>
+      </div>
+      <p class="hint">Press <kbd>Enter</kbd> to continue</p>
+    </section>
+
+    <!-- 3 · email -->
+    <section class="screen" data-step="3">
+      <div class="stepper" aria-label="Step 3 of 5"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2>Your work email?</h2>
+      <div class="field"><input type="email" id="f_email" placeholder="you@company.com" autocomplete="email"></div>
+      <p class="err" id="e_email"></p>
+      <div class="nav">
+        <button class="btn" onclick="next()">Next</button>
+        <button class="btn ghost" onclick="back()">Back</button>
+      </div>
+      <p class="hint">Press <kbd>Enter</kbd> to continue</p>
+    </section>
+
+    <!-- 4 · business -->
+    <section class="screen" data-step="4">
+      <div class="stepper" aria-label="Step 4 of 5"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2>Where can we find your business?</h2>
+      <p class="sub">Share your company LinkedIn and website. One of the two is enough.</p>
+      <div class="field"><input type="text" id="f_linkedin" placeholder="linkedin.com/company/yourbusiness"></div>
+      <div class="field" style="margin-top:14px"><input type="text" id="f_website" placeholder="yourbusiness.com"></div>
+      <p class="err" id="e_business"></p>
+      <div class="nav">
+        <button class="btn" onclick="next()">Next</button>
+        <button class="btn ghost" onclick="back()">Back</button>
+      </div>
+      <p class="hint">Press <kbd>Enter</kbd> to continue</p>
+    </section>
+
+    <!-- 5 · agents -->
+    <section class="screen" data-step="5">
+      <div class="stepper" aria-label="Step 5 of 5"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2 id="t_pickH">Which agents do you want first?</h2>
+      <p class="sub" id="t_pickSub">Pick as many as you like. Hover over an agent to see what it does.</p>
+      <div class="agents" id="agentGrid"></div>
+      <div class="field" id="customWrap" style="max-width:100%;margin-top:18px">
+        <input type="text" id="f_custom" placeholder="Need something else? Describe your custom agent in a line">
+      </div>
+      <div class="field" id="partnerReason" style="max-width:100%;margin-top:6px">
+        <textarea id="f_reason" placeholder="e.g. We run retention for 30+ D2C brands and want to offer AI-led payment recovery as part of our mandate…"></textarea>
+      </div>
+      <p class="err" id="e_agents"></p>
+      <div class="nav">
+        <button class="btn" id="submitBtn" onclick="submitForm()">Request beta access &nbsp;→</button>
+        <button class="btn ghost" onclick="back()">Back</button>
+      </div>
+    </section>
+
+    <!-- 6 · thanks -->
+    <section class="screen center" data-step="6">
+      <div id="chosenOrbs" class="chosen"></div>
+      <h2 id="t_thanksH">You're on the list.</h2>
+      <p class="sub" style="margin-inline:auto" id="t_thanksP">Thanks! Your agents are warming up, and our team will reach out shortly to switch them on. Your journey from Manual Ops to Agentic Ops is starting soon.</p>
+    </section>
+
+  </div>
+  <footer>Relay by Cashfree Payments</footer>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+var SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+/* ========================================== */
+
+var AGENTS = [
+ {id:"Cart Recovery Agent",      short:"Cart Recovery",      orb:"o1", tip:"Brings the buyer back to the cart with a personal call and a payment link."},
+ {id:"Payment Recovery Agent",   short:"Payment Recovery",   orb:"o2", tip:"Gives every failed payment a second try, with the reason and a fresh link."},
+ {id:"Dispute Responder Agent",  short:"Dispute Responder",  orb:"o3", tip:"Collects the evidence and files every dispute five days before the deadline."},
+ {id:"Subscription Dunning Agent",short:"Subscription Dunning",orb:"o4", tip:"Keeps buyers subscribed by retrying failed renewals on the day money lands."},
+ {id:"COD Confirmation Agent",   short:"COD Confirmation",   orb:"o5", tip:"Calls to confirm every COD order before it ships, cutting RTO."}
+];
+var PARTNERS = [
+ {id:"Agency",                 short:"Agency",            orb:"o1", tip:"You run growth, CRO or retention for merchants. Add Relay agents to every mandate and share the upside."},
+ {id:"System Integrator",      short:"System Integrator", orb:"o2", tip:"You implement commerce and payment stacks. Deploy Relay for clients with priority onboarding and support."},
+ {id:"SaaS Platform",          short:"SaaS Platform",     orb:"o3", tip:"You serve merchants at scale. Embed Relay agents into your product with API access and rev share."},
+ {id:"Consultant / Freelancer",short:"Consultant",        orb:"o4", tip:"You advise D2C and ecommerce brands. Refer clients to Relay and earn on every activation."},
+ {id:"Reseller / Distributor", short:"Reseller",          orb:"o5", tip:"You sell software to merchants. Bundle Relay into your catalogue with partner pricing."}
+];
+var MODE = 'beta';
+var TEXTS = {
+ beta:{
+  phoneSub:"Our team will reach out on WhatsApp to set up your first agent.",
+  pickH:"Which agents do you want first?",
+  pickSub:"Pick as many as you like. Hover over an agent to see what it does.",
+  customPh:"Need something else? Describe your custom agent in a line",
+  submit:"Request beta access \u00a0\u2192",
+  pickErr:"Pick at least one agent, or describe the one you need.",
+  thanksH:"You're on the list.",
+  thanksP:"Thanks! Your agents are warming up, and our team will reach out shortly to switch them on. Your journey from Manual Ops to Agentic Ops is starting soon."
+ },
+ partner:{
+  phoneSub:"Our team will reach out to you to talk terms and next steps.",
+  pickH:"Why do you want to partner with us?",
+  pickSub:"",
+  customPh:"Anything else? Clients you serve, ideas, or how you'd like to work together",
+  submit:"Register partner interest \u00a0\u2192",
+  pickErr:"A line or two is enough \u2014 just tell us why you'd like to partner.",
+  thanksH:"Welcome aboard, partner.",
+  thanksP:"Thanks! Our partnerships team will reach out shortly with the early-partner details \u2014 revenue share, co-marketing, and how we onboard your first clients together."
+ }
+};
+function startFlow(mode){
+  MODE = mode;
+  document.body.classList.toggle('partner', mode==='partner');
+  var t = TEXTS[mode];
+  document.getElementById('t_phoneSub').textContent = t.phoneSub;
+  document.getElementById('t_pickH').textContent = t.pickH;
+  var ps=document.getElementById('t_pickSub'); ps.textContent = t.pickSub; ps.style.display = t.pickSub? '' : 'none';
+  document.getElementById('f_custom').placeholder = t.customPh;
+  document.getElementById('submitBtn').innerHTML = t.submit;
+  document.getElementById('t_thanksH').textContent = t.thanksH;
+  document.getElementById('t_thanksP').textContent = t.thanksP;
+  if(mode==='beta') buildGrid(AGENTS);
+  show(1);
+}
+var sel = {};
+var grid = document.getElementById('agentGrid');
+function buildGrid(list){
+sel = {}; grid.innerHTML='';
+list.forEach(function(a){
+  var d = document.createElement('div');
+  d.className='agent'; d.setAttribute('role','button'); d.setAttribute('tabindex','0');
+  d.innerHTML = '<span class="tick">✓</span><div class="orb '+a.orb+'"><span class="eyes"><i></i><i></i></span></div>'+
+                '<b>'+a.short+'</b><span class="oneline">'+a.tip+'</span><span class="tip">'+a.tip+'</span>';
+  d.onclick = function(){ sel[a.id]=!sel[a.id]; d.classList.toggle('sel', !!sel[a.id]); };
+  d.onkeydown = function(e){ if(e.key===' '||e.key==='Enter'){e.preventDefault();d.click();} };
+  /* cursor-following 3D: orb tilts and floats toward the cursor; pupils track it too */
+  var orb = d.querySelector('.orb');
+  var eyes = d.querySelector('.eyes');
+  d.addEventListener('mousemove', function(ev){
+    var r = d.getBoundingClientRect();
+    var dx = (ev.clientX - (r.left + r.width/2)) / (r.width/2);   /* -1 .. 1 */
+    var dy = (ev.clientY - (r.top + r.height/2)) / (r.height/2);
+    orb.style.transform = 'translateY(' + (dy*-9) + 'px) translateX(' + (dx*5) + 'px)' +
+                          ' rotateY(' + (dx*18) + 'deg) rotateX(' + (dy*-14) + 'deg) translateZ(14px)';
+  });
+  d.addEventListener('mouseenter', function(){ blinkEyes(eyes); });
+  d.addEventListener('mouseleave', function(){ orb.style.transform=''; });
+  grid.appendChild(d);
+});
+}
+buildGrid(AGENTS);
+
+/* ---- orb life: blinking + cursor-tracking pupils ---- */
+function blinkEyes(eyes){
+  if(!eyes || eyes.classList.contains('blink')) return;
+  eyes.classList.add('blink');
+  setTimeout(function(){ eyes.classList.remove('blink'); }, 320);
+}
+/* idle blinks: each visible orb blinks on its own lazy schedule */
+setInterval(function(){
+  document.querySelectorAll('.screen.active .orb .eyes').forEach(function(e){
+    if(Math.random() < .22) blinkEyes(e);           /* ~every 3–5s per orb */
+    if(Math.random() < .06) setTimeout(function(){ blinkEyes(e); }, 380); /* occasional double-blink */
+  });
+}, 900);
+/* pupils glance toward the cursor when it's near a ball (works on every screen) */
+document.addEventListener('mousemove', function(ev){
+  document.querySelectorAll('.screen.active .orb').forEach(function(orb){
+    var eyes = orb.querySelector('.eyes'); if(!eyes) return;
+    var r = orb.getBoundingClientRect();
+    var cx = r.left + r.width/2, cy = r.top + r.height/2;
+    var dx = ev.clientX - cx, dy = ev.clientY - cy;
+    var dist = Math.hypot(dx, dy);
+    var reach = r.width * 2.6;                       /* how close counts as "near" */
+    if(dist < reach){
+      var f = Math.max(.35, 1 - dist/reach);         /* stronger glance when closer */
+      var ang = Math.atan2(dy, dx);
+      eyes.style.setProperty('--ex', (Math.cos(ang)*4*f).toFixed(1) + 'px');
+      eyes.style.setProperty('--ey', (Math.sin(ang)*3*f).toFixed(1) + 'px');
+    } else {
+      eyes.style.setProperty('--ex','0px'); eyes.style.setProperty('--ey','0px');
+    }
+  });
+});
+
+var step = 0, MAX = 6;
+function show(n){
+  document.body.classList.toggle('on-intro', n===0);
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelector('[data-step="'+n+'"]').classList.add('active');
+  document.getElementById('progress').style.width = (n/5*100)+'%';
+  var pct = n>=6 ? 100 : Math.round(n/5*100);
+  var mf = document.getElementById('markFill');
+  if(mf) mf.style.clipPath = 'inset(' + (100-pct) + '% 0 0 0)';
+  step = n;
+  document.querySelectorAll('.stepper').forEach(function(st){
+    st.querySelectorAll('i').forEach(function(seg,i){
+      seg.className = (i+1)<n ? 'done' : (i+1)===n ? 'cur' : '';
+    });
+  });
+  var inp = document.querySelector('[data-step="'+n+'"] input');
+  if(inp) setTimeout(function(){inp.focus()},80);
+}
+function go(n){ show(n); }
+function back(){ if(step>0) show(step-1); }
+
+function validate(n){
+  function err(id,msg){document.getElementById(id).textContent = msg||'';}
+  if(n===1){var v=document.getElementById('f_name').value.trim();
+    if(v.length<2){err('e_name','Please tell us your name.');return false} err('e_name');return true}
+  if(n===2){var v=document.getElementById('f_phone').value.replace(/\D/g,'');
+    if(v.length<10||v.length>12){err('e_phone','That number looks incomplete. 10 digits, please.');return false} err('e_phone');return true}
+  if(n===3){var v=document.getElementById('f_email').value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){err('e_email','That email doesn’t look right.');return false} err('e_email');return true}
+  if(n===4){var li=document.getElementById('f_linkedin').value.trim();
+    var web=document.getElementById('f_website').value.trim();
+    var urlish=function(v){return /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}([\/?#].*)?$/i.test(v)};
+    if(!li && !web){err('e_business','Share at least one: LinkedIn or website.');return false}
+    if(li && !urlish(li)){err('e_business','That LinkedIn URL looks off.');return false}
+    if(web && !urlish(web)){err('e_business','That website URL looks off.');return false}
+    err('e_business');return true}
+  return true;
+}
+function next(){ if(validate(step)) show(step+1); }
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter' && step>=1 && step<=4){ e.preventDefault(); next(); }
+});
+
+function submitForm(){
+  var chosen = [], custom = '';
+  if(MODE==='partner'){
+    custom = document.getElementById('f_reason').value.trim();
+    if(custom.length<10){document.getElementById('e_agents').textContent=TEXTS[MODE].pickErr;return}
+  } else {
+    chosen = Object.keys(sel).filter(function(k){return sel[k]});
+    custom = document.getElementById('f_custom').value.trim();
+    if(chosen.length===0 && !custom){document.getElementById('e_agents').textContent=TEXTS[MODE].pickErr;return}
+  }
+  document.getElementById('e_agents').textContent='';
+  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='Sending…';
+  var fd = new FormData();
+  fd.append('name', document.getElementById('f_name').value.trim());
+  fd.append('phone', document.getElementById('f_phone').value.trim());
+  fd.append('email', document.getElementById('f_email').value.trim());
+  fd.append('linkedin', document.getElementById('f_linkedin').value.trim());
+  fd.append('website', document.getElementById('f_website').value.trim());
+  fd.append('type', MODE==='partner' ? 'Partner' : 'Beta');
+  fd.append('agents', chosen.join(', '));
+  fd.append('custom_agent', custom);
+  var box = document.getElementById('chosenOrbs'); box.innerHTML='';
+  if(MODE==='partner'){
+    var el=document.createElement('div'); el.className='co';
+    el.innerHTML='<div class="orb o1"><span class="eyes"><i></i><i></i></span></div><small>Partner</small>';
+    box.appendChild(el);
+  } else {
+    AGENTS.forEach(function(a){
+      if(sel[a.id]){
+        var el=document.createElement('div'); el.className='co';
+        el.innerHTML='<div class="orb '+a.orb+'"><span class="eyes"><i></i><i></i></span></div><small>'+a.short+'</small>';
+        box.appendChild(el);
+      }
+    });
+  }
+  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body:fd})
+    .then(function(){ show(6); })
+    .catch(function(){ show(6); }); /* no-cors always resolves opaque; sheet still records */
+}
+</script>
+
+</body>
+</html>

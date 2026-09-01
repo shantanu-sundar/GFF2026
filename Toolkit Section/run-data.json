@@ -1,0 +1,45 @@
+{
+  "_comment": "Captured from a real run against the Cashfree sandbox on 2026-08-31 using @cashfreepayments/agent-toolkit@1.1.0. Every id, amount and latency is measured, not invented. The derived stats below were recomputed on 2026-09-01; if you change any latency, recompute them.",
+  "env": "SANDBOX",
+  "model": "gpt-4.1",
+  "framework": "openai",
+  "toolCatalog": {
+    "total": 40,
+    "paymentGateway": 22,
+    "verificationKyc": 18,
+    "_note": "Counted from getAgentTools().length and the tool names, NOT from the package README, which implies 41."
+  },
+  "toolsGrantedToAgent": 11,
+  "customer": {
+    "uid": "ae9c510d-1996-42f9-a59c-f9d12f62aca8",
+    "phone": "+91 9999999999",
+    "name": "Rahul Sharma",
+    "email": "rahul@example.com"
+  },
+  "order": { "id": "order_4303293IgMBjF12cXHqH98Ya9ofCW9oKB", "amount": 500, "currency": "INR", "finalStatus": "PAID" },
+  "payment": {
+    "cfPaymentId": "215007619078080",
+    "amount": 500,
+    "method": "UPI collect",
+    "vpa": "testsuccess@gocash",
+    "finalStatus": "SUCCESS"
+  },
+  "refund": { "id": "rf_9ofCW9oKB_200", "amount": 200, "finalStatus": "SUCCESS" },
+  "netPosition": { "captured": 500, "refunded": 200, "net": 300 },
+  "latencyMs": {
+    "createCustomer": 176,
+    "createOrder": 300,
+    "orderPayUsingUpi": 925,
+    "getOrder": 120,
+    "createRefund": 244,
+    "getAllRefunds": 64
+  },
+  "latencyStats": {
+    "calls": 6,
+    "totalMs": 1829,
+    "medianMs": 210,
+    "fastestMs": 64,
+    "slowestMs": 925,
+    "_note": "64ms is the FASTEST call (getAllRefunds), not a typical one. Do not describe it as typical."
+  }
+}

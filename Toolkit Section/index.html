@@ -1,0 +1,3874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Toolkit — interactive section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/*
+ * Agent Toolkit — a sibling section to the Checkout360 one.
+ *
+ * Shell: the dark bento language from "Checkout Screen/Screen 1.png" — near-black
+ * ground, large rounded cards, two-tone headings, small pill tags, soft gradient
+ * blobs bleeding out of the card corners.
+ *
+ * Phone: the Cashfree 2026 liquid-glass direction (mint -> oat -> amber light,
+ * frosted surfaces), so the device reads as the product and the shell reads as
+ * the website around it.
+ *
+ * Self-contained on purpose: no build, no server, no dependency on the Next app.
+ * Double-click this file.
+ */
+
+:root {
+  --bg: #050506;
+  --card: #0d0e10;
+  --card-2: #121316;
+  --hair: rgba(255, 255, 255, 0.09);
+  --hair-2: rgba(255, 255, 255, 0.16);
+  --fg: #f4f5f4;
+  --fg-2: rgba(244, 245, 244, 0.62);
+  --fg-3: rgba(244, 245, 244, 0.38);
+
+  --evergreen: #00ad6c;
+  --gold: #ffae15;
+  --mint: #cef993;
+  --oat: #fce2b0;
+  --graphite: #1d221f;
+  --coral: #e64d73;
+
+  --r-lg: 26px;
+  --r-md: 18px;
+  --r-sm: 12px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 72px 28px 96px;
+}
+
+/* ---------------- section header ---------------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--fg-2);
+  background: rgba(255, 255, 255, 0.03);
+}
+.eyebrow .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--evergreen);
+  box-shadow: 0 0 0 3px rgba(0, 173, 108, 0.18);
+}
+
+h1 {
+  margin: 22px 0 0;
+  font-size: clamp(34px, 4.6vw, 58px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+h1 .muted { font-weight: 400; color: var(--fg-3); }
+
+.sub {
+  margin: 18px 0 0;
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+
+/* ---------------- bento ---------------- */
+
+.bento {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  min-height: 168px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.card h3 .thin { font-weight: 400; color: var(--fg-3); }
+.card p {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+  max-width: 34ch;
+}
+
+.tag {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 12.5px;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+
+/* the soft gradient blobs that bleed out of the checkout section's cards */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(38px);
+  opacity: 0.62;
+  pointer-events: none;
+}
+.blob-a { width: 210px; height: 210px; right: -54px; bottom: -66px;
+  background: radial-gradient(circle at 30% 30%, var(--mint), var(--evergreen) 62%, transparent 72%); }
+.blob-b { width: 190px; height: 190px; right: -46px; top: -60px;
+  background: radial-gradient(circle at 40% 40%, var(--oat), var(--gold) 60%, transparent 72%); }
+.blob-c { width: 240px; height: 200px; right: -70px; bottom: -80px;
+  background: radial-gradient(circle at 35% 35%, #ffd9e2, var(--gold) 45%, var(--evergreen) 78%, transparent 86%); }
+
+.span-2 { grid-column: span 2; }
+.span-3 { grid-column: span 3; }
+.span-4 { grid-column: span 4; }
+.span-5 { grid-column: span 5; }
+.span-6 { grid-column: span 6; }
+.span-7 { grid-column: span 7; }
+.span-8 { grid-column: span 8; }
+.span-9 { grid-column: span 9; }
+.span-10 { grid-column: span 10; }
+.span-12 { grid-column: span 12; }
+
+.stat {
+  font-size: clamp(28px, 2.6vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.stat small { font-size: 16px; font-weight: 400; color: var(--fg-3); margin-left: 4px; }
+
+/* ---------------- the demo card + phone ---------------- */
+
+.demo {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: 1fr 372px;
+  gap: 34px;
+  align-items: center;
+  padding: 34px;
+  min-height: 0;
+}
+
+.demo-copy h2 {
+  margin: 0;
+  font-size: clamp(26px, 2.5vw, 34px);
+  letter-spacing: -0.025em;
+  line-height: 1.14;
+  font-weight: 700;
+}
+.demo-copy h2 .thin { font-weight: 400; color: var(--fg-3); }
+
+/* the step list doubles as the nav */
+.steps { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.step {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 13px;
+  align-items: start;
+  padding: 11px 13px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.22s ease, border-color 0.22s ease;
+}
+.step:hover { background: rgba(255, 255, 255, 0.035); }
+.step[aria-current='true'] {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: var(--hair);
+}
+.step .idx {
+  margin-top: 1px;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--hair-2);
+  font-size: 12.5px;
+  color: var(--fg-3);
+  font-variant-numeric: tabular-nums;
+  transition: all 0.28s ease;
+}
+.step[aria-current='true'] .idx,
+.step.done .idx {
+  background: var(--evergreen);
+  border-color: var(--evergreen);
+  color: #04231a;
+  font-weight: 700;
+}
+.step .label { font-size: 15.5px; font-weight: 500; letter-spacing: -0.01em; }
+.step .tool {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--fg-3);
+  margin-top: 3px;
+  display: block;
+}
+.step[aria-current='true'] .tool { color: var(--evergreen); }
+
+.controls { margin-top: 22px; display: flex; align-items: center; gap: 10px; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--hair-2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
+.btn.primary { background: var(--evergreen); border-color: var(--evergreen); color: #04231a; font-weight: 700; }
+.btn.primary:hover { background: #00c47a; }
+.btn:disabled { opacity: 0.38; cursor: default; transform: none; }
+.hintkey {
+  margin-left: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+/* ---------------- phone ---------------- */
+
+.phone-wrap { display: flex; flex-direction: column; align-items: center; }
+.phone {
+  position: relative;
+  width: 340px;
+  height: 700px;
+  border-radius: 46px;
+  padding: 11px;
+  background: linear-gradient(160deg, #2c2e33 0%, #0a0a0c 42%, #26282c 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 44px 90px rgba(0, 0, 0, 0.62),
+    0 8px 24px rgba(0, 0, 0, 0.45);
+  flex: none;
+}
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* flat white ground: no wash, no blueprint grid */
+  background: #fff;
+  color: var(--graphite);
+}
+.notch {
+  position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 112px; height: 26px; border-radius: 999px;
+  background: #08080a; z-index: 6;
+}
+
+/* phone chrome */
+.ph-top {
+  position: relative; z-index: 2;
+  /* left inset leaves room for the back chevron */
+  padding: 46px 14px 10px 48px;
+  display: flex; align-items: center; gap: 7px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 500;
+  color: rgba(29,34,31,0.66);
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.10);
+  box-shadow: 0 2px 6px rgba(29,34,31,0.05);
+  white-space: nowrap;
+}
+.chip .gdot { width: 5px; height: 5px; border-radius: 50%; background: var(--evergreen); }
+.chip.mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
+
+/* thread */
+.thread {
+  position: relative; z-index: 2;
+  flex: 1; min-height: 0;
+  overflow: hidden;
+  padding: 6px 16px 4px;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 9px;
+}
+.msg { display: flex; }
+.msg.me { justify-content: flex-end; }
+.bubble-me.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+.bubble-me {
+  max-width: 84%;
+  padding: 9px 13px;
+  border-radius: 17px 17px 6px 17px;
+  font-size: 13.5px; line-height: 1.45;
+  background: #e6f7cd;
+  border: 1px solid rgba(0,122,76,0.14);
+  box-shadow: none;
+}
+.bubble-ai {
+  max-width: 92%;
+  display: flex; gap: 9px; align-items: flex-start;
+  padding: 10px 13px;
+  border-radius: 17px 17px 17px 6px;
+  font-size: 13.5px; line-height: 1.45;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.10);
+  box-shadow: 0 2px 8px rgba(29,34,31,0.05);
+}
+.tick {
+  flex: none; margin-top: 1px;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: var(--evergreen);
+  display: grid; place-items: center;
+}
+.tick svg { width: 10px; height: 10px; }
+
+/* tool chip inside the thread */
+.toolrow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 11px;
+  border-radius: 14px;
+  background: #fafaf9;
+  border: 1px solid rgba(29,34,31,0.10);
+  box-shadow: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  max-width: 96%;
+}
+.toolrow .nm { font-weight: 500; color: var(--graphite); }
+.toolrow .sm { color: rgba(29,34,31,0.44); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toolrow .ms { margin-left: auto; color: rgba(29,34,31,0.44); }
+
+/* ledger strip */
+.ledger {
+  position: relative; z-index: 2;
+  margin: 0 16px 10px;
+  padding: 11px 13px;
+  border-radius: 17px;
+  background: #fafaf9;
+  border: 1px solid rgba(29,34,31,0.10);
+  box-shadow: 0 2px 10px rgba(29,34,31,0.05);
+}
+.ledger .lg-top { display: flex; align-items: baseline; gap: 8px; }
+.ledger .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(29,34,31,0.44); }
+.ledger .net { margin-left: auto; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.ledger .rows { margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px; }
+.lrow { display: grid; grid-template-columns: 6px 1fr; gap: 2px 6px; align-items: center; font-size: 10.5px; color: rgba(29,34,31,0.55); min-width: 0; }
+.lrow .pip { grid-row: 1; width: 6px; height: 6px; border-radius: 50%; background: rgba(29,34,31,0.2); }
+.lrow.on .pip { background: var(--evergreen); }
+.lrow.warn .pip { background: var(--gold); }
+.lrow .v { grid-column: 2; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: rgba(29,34,31,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* composer */
+.composer {
+  position: relative; z-index: 2;
+  margin: 0 16px 20px;
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 8px 8px 15px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: 0 3px 12px rgba(29,34,31,0.07);
+  font-size: 13px;
+}
+.composer .txt { flex: 1; min-width: 0; color: var(--graphite); }
+.composer .txt.ph { color: rgba(29,34,31,0.4); }
+.caret {
+  display: inline-block; width: 2px; height: 1.05em; vertical-align: -3px;
+  background: var(--evergreen); margin-left: 1px; border-radius: 2px;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 0%,45%{opacity:1} 55%,100%{opacity:0} }
+.send {
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--evergreen); display: grid; place-items: center;
+}
+.send svg { width: 14px; height: 14px; }
+
+/* A Relay run opens on a spoken prompt, so the composer says so: the arrow
+   swaps for a mic, and the mic breathes while the phone is actually hearing. */
+.micbtn {
+  display: none;
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  background: #1f54d8; place-items: center;
+  box-shadow: 0 0 0 0 rgba(31, 84, 216, 0.5);
+}
+.micbtn svg { width: 14px; height: 14px; }
+.composer.voice .send { display: none; }
+.composer.voice .micbtn { display: grid; }
+.composer.listening .micbtn { animation: micpulse 1.2s ease-out infinite; }
+@keyframes micpulse {
+  0%   { box-shadow: 0 0 0 0 rgba(31, 84, 216, 0.45) }
+  100% { box-shadow: 0 0 0 11px rgba(31, 84, 216, 0) }
+}
+/* the spoken prompt keeps its mic in the thread, so a replay still reads as voice */
+.bubble-me.said { display: flex; align-items: flex-start; gap: 7px; }
+.bubble-me.said .mic { flex: none; width: 13px; height: 13px; margin-top: 2px; color: #1f54d8; }
+
+/* entrance */
+.rise { animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+
+
+.prov {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 12px; padding: 5px 11px;
+  border: 1px solid var(--hair); border-radius: 999px;
+  font-size: 12.5px; color: var(--fg-2);
+  background: rgba(255,255,255,0.03);
+}
+.prov .pdot { width: 6px; height: 6px; border-radius: 50%; background: var(--evergreen); }
+.prov.illustrative .pdot { background: var(--gold); }
+
+/* ---------------- phone home: replica of Checkout Screen/Screen 1.png ---------------- */
+
+/*
+ * Card anatomy taken from the reference: near-black fill, 1px hairline grey
+ * border, ~24px radius, a bag-icon + two-weight wordmark lockup at top-left, a
+ * grey pill tag, and a soft gradient blob bleeding past the card edge. The row
+ * rhythm is the reference's too: wide+square, narrow+wide, full, full, then
+ * two-up pairs.
+ */
+.home {
+  position: absolute; inset: 0; z-index: 9;
+  background: #000;
+  overflow-y: auto;
+  padding: 42px 11px 18px;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.home.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
+.home::-webkit-scrollbar { width: 0; }
+
+.home-head {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 0 5px 11px;
+}
+.home-head .mark {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.17em; text-transform: uppercase;
+  color: rgba(244,245,244,0.4);
+}
+.home-head .sub { font-size: 11px; color: rgba(244,245,244,0.28); margin-left: auto; }
+
+.hgrid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+
+.hcard {
+  position: relative; overflow: hidden;
+  border: 1px solid #2a2a2a;
+  border-radius: 22px;
+  background: #0a0a0b;
+  padding: 13px;
+  min-height: 116px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.hcard:hover { transform: translateY(-2px); border-color: #3d3d3d; }
+.hcard.locked { cursor: default; }
+.hcard.locked:hover { transform: none; border-color: #2a2a2a; }
+
+/* the two-weight wordmark lockup */
+.hlock { position: relative; z-index: 3; display: flex; align-items: center; gap: 9px; min-width: 0; }
+.hlock .name {
+  font-size: 13.5px; font-weight: 700; letter-spacing: -0.02em; color: #f4f5f4; line-height: 1.15;
+  min-width: 0; overflow-wrap: anywhere;
+}
+.hlock .name .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
+.hcard.wide .hlock .name { font-size: 17px; }
+
+.htag {
+  position: relative; z-index: 3;
+  align-self: flex-start;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(58,58,58,0.92); backdrop-filter: blur(3px);
+  font-size: 10.5px; color: rgba(244,245,244,0.8);
+  white-space: nowrap;
+}
+.hcard.locked .htag { background: rgba(255,174,21,0.14); color: #ffce7a; }
+/* the reference has one card whose tag sits under the title instead of at the foot */
+.hcard.tagtop { justify-content: flex-start; gap: 9px; }
+
+/* ---------------- glassmorphic product icons ---------------- */
+
+/*
+ * Liquid glass, built in CSS rather than shipped as art: a translucent rounded
+ * tile with a bright top-edge highlight, an inner bloom, a coloured glow behind
+ * it, and a glyph floating above. Each product gets its own hue.
+ */
+.gicon {
+  position: relative;
+  width: 32px; height: 32px;
+  flex: none;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  background: linear-gradient(150deg, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0.05) 60%);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    inset 0 -7px 14px rgba(255,255,255,0.05),
+    0 5px 14px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+/* the specular sweep across the top half */
+.gicon::before {
+  content: '';
+  position: absolute; inset: -40% -40% 45% -40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  filter: blur(3px);
+}
+/* the coloured light trapped inside the glass */
+.gicon::after {
+  content: '';
+  position: absolute; width: 26px; height: 26px; right: -9px; bottom: -11px;
+  border-radius: 50%;
+  filter: blur(7px);
+  opacity: 0.95;
+  background: var(--ic, #00ad6c);
+}
+.gicon svg { position: relative; z-index: 3; width: 16px; height: 16px; color: #fff; }
+.hcard.wide .gicon { width: 38px; height: 38px; border-radius: 12px; }
+.hcard.wide .gicon svg { width: 19px; height: 19px; }
+
+.ic-mint  { --ic: #00ad6c; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 5px 14px rgba(0,0,0,0.5), 0 0 20px rgba(0,173,108,0.38); }
+.ic-gold  { --ic: #ffae15; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 5px 14px rgba(0,0,0,0.5), 0 0 20px rgba(255,174,21,0.34); }
+.ic-cyan  { --ic: #1ed2f2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 5px 14px rgba(0,0,0,0.5), 0 0 20px rgba(30,210,242,0.3); }
+.ic-coral { --ic: #e64d73; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 5px 14px rgba(0,0,0,0.5), 0 0 20px rgba(230,77,115,0.28); }
+.ic-lime  { --ic: #cef993; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 5px 14px rgba(0,0,0,0.5), 0 0 20px rgba(206,249,147,0.3); }
+
+/* the blurred mesh blobs that bleed out of the reference's cards */
+.hblob { position: absolute; border-radius: 50%; filter: blur(30px); pointer-events: none; opacity: 0.34; }
+.hblob.br { width: 96px; height: 96px; right: -30px; bottom: -34px; }
+.hblob.tr { width: 88px; height: 88px; right: -28px; top: -32px; }
+.b-mint  { background: radial-gradient(circle at 32% 32%, #cef993, #00ad6c 62%, transparent 74%); }
+.b-gold  { background: radial-gradient(circle at 36% 36%, #fce2b0, #ffae15 58%, transparent 74%); }
+.b-cyan  { background: radial-gradient(circle at 36% 36%, #9feaf9, #1ed2f2 58%, transparent 74%); }
+.b-mesh  { background: radial-gradient(circle at 30% 30%, #ffd9e2, #ffae15 40%, #00ad6c 74%, transparent 86%); }
+.b-coral { background: radial-gradient(circle at 36% 36%, #ffc9d6, #e64d73 58%, transparent 74%); }
+
+/* ---------------- tier 2: the three builder surfaces ---------------- */
+
+.tier2 {
+  position: absolute; inset: 0; z-index: 10;
+  background: #000;
+  overflow-y: auto;
+  padding: 42px 11px 18px;
+  display: flex; flex-direction: column; gap: 9px;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.tier2.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
+.tier2::-webkit-scrollbar { width: 0; }
+
+.tier2 .t2head { padding: 0 5px 4px 40px; }
+.tier2 .t2head .k {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.17em; text-transform: uppercase;
+  color: rgba(244,245,244,0.4);
+}
+.tier2 .t2head .t {
+  margin-top: 5px; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; color: #f4f5f4;
+}
+.tier2 .t2head .t .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
+
+.t2card {
+  position: relative; overflow: hidden;
+  flex: 1;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  background: #0a0a0b;
+  padding: 14px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.t2card:hover { transform: translateY(-2px); border-color: #3d3d3d; }
+.t2card .row { position: relative; z-index: 3; display: flex; align-items: center; gap: 10px; }
+.t2card .nm { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: #f4f5f4; }
+.t2card .nm .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
+.t2card .desc {
+  position: relative; z-index: 3;
+  margin: 8px 0 0; font-size: 12px; line-height: 1.45;
+  color: rgba(244,245,244,0.58); max-width: 30ch;
+}
+.t2card .foot { position: relative; z-index: 3; display: flex; align-items: center; gap: 7px; }
+.t2card .steps-n {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  color: rgba(244,245,244,0.36);
+}
+.t2card .go {
+  margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.t2card .go svg { width: 11px; height: 11px; color: rgba(244,245,244,0.75); }
+.b-lime  { background: radial-gradient(circle at 36% 36%, #eafcc8, #cef993 52%, #7bc44a 74%, transparent 84%); }
+
+
+/* Back chevron. Must out-rank the home (9) and tier-2 (10) overlays or it is
+   unclickable exactly when it is needed — which is how it broke once already. */
+.backbtn {
+  position: absolute; top: 44px; left: 12px; z-index: 14;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: 0 3px 10px rgba(29,34,31,0.12);
+  cursor: pointer;
+}
+.backbtn svg { width: 14px; height: 14px; }
+
+
+
+/* ---------------- level 2b: the Relay agent shelf ---------------- */
+
+/*
+ * Relay is not one demo, it is a shelf of agents with one payment operation
+ * each. So the Relay card opens a picker first, and the agent you choose
+ * decides which conversation the phone then runs.
+ *
+ * The orbs are lifted from the beta-access form (../Checkout Screen/relay-beta-form
+ * Final.html) -- same gradient recipes, same eyes. What is deliberately NOT
+ * lifted is that form's cursor-tracking 3D tilt: this screen is a menu you
+ * click, the card itself already answers the hover, and a ball leaning at the
+ * pointer fights the tap. The blink stays, because that is what makes an agent
+ * read as alive rather than as an icon.
+ */
+.agentpick {
+  position: absolute; inset: 0; z-index: 11;
+  background: #000;
+  overflow-y: auto;
+  padding: 42px 11px 18px;
+  display: flex; flex-direction: column; gap: 9px;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.agentpick.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
+.agentpick::-webkit-scrollbar { width: 0; }
+
+.agentpick .aphead { padding: 0 5px 4px 40px; }
+.agentpick .aphead .k {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.17em; text-transform: uppercase;
+  color: rgba(244,245,244,0.4);
+}
+.agentpick .aphead .t {
+  margin-top: 5px; font-size: 21px; font-weight: 700; letter-spacing: -0.025em; color: #f4f5f4;
+}
+.agentpick .aphead .t .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
+
+.acard {
+  position: relative; overflow: hidden;
+  flex: 1;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  background: #0a0a0b;
+  padding: 13px 14px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.acard:hover { transform: translateY(-2px); border-color: #3d3d3d; }
+.acard .row { position: relative; z-index: 3; display: flex; align-items: center; gap: 12px; }
+.acard .nm { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: #f4f5f4; }
+.acard .nm .thin { font-weight: 400; color: rgba(244,245,244,0.42); }
+.acard .desc {
+  position: relative; z-index: 3;
+  margin: 7px 0 0; font-size: 11.5px; line-height: 1.45;
+  color: rgba(244,245,244,0.58); max-width: 34ch;
+}
+.acard .foot { position: relative; z-index: 3; display: flex; align-items: center; gap: 8px; }
+.acard .stat {
+  font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  background: rgba(0,173,108,0.16); color: #9ce6bf; border: 1px solid rgba(0,173,108,0.24);
+  white-space: nowrap;
+}
+.acard .steps-n {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  color: rgba(244,245,244,0.36);
+}
+.acard .go {
+  margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.acard .go svg { width: 11px; height: 11px; color: rgba(244,245,244,0.75); }
+
+/* --- the orbs --- */
+.orb {
+  position: relative; flex: none;
+  width: 52px; height: 52px; border-radius: 50%;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+  outline: 1.5px solid rgba(255,255,255,0.2); outline-offset: 3px;
+}
+/* the gradient artwork lives on ::before, slightly oversized and softened */
+.orb::before { content: ''; position: absolute; inset: -4%; border-radius: 50%; filter: blur(1.4px); }
+.orb .eyes {
+  position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; gap: 8px; z-index: 1;
+}
+.orb .eyes i {
+  width: 5px; height: 10px; border-radius: 4px; display: block;
+  background: #15191a; transform-origin: 50% 50%;
+}
+.orb .eyes.blinking i { animation: eyeblink 0.28s ease-in-out both; }
+@keyframes eyeblink { 0%, 100% { transform: scaleY(1); } 45%, 55% { transform: scaleY(0.08); } }
+@media (prefers-reduced-motion: reduce) { .orb .eyes.blinking i { animation: none; } }
+
+/* Cart Recovery - green with a sky-blue crown, lime left glow, gold fleck bottom-right */
+.o1 { background: #10ab50; }
+.o1::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 66%, rgba(8,70,45,.10) 88%, rgba(8,70,45,.16) 100%),
+  radial-gradient(70% 66% at 104% 100%, rgba(216,182,46,.95) 0%, rgba(216,182,46,.5) 38%, rgba(216,182,46,0) 62%),
+  radial-gradient(30% 36% at 106% 50%, rgba(228,246,240,.85) 0%, rgba(228,246,240,0) 60%),
+  radial-gradient(94% 64% at 66% -14%, #85cfee 0%, #7ac8de 24%, rgba(106,196,196,.85) 44%, rgba(120,200,205,.35) 60%, rgba(120,200,205,0) 74%),
+  radial-gradient(42% 48% at 108% 24%, rgba(122,202,224,.9) 0%, rgba(122,202,224,0) 62%),
+  radial-gradient(74% 100% at -10% 74%, #e4f8ac 0%, rgba(170,235,148,.9) 30%, rgba(170,235,148,.35) 54%, rgba(170,235,148,0) 68%),
+  radial-gradient(36% 36% at -4% 22%, rgba(150,225,175,.55) 0%, rgba(150,225,175,0) 62%),
+  radial-gradient(circle at 46% 54%, #1cb75a 0%, #10ab50 52%, #0a9846 100%); }
+
+/* Payment Recovery - bright yellow into olive, cream and peach left glow */
+.o2 { background: #d5cd2b; }
+.o2::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(92,92,24,.10) 90%, rgba(92,92,24,.16) 100%),
+  radial-gradient(60% 50% at 62% 106%, rgba(58,80,20,.92) 0%, rgba(58,80,20,.45) 40%, rgba(58,80,20,0) 66%),
+  radial-gradient(36% 34% at 4% 8%, rgba(246,216,170,.95) 0%, rgba(246,216,170,0) 62%),
+  radial-gradient(30% 30% at 4% 92%, rgba(246,214,168,.85) 0%, rgba(246,214,168,0) 62%),
+  radial-gradient(52% 58% at -8% 55%, rgba(252,248,230,.95) 0%, rgba(235,235,198,.7) 40%, rgba(235,235,198,0) 68%),
+  radial-gradient(circle at 44% 14%, #f7e315 0%, #ecda1e 24%, #d5cd2b 44%, #b1b733 64%, #94a02f 84%, #8b9430 100%); }
+
+/* Subscription Dunning - lilac with a gold spot, mint and sage left rim, violet base */
+.o4 { background: #c8b4ee; }
+.o4::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(80,58,130,.10) 90%, rgba(80,58,130,.16) 100%),
+  radial-gradient(98% 84% at 50% 128%, #8a4be6 0%, rgba(142,84,232,.95) 28%, rgba(150,100,234,.6) 48%, rgba(158,116,236,.22) 62%, rgba(158,116,236,0) 72%),
+  radial-gradient(34% 32% at 6% 6%, #eec84e 0%, rgba(238,200,78,.55) 46%, rgba(238,200,78,0) 70%),
+  radial-gradient(28% 46% at -6% 40%, rgba(216,230,200,.95) 0%, rgba(216,230,200,0) 58%),
+  radial-gradient(26% 26% at 2% 78%, rgba(205,188,106,.85) 0%, rgba(205,188,106,0) 60%),
+  radial-gradient(26% 44% at 102% 26%, rgba(150,204,200,.8) 0%, rgba(150,204,200,0) 58%),
+  radial-gradient(56% 38% at 55% -8%, rgba(196,206,242,.85) 0%, rgba(196,206,242,0) 58%),
+  radial-gradient(circle at 52% 34%, #ddd4f4 0%, #cdbcee 48%, #b493ea 100%); }
+
+/* The picked agent keeps its face on in the chat header. */
+.ph-top .orb { width: 22px; height: 22px; outline: none; box-shadow: 0 2px 6px rgba(0,0,0,0.22); }
+.ph-top .orb .eyes { gap: 4px; }
+.ph-top .orb .eyes i { width: 2.5px; height: 5px; border-radius: 2px; }
+
+/* ---------------- host skins ---------------- */
+
+/*
+ * The MCP demo runs inside an AI client rather than inside a Cashfree surface,
+ * so the phone wears that client's clothes: Claude's warm ivory ground and
+ * terracotta accent instead of the Cashfree liquid glass. Stylised on purpose —
+ * this is "the integration runs here", not a pixel copy of anyone's app.
+ */
+.screen.skin-claude {
+  --lg-evergreen: #c15f3c;
+  background: #faf9f5;
+  color: #2a2724;
+}
+
+.screen.skin-claude .bubble-me {
+  background: #ece9e1;
+  border: 1px solid rgba(42, 39, 36, 0.07);
+  box-shadow: none;
+  color: #2a2724;
+}
+.screen.skin-claude .bubble-ai {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding-left: 0;
+  color: #2a2724;
+}
+.screen.skin-claude .tick { background: #c15f3c; }
+.screen.skin-claude .toolrow {
+  background: #fff;
+  border: 1px solid rgba(42, 39, 36, 0.09);
+  box-shadow: none;
+}
+.screen.skin-claude .toolrow .nm { color: #7a4630; }
+.screen.skin-claude .ledger,
+.screen.skin-claude .composer {
+  background: #fff;
+  border: 1px solid rgba(42, 39, 36, 0.09);
+  box-shadow: 0 6px 18px rgba(42, 39, 36, 0.06);
+}
+.screen.skin-claude .chip {
+  background: #fff;
+  border: 1px solid rgba(42, 39, 36, 0.09);
+  box-shadow: none;
+  color: rgba(42, 39, 36, 0.62);
+}
+.screen.skin-claude .chip .gdot { background: #c15f3c; }
+.screen.skin-claude .send { background: #c15f3c; }
+.screen.skin-claude .lrow .pip { background: rgba(42, 39, 36, 0.2); }
+.screen.skin-claude .lrow.on .pip { background: #c15f3c; }
+.screen.skin-claude .caret { background: #c15f3c; }
+.screen.skin-claude .cx-switch .track,
+.screen.skin-claude.connectskin .cx-switch .track { background: rgba(42, 39, 36, 0.18); }
+.screen.skin-claude .connect.live .cx-switch .track { background: #c15f3c; }
+.screen.skin-claude .connect.live .cx-wire .fill { background: #c15f3c; }
+.screen.skin-claude .cx-wire .bead { background: #c15f3c; box-shadow: 0 0 0 4px rgba(193, 95, 60, 0.18); }
+.screen.skin-claude .cx-status .ok { color: #7a4630; }
+
+
+/* ---------------- inline connect card ---------------- */
+
+/*
+ * The connect beat is a turn in the conversation, not a gate in front of it:
+ * you ask to connect, the card appears in the thread and wires itself up, then
+ * the assistant confirms and the rest of the prompts follow. Same scroll, same
+ * rhythm as every other step.
+ */
+.cxi {
+  position: relative;
+  padding: 13px 14px 12px;
+  border-radius: 17px;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.10);
+  box-shadow: 0 2px 10px rgba(29,34,31,0.06);
+  max-width: 96%;
+}
+.cxi-pair { display: flex; align-items: center; justify-content: center; gap: 0; }
+.cxi-node { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 82px; }
+.cxi-node .tile {
+  width: 38px; height: 38px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: none;
+}
+.cxi-node .tile svg { width: 19px; height: 19px; }
+.cxi-node .nm {
+  font-size: 10.5px; font-weight: 600; text-align: center; line-height: 1.2;
+  color: rgba(29,34,31,0.78);
+}
+.cxi-wire { position: relative; width: 54px; height: 2px; margin-bottom: 18px;
+  background: rgba(29,34,31,0.14); border-radius: 2px; }
+.cxi-wire .fill {
+  position: absolute; inset: 0; width: 0; border-radius: 2px;
+  background: var(--evergreen);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cxi.live .cxi-wire .fill { width: 100%; }
+.cxi-wire .bead {
+  position: absolute; top: 50%; left: 0; width: 6px; height: 6px;
+  margin: -3px 0 0 -3px; border-radius: 50%; background: var(--evergreen);
+  box-shadow: 0 0 0 3px rgba(0,173,108,0.18); opacity: 0;
+}
+.cxi.live .cxi-wire .bead { animation: bead 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+.cxi-via {
+  margin-top: 10px; text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px; color: rgba(29,34,31,0.5); word-break: break-all;
+}
+.cxi-foot { margin-top: 11px; display: flex; align-items: center; justify-content: center; gap: 9px; }
+.cxi-sw { position: relative; width: 34px; height: 20px; border-radius: 999px;
+  background: rgba(29,34,31,0.18); transition: background 0.34s ease; }
+.cxi-sw .knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.22);
+  transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.cxi.live .cxi-sw { background: var(--evergreen); }
+.cxi.live .cxi-sw .knob { transform: translateX(14px); }
+.cxi-state { font-size: 12px; font-weight: 600; color: rgba(29,34,31,0.5); }
+.cxi.live .cxi-state { color: #04663f; }
+
+.screen.skin-claude .cxi.live .cxi-sw { background: #c15f3c; }
+.screen.skin-claude .cxi.live .cxi-wire .fill { background: #c15f3c; }
+.screen.skin-claude .cxi-wire .bead { background: #c15f3c; box-shadow: 0 0 0 3px rgba(193,95,60,0.18); }
+.screen.skin-claude .cxi.live .cxi-state { color: #7a4630; }
+.screen.skin-claude .cxi { background: #fff; border-color: rgba(42,39,36,0.09); }
+
+/* ---------------- Relay: voice in, buyer screen, and the call ----------------
+ *
+ * The Relay docs (../Checkout Screen/{Cart,Payment} Recovery.docx) tell each
+ * agent's story in three segments, and only the first of them is a chat:
+ *
+ *   1. the merchant SAYS what they want          -> .vcap    (voice capture)
+ *   2. the buyer drops off on their OWN screen   -> .buyscr  (buyer's screen)
+ *   3. the agent CALLS the buyer                 -> .callscene
+ *
+ * So none of the three is drawn as a bubble. Voice gets a meter and the Indic
+ * glyphs that say out loud this is not an English-only product; the buyer's
+ * screen is drawn as a small separate device inside the thread so it can never
+ * be read as the merchant's own phone; and the call takes the whole screen,
+ * because that is what a call does to a phone.
+ */
+
+/* --- 1. voice capture ---------------------------------------------------- */
+
+.vcap {
+  position: absolute; inset: 0; z-index: 12;
+  background: rgba(252, 252, 251, 0.74);
+  -webkit-backdrop-filter: blur(9px) saturate(1.08);
+  backdrop-filter: blur(9px) saturate(1.08);
+  animation: vcapIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.vcap.gone { animation: vcapOut 0.34s ease both; }
+@keyframes vcapIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes vcapOut { to { opacity: 0; transform: scale(1.04) } }
+
+.vstage {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+
+/* the meter. Seven bars, each with its own peak and phase, so it reads as a
+   voice rather than as a loader. */
+.vbars { display: flex; align-items: center; gap: 7px; height: 92px; }
+.vbars i {
+  display: block; width: 10px; border-radius: 7px; height: 18px;
+  background: linear-gradient(180deg, #3d7dff 0%, #1546c8 100%);
+  box-shadow: 0 4px 12px rgba(31, 84, 216, 0.28);
+  animation: vbar 0.92s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes vbar { 0%, 100% { height: 16px } 50% { height: var(--h, 54px) } }
+
+.vcap .vlabel {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--graphite);
+}
+.vcap .vlabel .rec {
+  width: 7px; height: 7px; border-radius: 50%; background: #e0483f;
+  animation: recpulse 1.1s ease-in-out infinite;
+}
+@keyframes recpulse { 0%, 100% { opacity: 1; transform: scale(1) } 50% { opacity: 0.35; transform: scale(0.82) } }
+
+/* Indic glyph chips, placed the way the doc frames them: a loose ring around
+   the meter, not a grid. Sizes and tints vary so the ring reads as scattered. */
+.vg {
+  position: absolute;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 15px; font-weight: 700; line-height: 1;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(29, 34, 31, 0.14), 0 0 0 1px rgba(29, 34, 31, 0.05);
+  animation: vfloat 3.4s ease-in-out infinite;
+}
+.vg.sm { width: 28px; height: 28px; font-size: 12.5px; }
+@keyframes vfloat {
+  0%, 100% { transform: translateY(0) }
+  50%      { transform: translateY(-7px) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vg { animation: none }
+  .vbars i { animation: none; height: 34px }
+}
+
+/* --- 2. the buyer's screen ----------------------------------------------- */
+
+.buyscr {
+  width: 100%; overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(29, 34, 31, 0.13);
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(29, 34, 31, 0.09);
+}
+.buyscr .bs-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 11px;
+  background: #f6f6f4; border-bottom: 1px solid rgba(29, 34, 31, 0.08);
+  font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.44);
+}
+.buyscr .bs-tag .live {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--coral);
+  animation: recpulse 1.4s ease-in-out infinite;
+}
+/* the merchant panel, in the brick the Cashfree checkout actually uses */
+.buyscr .bs-brand {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px;
+  background: linear-gradient(150deg, #6d2620 0%, #571c17 100%);
+  color: #fff;
+}
+.buyscr .bs-brand .glyph {
+  flex: none; width: 26px; height: 26px; border-radius: 8px;
+  display: grid; place-items: center; font-size: 13px;
+  background: rgba(255, 255, 255, 0.13); border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.buyscr .bs-brand .who { min-width: 0 }
+.buyscr .bs-brand .nm {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.buyscr .bs-brand .tr { display: block; margin-top: 1px; font-size: 9px; color: rgba(255, 255, 255, 0.6) }
+.buyscr .bs-brand .amt {
+  margin-left: auto; font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.buyscr .bs-body { padding: 11px 12px 12px }
+.buyscr .bs-h { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; letter-spacing: -0.015em }
+.buyscr .bs-ic { flex: none; width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center }
+.buyscr .bs-ic svg { width: 9px; height: 9px }
+.buyscr .bs-reason {
+  margin-top: 7px; padding: 7px 9px; border-radius: 10px;
+  font-size: 11px; line-height: 1.42;
+}
+.buyscr .bs-meta {
+  margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+  color: rgba(29, 34, 31, 0.42);
+}
+/* the exit prompt's reasons, with the one the buyer picked filled in */
+.buyscr .bs-opts { margin-top: 8px; display: flex; flex-direction: column; gap: 5px }
+.buyscr .bs-opt { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: rgba(29, 34, 31, 0.5) }
+.buyscr .bs-opt i {
+  flex: none; width: 11px; height: 11px; border-radius: 50%;
+  border: 1.5px solid rgba(29, 34, 31, 0.22);
+}
+.buyscr .bs-opt.on { color: var(--graphite); font-weight: 500 }
+.buyscr .bs-opt.on i { border-color: var(--gold); box-shadow: inset 0 0 0 2.5px var(--gold) }
+
+/* failed vs abandoned: red for money that bounced, amber for money that walked */
+.buyscr.fail .bs-ic { background: #d64545 }
+.buyscr.fail .bs-reason { background: #fdeeee; border: 1px solid rgba(214, 69, 69, 0.2); color: #8d2b2b }
+.buyscr.drop .bs-ic { background: var(--gold) }
+.buyscr.drop .bs-reason { background: #fff6e6; border: 1px solid rgba(255, 174, 21, 0.28); color: #7a5312 }
+
+/* --- 2b. the month at a glance -------------------------------------------
+ *
+ * Both docs open the same way: the merchant asks what happened this month and
+ * "the agent lists failed transactions with reasons for failure". A sentence
+ * cannot carry five reasons and five amounts, so that answer is a small table.
+ */
+.brk {
+  width: 100%; padding: 10px 12px 11px;
+  border-radius: 16px; background: #fafaf9;
+  border: 1px solid rgba(29, 34, 31, 0.11);
+}
+.brk .bk-top {
+  display: flex; align-items: baseline; gap: 8px; padding-bottom: 7px;
+  border-bottom: 1px solid rgba(29, 34, 31, 0.08);
+}
+.brk .bk-top .lbl {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.44);
+}
+.brk .bk-top .tot {
+  margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: rgba(29, 34, 31, 0.5);
+}
+.brk .bk-row {
+  display: grid; grid-template-columns: 5px 1fr auto auto; align-items: center; gap: 8px;
+  padding: 6px 0 5px; border-bottom: 1px solid rgba(29, 34, 31, 0.05);
+  font-size: 11px;
+}
+.brk .bk-row:last-child { border-bottom: 0; padding-bottom: 0 }
+.brk .bk-row .pip { width: 5px; height: 5px; border-radius: 50%; background: rgba(29, 34, 31, 0.2) }
+.brk .bk-row.hot .pip { background: var(--gold) }
+.brk .bk-row .k { color: rgba(29, 34, 31, 0.66); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.brk .bk-row .n { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: rgba(29, 34, 31, 0.42) }
+.brk .bk-row .v {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+  color: var(--graphite); font-variant-numeric: tabular-nums;
+}
+.brk .bk-row.hot .v { color: #8a5a06 }
+
+/* --- 3. Relay Calling ----------------------------------------------------- */
+
+.callscene {
+  position: absolute; inset: 0; z-index: 13;
+  overflow: hidden;
+  background: #06080a; color: #f4f5f4;
+  display: flex; flex-direction: column;
+  padding: 50px 16px 18px;
+  animation: callIn 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.callscene.gone { animation: callOut 0.4s ease both }
+@keyframes callIn  { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+@keyframes callOut { to { opacity: 0; transform: scale(1.03); filter: blur(6px) } }
+
+/* the agent's own colour bleeds in from the top, so a call always looks like
+   it came from the agent you were just watching */
+.callscene::before {
+  content: ''; position: absolute; left: -30%; right: -30%; top: -34%; height: 74%;
+  background: radial-gradient(58% 58% at 50% 62%, var(--glow, #10ab50) 0%, transparent 72%);
+  opacity: 0.3; filter: blur(26px); pointer-events: none;
+}
+
+.callscene .chead { position: relative; z-index: 2; text-align: center }
+.callscene .ckick {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(244, 245, 244, 0.42);
+}
+.callscene .cstat {
+  margin-top: 5px; font-size: 14px; font-weight: 700; letter-spacing: -0.015em;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.callscene .cstat .t { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(244, 245, 244, 0.5) }
+.callscene .clang {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em;
+  color: rgba(244, 245, 244, 0.62);
+  background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* the pair */
+.callscene .cpair {
+  position: relative; z-index: 2;
+  margin: 18px 0 2px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px;
+}
+.callscene .cnode { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0 }
+.callscene .cnode .nm {
+  font-size: 11px; font-weight: 700; letter-spacing: -0.01em; text-align: center;
+  max-width: 12ch; line-height: 1.25;
+}
+.callscene .cnode .sub {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(244, 245, 244, 0.4);
+}
+.callscene .cnode .orb { width: 58px; height: 58px; outline: none }
+.callscene .cava {
+  position: relative; width: 58px; height: 58px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: #10321a;
+  background: linear-gradient(150deg, #dff3c4 0%, #b6ddb0 100%);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+}
+/* the halo marks whoever is talking; while it rings, it pulses on the agent */
+.callscene .halo {
+  position: absolute; inset: -9px; border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  opacity: 0; pointer-events: none;
+}
+.callscene .cshell { position: relative; display: grid; place-items: center }
+.callscene.ringing .cshell.a .halo,
+.callscene.side-a .cshell.a .halo,
+.callscene.side-b .cshell.b .halo { opacity: 1; animation: halo 1.5s ease-out infinite }
+@keyframes halo {
+  0%   { transform: scale(0.9); opacity: 0.85 }
+  100% { transform: scale(1.42); opacity: 0 }
+}
+
+/* the line between them: a flat dotted rule while it rings, a live meter once
+   it connects, leaning toward whoever holds the floor */
+.callscene .cwire { display: flex; align-items: center; gap: 3px; height: 46px; padding: 0 2px }
+.callscene .cwire i {
+  display: block; width: 2.5px; border-radius: 3px; height: 4px;
+  background: rgba(255, 255, 255, 0.24);
+  transition: background 0.3s ease;
+}
+.callscene.live .cwire i { animation: cw 0.8s ease-in-out infinite; background: rgba(255, 255, 255, 0.6) }
+.callscene.side-a .cwire i:nth-child(-n+6),
+.callscene.side-b .cwire i:nth-child(n+10) { background: #fff }
+@keyframes cw { 0%, 100% { height: 4px } 50% { height: var(--h, 20px) } }
+
+/* the transcript. One line at a time, so it reads at video speed. */
+.callscene .csub {
+  position: relative; z-index: 2;
+  flex: 1; min-height: 0; margin-top: 8px;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 7px;
+  overflow: hidden;
+}
+.callscene .cline {
+  padding: 8px 11px; border-radius: 14px;
+  font-size: 12px; line-height: 1.42;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.callscene .cline .who {
+  display: block; margin-bottom: 3px;
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(244, 245, 244, 0.42);
+}
+.callscene .cline.b { background: rgba(206, 249, 147, 0.12); border-color: rgba(206, 249, 147, 0.22) }
+.callscene .cline.b .who { color: rgba(206, 249, 147, 0.7) }
+
+/* what the call actually produced */
+.callscene .cres {
+  position: relative; z-index: 2;
+  margin-top: 9px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 11px; border-radius: 14px;
+  background: rgba(0, 173, 108, 0.16);
+  border: 1px solid rgba(0, 173, 108, 0.3);
+  font-size: 11.5px; font-weight: 600;
+  animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.callscene .cres .amt { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-weight: 500 }
+.callscene .cres .tick { width: 16px; height: 16px }
+
+/* hang up */
+.callscene .cend {
+  position: relative; z-index: 2;
+  margin: 10px auto 0; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #e0483f; box-shadow: 0 8px 20px rgba(224, 72, 63, 0.4);
+}
+.callscene .cend svg { width: 16px; height: 16px }
+@media (prefers-reduced-motion: reduce) {
+  .callscene .cwire i, .callscene .halo { animation: none }
+}
+
+/* ---------------- connect screen ---------------- */
+
+/*
+ * Every demo opens by showing what is plugging into what — the host on the
+ * left, the Cashfree surface on the right, a link that fills between them and
+ * a switch that throws. Without it the chat just starts and you have to take
+ * on faith that anything is actually wired up.
+ */
+.connect {
+  position: absolute; inset: 0; z-index: 11;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 40px 22px;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.connect.gone { opacity: 0; filter: blur(12px); transform: scale(1.04); pointer-events: none; }
+
+.cx-pair { display: flex; align-items: center; gap: 0; }
+.cx-node { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 84px; }
+.cx-node .tile {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: grid; place-items: center;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: 0 3px 12px rgba(29,34,31,0.09);
+}
+.cx-node .tile svg { width: 24px; height: 24px; }
+.cx-node .nm {
+  font-size: 11.5px; font-weight: 600; text-align: center; line-height: 1.25;
+  color: var(--graphite);
+}
+
+/* the link that fills between the two */
+.cx-wire { position: relative; width: 62px; height: 2px; background: rgba(29,34,31,0.14); border-radius: 2px; }
+.cx-wire .fill {
+  position: absolute; inset: 0; width: 0;
+  background: var(--evergreen);
+  border-radius: 2px;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.connect.live .cx-wire .fill { width: 100%; }
+.cx-wire .bead {
+  position: absolute; top: 50%; left: 0;
+  width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%; background: var(--evergreen);
+  box-shadow: 0 0 0 4px rgba(0,173,108,0.18);
+  opacity: 0;
+}
+.connect.live .cx-wire .bead { animation: bead 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes bead {
+  0% { left: 0; opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+.cx-via {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(29,34,31,0.5); text-align: center;
+  max-width: 250px; word-break: break-all;
+}
+
+/* the switch you watch throw */
+.cx-switch {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 13px 9px 11px; border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: 0 3px 12px rgba(29,34,31,0.08);
+}
+.cx-switch .track {
+  position: relative; width: 40px; height: 23px; border-radius: 999px;
+  background: rgba(29,34,31,0.18);
+  transition: background 0.34s ease;
+}
+.cx-switch .knob {
+  position: absolute; top: 2.5px; left: 2.5px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.24);
+  transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.connect.live .cx-switch .track { background: var(--evergreen); }
+.connect.live .cx-switch .knob { transform: translateX(17px); }
+.cx-switch .lbl { font-size: 13px; font-weight: 600; color: var(--graphite); }
+
+.cx-status {
+  font-size: 12.5px; color: rgba(29,34,31,0.55);
+  text-align: center; line-height: 1.4; min-height: 34px;
+  max-width: 240px;
+}
+.cx-status .ok { color: #04663f; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cx-wire .fill { transition: none; }
+  .connect.live .cx-wire .bead { animation: none; }
+}
+
+/* ---------------- tap-to-advance (Figma-prototype behaviour) ---------------- */
+
+/* The phone itself is the control — clicking the screen advances a step, the way
+   tapping a frame in a Figma prototype moves to the next one. The buttons stay
+   for keyboard and for anyone who does not think to try the device. */
+.screen.tappable { cursor: pointer; }
+.screen.tappable:active { transform: scale(0.997); }
+
+.ripple {
+  position: absolute;
+  z-index: 8;
+  width: 12px; height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: rgba(0, 173, 108, 0.34);
+  pointer-events: none;
+  animation: ripple 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes ripple {
+  from { transform: scale(1); opacity: 0.85; }
+  to   { transform: scale(13); opacity: 0; }
+}
+
+/* A quiet pulse on the device before anyone has touched it. */
+.taphint {
+  position: absolute;
+  left: 50%; top: 42%; transform: translate(-50%, -50%);
+  z-index: 7;
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 500;
+  color: rgba(29,34,31,0.7);
+  background: #fff;
+  border: 1px solid rgba(29,34,31,0.12);
+  box-shadow: 0 3px 12px rgba(29,34,31,0.10);
+  pointer-events: none;
+  animation: hintpulse 2.1s ease-in-out infinite;
+}
+@keyframes hintpulse {
+  0%, 100% { opacity: 0.66; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;    transform: translate(-50%, -52%) scale(1.03); }
+}
+.taphint .ring {
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid var(--evergreen);
+}
+
+/* Step entrance with a bit more travel, so an advance reads as a transition
+   rather than a list quietly growing. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px) scale(0.985); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple, .taphint { animation: none !important; }
+  .ripple { display: none; }
+}
+
+.dots { display: flex; gap: 6px; justify-content: center; margin-top: 16px; }
+.dots i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); cursor: pointer; transition: all 0.25s ease;
+}
+.dots i.on { background: var(--evergreen); width: 20px; border-radius: 999px; }
+
+
+/* ---------------- laptop chassis + terminal surface (Agent Skills) ----------------
+ *
+ * Agent Skills is the one product here that does not live on a phone: you run a
+ * command in your repo and your coding assistant reads the skill files as it
+ * writes code. So for that demo the device itself changes -- the phone widens
+ * into a laptop and the liquid-glass screen goes dark. Same .screen element
+ * throughout, so tap-to-advance, the dots, the tour and the connect screen all
+ * keep working untouched; only the chassis and the renderer swap.
+ */
+
+/* The slot keeps the phone's height in both shapes, so opening Skills never
+   reflows the card underneath it. */
+.phone-wrap { min-height: 722px; justify-content: center; }
+
+.phone {
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              border-radius 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.demo { transition: grid-template-columns 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.demo.wide { grid-template-columns: 1fr 668px; }
+.demo.wide .controls { flex-wrap: wrap; }
+
+.phone.as-laptop {
+  width: 596px;
+  height: 376px;
+  border-radius: 17px;
+  padding: 11px 11px 13px;
+}
+.phone.as-laptop .screen { border-radius: 7px; }
+.phone.as-laptop .notch { display: none; }
+/* camera pinhole in the top bezel */
+.phone.as-laptop::before {
+  content: '';
+  position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #45474c;
+}
+/* the base: a lip wider than the lid */
+.phone.as-laptop::after {
+  content: '';
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 652px; height: 12px;
+  border-radius: 0 0 11px 11px;
+  background: linear-gradient(180deg, #2a2c30 0%, #131417 68%, #0a0a0c 100%);
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.55);
+}
+
+/* --- the terminal screen ---
+ *
+ * Light, not dark. A terminal is legible on paper as long as the grammar is
+ * intact -- traffic lights, mono, a $ prompt, tool lines -- and a light ground
+ * keeps this demo inside the same warm liquid-glass world as the rest of the
+ * section instead of reading as a hole cut in the page.
+ */
+.screen.term {
+  background:
+    radial-gradient(120% 90% at 4% 0%, rgba(206, 249, 147, 0.28) 0%, rgba(206, 249, 147, 0) 52%),
+    radial-gradient(110% 85% at 100% 100%, rgba(255, 174, 21, 0.2) 0%, rgba(255, 174, 21, 0) 58%),
+    linear-gradient(150deg, #fcfbf6 0%, #faf7f0 54%, #fdf6e9 100%);
+  color: var(--graphite);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* landscape: a file rail down the left, transcript to the right of it */
+  display: grid;
+  grid-template-columns: 186px 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "top    top"
+    "panel  thread"
+    "panel  composer";
+}
+.screen.term .ph-top   { grid-area: top; }
+.screen.term .ledger   { grid-area: panel; }
+.screen.term .thread   { grid-area: thread; }
+.screen.term .composer { grid-area: composer; }
+/* the blueprint grid is already dark-on-light; just keep it a whisper */
+.screen.term::before { opacity: 0.5; }
+
+/* window title bar */
+.screen.term .ph-top {
+  padding: 9px 12px 9px 48px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(29, 34, 31, 0.09);
+  background: rgba(255, 255, 255, 0.62);
+}
+.tlights { display: inline-flex; gap: 5px; align-items: center; margin-right: 3px; }
+.tlights i { width: 8px; height: 8px; border-radius: 50%; background: #d6d3cc; }
+.tlights i:nth-child(1) { background: #ec6a5e; }
+.tlights i:nth-child(2) { background: #f4bf4f; }
+.tlights i:nth-child(3) { background: #61c554; }
+.screen.term .chip {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(255, 255, 255, 0.95);
+  color: rgba(29, 34, 31, 0.62);
+  box-shadow: 0 3px 10px rgba(29, 34, 31, 0.06);
+}
+.screen.term .backbtn { top: 10px; left: 12px; width: 28px; height: 28px; }
+
+/* transcript */
+.screen.term .thread {
+  padding: 11px 14px 9px;
+  gap: 2px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  min-width: 0;   /* grid items default to min-width:auto */
+}
+.tline { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tline.in { color: var(--graphite); font-weight: 500; }
+.tline .p { color: var(--evergreen); font-weight: 700; margin-right: 7px; }
+.tline.ok { color: rgba(29, 34, 31, 0.72); }
+.tline.dim { color: rgba(29, 34, 31, 0.42); }
+.tk { width: 10px; height: 10px; vertical-align: -1px; margin-right: 6px; color: var(--evergreen); }
+.tcall { display: flex; align-items: center; gap: 8px; color: var(--graphite); padding-top: 3px; }
+.tcall .bul { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--evergreen); }
+.tcall .fn { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tcall .ms { margin-left: auto; color: rgba(29, 34, 31, 0.34); font-size: 10.5px; }
+.tres { display: block; padding-left: 14px; color: rgba(29, 34, 31, 0.55); }
+.tres .br { color: rgba(29, 34, 31, 0.28); margin-right: 6px; }
+.tsay {
+  display: block; padding: 5px 0 3px;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 11.5px; line-height: 1.5;
+  color: rgba(29, 34, 31, 0.78);
+}
+/* the installer's own banner -- ANSI shadow art, chalk's own two hexes.
+   Sized so all 73 columns clear the transcript width. */
+.tbanner {
+  margin: 4px 0 2px;
+  font-size: 8px;
+  line-height: 1.03;
+  white-space: pre;
+  overflow: hidden;
+}
+.tbanner .g { color: #10b981; font-weight: 700; }
+.tbanner .a { color: #f59e0b; font-weight: 700; }
+.tsetup { display: block; color: #0e7490; font-weight: 700; padding: 3px 0 2px; }
+
+/* the inquirer checkbox prompt */
+.tq { display: block; color: var(--graphite); font-weight: 500; }
+.tq .qm { color: var(--evergreen); font-weight: 700; margin-right: 6px; }
+.thint { display: block; color: rgba(29, 34, 31, 0.38); padding-bottom: 2px; }
+.thint b { color: rgba(29, 34, 31, 0.55); font-weight: 500; }
+.topt { display: block; color: rgba(29, 34, 31, 0.6); padding-left: 12px; }
+.topt .mk { margin-right: 7px; }
+.topt.on { color: #0e7490; font-weight: 700; padding-left: 0; }
+.topt.on .ptr { color: #0e7490; margin-right: 2px; }
+
+/* the installed skill tree */
+.ttree { display: block; color: rgba(29, 34, 31, 0.5); white-space: pre; }
+.ttree .hi { color: rgba(29, 34, 31, 0.78); }
+
+/* the payoff: skills generate code, so the code shows up on screen */
+.tcode {
+  margin: 6px 0 3px;
+  border: 1px solid rgba(29, 34, 31, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 5px 16px rgba(29, 34, 31, 0.05);
+  overflow: hidden;
+}
+.tcode .hd {
+  padding: 4px 10px;
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.36);
+  border-bottom: 1px solid rgba(29, 34, 31, 0.08);
+}
+.tcode pre { margin: 0; padding: 8px 10px; font: inherit; font-size: 11px; line-height: 1.55; white-space: pre-wrap; }
+.tcode .k { color: #0a7a4d; }
+.tcode .s { color: #a86a00; }
+.tcode .n { color: #0f6a86; }
+.tcode .c { color: rgba(29, 34, 31, 0.38); }
+
+/* file rail: what got written, what it is reading */
+.screen.term .ledger {
+  margin: 0;
+  padding: 12px 12px 14px;
+  border-radius: 0;
+  border: 0;
+  border-right: 1px solid rgba(29, 34, 31, 0.09);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+  min-width: 0;
+}
+.screen.term .ledger .lbl { color: rgba(29, 34, 31, 0.4); }
+.screen.term .ledger .net {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; letter-spacing: 0;
+  color: var(--evergreen);
+}
+.screen.term .ledger .rows { grid-template-columns: 1fr; gap: 7px; margin-top: 11px; }
+.screen.term .lrow {
+  grid-template-columns: 6px 1fr;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(29, 34, 31, 0.42);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.screen.term .lrow .pip { background: rgba(29, 34, 31, 0.17); }
+.screen.term .lrow.on { color: rgba(29, 34, 31, 0.8); }
+.screen.term .lrow .v { font-size: 9.5px; font-weight: 400; color: rgba(29, 34, 31, 0.38); }
+.screen.term .lrow.on .v { color: var(--evergreen); }
+/* the summary row sits under the files, not among them */
+.screen.term .lrow.sum {
+  margin-top: 4px; padding-top: 9px;
+  border-top: 1px solid rgba(29, 34, 31, 0.09);
+}
+
+/* prompt line */
+.screen.term .composer {
+  margin: 0;
+  padding: 10px 14px 12px;
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid rgba(29, 34, 31, 0.09);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: none;
+  font-size: 11.5px;
+  gap: 7px;
+}
+.screen.term .composer::before {
+  content: attr(data-p);
+  color: var(--evergreen);
+  font-weight: 700;
+}
+.screen.term .composer .txt { color: var(--graphite); }
+.screen.term .composer .txt.ph { color: rgba(29, 34, 31, 0.36); }
+.screen.term .send { display: none; }
+
+/* ---------------- the storefront outro ----------------
+ *
+ * The script ends on the browser, not the terminal: "Visual: Website check out
+ * - payments." So the last beat lifts a browser over the whole laptop screen --
+ * the store the assistant just wired up, taking a payment. Deliberately a plain
+ * demo store: no third-party storefront branding on a Cashfree asset.
+ */
+.store {
+  position: absolute; inset: 0; z-index: 8;
+  display: flex; flex-direction: column;
+  background: #f3f1ec;
+  opacity: 0; transform: scale(1.02);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store.live { opacity: 1; transform: none; }
+
+.st-chrome {
+  flex: none;
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 12px 8px 48px;
+  background: #e6e3dc;
+  border-bottom: 1px solid rgba(29, 34, 31, 0.1);
+}
+.st-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(29, 34, 31, 0.5);
+  background: #fbfaf7;
+  border: 1px solid rgba(29, 34, 31, 0.08);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.st-url .lock { color: var(--evergreen); margin-right: 5px; }
+
+.st-body { flex: 1; min-height: 0; background: #ffffff; display: flex; flex-direction: column; }
+.st-nav {
+  flex: none;
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+}
+.st-logo {
+  width: 20px; height: 20px; border-radius: 6px;
+  background: linear-gradient(140deg, #6366f1, #7c3aed);
+  display: grid; place-items: center;
+}
+.st-logo svg { width: 11px; height: 11px; color: #fff; }
+.st-brand { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.st-brand .thin { color: #4f46e5; }
+.st-links { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: #6b7280; }
+.st-links span { padding: 4px 8px; border-radius: 7px; }
+.st-links span.on { background: #4f46e5; color: #fff; font-weight: 700; }
+.st-av {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(140deg, #6366f1, #7c3aed);
+  color: #fff; font-size: 7.5px; font-weight: 700;
+  display: grid; place-items: center;
+}
+
+.st-head { flex: none; padding: 10px 14px 0; font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; }
+.st-head .h { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.st-head .c { font-size: 9px; color: #9ca3af; margin-top: 1px; }
+
+.st-grid {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px;
+  padding: 9px 14px 6px;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+}
+.st-card {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(17, 24, 39, 0.09);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.05);
+  min-height: 0;
+}
+.st-shot { position: relative; flex: none; height: 74px; }
+.st-shot.a { background: linear-gradient(150deg, #e8eaf0 0%, #cfd4e0 100%); }
+.st-shot.b { background: linear-gradient(150deg, #5b4636 0%, #2f2a2e 100%); }
+.st-shot.c { background: linear-gradient(150deg, #f6c7cf 0%, #e59aa8 100%); }
+.st-new {
+  position: absolute; top: 5px; right: 5px;
+  background: #4f46e5; color: #fff;
+  font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 2px 5px; border-radius: 999px;
+}
+.st-info { padding: 7px 8px 8px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.st-name { font-size: 9.5px; font-weight: 700; color: #111827; line-height: 1.2; }
+.st-sizes { display: flex; gap: 3px; margin: 6px 0 5px; }
+.st-sizes i {
+  font-style: normal;
+  font-size: 7px; font-weight: 500; color: #4b5563;
+  background: #f3f4f6; border-radius: 4px;
+  padding: 3px 0; flex: 1; text-align: center;
+}
+.st-sizes i.on { background: #4f46e5; color: #fff; font-weight: 700; }
+.st-row { display: flex; align-items: center; gap: 5px; margin-top: auto; }
+.st-price { font-size: 12px; font-weight: 700; color: #4f46e5; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.st-stock { margin-left: auto; font-size: 6.5px; font-weight: 700; color: #047857; background: #d1fae5; padding: 2px 5px; border-radius: 999px; }
+.st-btn {
+  margin-top: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 6px 8px; border-radius: 7px;
+  background: #4f46e5; color: #fff;
+  font-size: 8.5px; font-weight: 700;
+}
+.st-btn svg { width: 9px; height: 9px; }
+
+/* the confirmation slides up once the payment lands */
+.st-toast {
+  flex: none;
+  margin: 0 14px 11px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(0, 173, 108, 0.32);
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.12);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 10.5px; font-weight: 600; color: #111827;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store.paid .st-toast { opacity: 1; transform: none; }
+.st-toast .tick {
+  flex: none; width: 17px; height: 17px; border-radius: 50%;
+  background: var(--evergreen); display: grid; place-items: center;
+}
+.st-toast .tick svg { width: 9px; height: 9px; }
+.st-toast .amt { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b7280; }
+
+@media (max-width: 700px) {
+  /* too narrow for a rail beside the transcript -- stack it under, and let both
+     it and the transcript shrink so the lid keeps its 596:376 proportions */
+  .screen.term {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto;
+    grid-template-areas: "top" "thread" "panel" "composer";
+  }
+  .screen.term .ledger {
+    border-right: 0;
+    border-top: 1px solid rgba(29, 34, 31, 0.09);
+    padding: 9px 12px 10px;
+    overflow: hidden;
+  }
+  .screen.term .ledger .rows { grid-template-columns: 1fr 1fr; margin-top: 7px; }
+  /* the storefront keeps both columns; it just gets quieter type */
+  .st-chrome { padding: 6px 10px 6px 44px; }
+  .st-nav { padding: 8px 12px; }
+  .st-brand { font-size: 12px; }
+  .st-cart { font-size: 9px; padding: 3px 8px; }
+  /* a phone-width lid is ~204px of screen: there is no room for the product
+     shot beside the buy column, and squeezing it wraps the button over the
+     confirmation. Drop the shot, give the buy column the full width. */
+  .st-grid { grid-template-columns: 1fr; gap: 0; padding: 12px 12px 6px; }
+  .st-shot { display: none; }
+  .st-name { font-size: 12.5px; }
+  /* there is no room for these under a phone-width lid */
+  .st-sub, .st-methods { display: none; }
+  .st-price { font-size: 16px; margin: 5px 0 8px; }
+  .st-btn { font-size: 10.5px; padding: 7px 10px; border-radius: 10px; gap: 6px; }
+  .st-btn svg { width: 11px; height: 11px; }
+  /* the confirmation goes into the flow instead of floating over the button --
+     it reserves its own band while still invisible, so nothing shifts */
+  .st-toast {
+    position: static; flex: none;
+    margin: 0 12px 10px;
+    transform: none;
+    padding: 8px 10px; font-size: 10px; border-radius: 11px;
+  }
+  .store.paid .st-toast { transform: none; }
+  .st-toast .tick { width: 15px; height: 15px; }
+  .st-toast .tick svg { width: 8px; height: 8px; }
+  .st-toast .amt { font-size: 9.5px; }
+}
+
+@media (max-width: 980px) {
+  .demo, .demo.wide { grid-template-columns: 1fr; }
+  .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+  .phone-wrap { order: -1; min-height: 0; }
+  /* a flex item's automatic minimum size is its content, which beats
+     aspect-ratio and stretches the lid into a slab -- so pin it to 0 */
+  .phone.as-laptop { width: min(596px, 100%); height: auto; min-height: 0; aspect-ratio: 596 / 376; }
+}
+@media (max-width: 700px) {
+  /* still landscape, but tall enough to hold a page at phone widths */
+  .phone.as-laptop { aspect-ratio: 4 / 3; }
+  .phone.as-laptop::after { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise, .caret { animation: none !important; }
+  .phone, .demo { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="eyebrow"><span class="dot"></span> Agent Toolkit</span>
+
+  <h1>Your payments stack,<br /><span class="muted">callable by an AI agent.</span></h1>
+  <p class="sub">
+    Forty Cashfree tools an agent can actually use — create customers, take payments,
+    check status, issue refunds. Same API you already run on, handed to a model
+    with the scope you choose.
+  </p>
+
+  <div class="bento">
+
+    <!-- the interactive demo -->
+    <div class="card demo">
+      <div class="demo-copy">
+        <h2 id="demo-title">Agent <span class="thin">Toolkit</span></h2>
+        <p id="demo-blurb" style="max-width:46ch">An agent runs the whole money lifecycle on a real sandbox account.</p>
+        <div class="prov" id="prov"><span class="pdot"></span><span id="prov-text"></span></div>
+
+        <ol class="steps" id="steps"></ol>
+
+        <div class="controls">
+          <button class="btn" id="prev">Back</button>
+          <button class="btn primary" id="next">Next step</button>
+          <button class="btn" id="play">Auto-play</button>
+          <button class="btn" id="tour">Guided tour</button>
+          <span class="hintkey">or press &larr; &rarr;</span>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+
+            <!-- level 1: home, a replica of Checkout Screen/Screen 1.png -->
+            <div class="home" id="home">
+              <div class="home-head">
+                <span class="mark">Cashfree</span>
+                <span class="sub">pick a product</span>
+              </div>
+
+              <div class="hgrid">
+                <div class="hcard wide locked" style="grid-column:span 7">
+                  <span class="hblob br b-mesh"></span>
+                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10l1 12H6L7 8Z"/><path d="M9.5 8V6.5a2.5 2.5 0 0 1 5 0V8"/></svg></span>
+                    <span class="name">Checkout<span class="thin">360</span></span></div>
+                  <span class="htag">Live product</span>
+                </div>
+
+                <div class="hcard tagtop" id="card-relay" style="grid-column:span 5">
+                  <span class="hblob tr b-gold"></span>
+                  <div class="hlock"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9l-2.5-2.5M20 16h-9l2.5 2.5"/><circle cx="17" cy="8" r="2"/><circle cx="7" cy="16" r="2"/></svg></span>
+                    <span class="name">Relay</span></div>
+                  <span class="htag">No-code agents</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 5">
+                  <span class="hblob br b-cyan"></span>
+                  <div class="hlock"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M12 16V12M12 12l-2 2M12 12l2 2" transform="rotate(180 12 14)"/></svg></span>
+                    <span class="name">Payouts</span></div>
+                  <span class="htag">Live product</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 7">
+                  <span class="hblob br b-mint"></span>
+                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg></span>
+                    <span class="name">Secure<span class="thin">ID</span></span></div>
+                  <span class="htag">Live product</span>
+                </div>
+
+                <!-- the hero slot: where Checkout360 sits in the reference -->
+                <div class="hcard wide" id="card-builders" style="grid-column:span 12;min-height:140px">
+                  <span class="hblob br b-mesh" style="width:170px;height:170px;right:-46px;bottom:-56px"></span>
+                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8M3 13h18M10.5 13v2.5h3V13"/></svg></span>
+                    <span class="name">Cashfree<span class="thin"> For Builders</span></span></div>
+                  <span class="htag">3 demos &middot; tap to open</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 12;min-height:96px">
+                  <span class="hblob br b-coral"></span>
+                  <div class="hlock"><span class="gicon ic-coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-13.7-5.6L4 7.5"/><path d="M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 13.7 5.6L20 16.5"/><path d="M20 20v-3.5h-3.5"/></svg></span>
+                    <span class="name">Subscriptions</span></div>
+                  <span class="htag">Live product</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 6">
+                  <span class="hblob br b-cyan"></span>
+                  <div class="hlock"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 12 4l8.5 5.5M5.5 10.5v7M10 10.5v7M14 10.5v7M18.5 10.5v7M3.5 20h17"/></svg></span>
+                    <span class="name">Auto<span class="thin">Collect</span></span></div>
+                  <span class="htag">Live</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 6">
+                  <span class="hblob br b-gold"></span>
+                  <div class="hlock"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h5M9 12l6-5M9 12l6 5"/><circle cx="17.5" cy="7" r="2"/><circle cx="17.5" cy="17" r="2"/><circle cx="4" cy="12" r="1.6"/></svg></span>
+                    <span class="name">Easy<span class="thin">Split</span></span></div>
+                  <span class="htag">Live</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 6">
+                  <span class="hblob br b-lime"></span>
+                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.6 12h16.8M12 3.5c2.2 2.4 3.3 5.3 3.3 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.3-5.3-3.3-8.5S9.8 5.9 12 3.5Z"/></svg></span>
+                    <span class="name">Cross<span class="thin">Border</span></span></div>
+                  <span class="htag">Live</span>
+                </div>
+
+                <div class="hcard locked" style="grid-column:span 6">
+                  <span class="hblob br b-mint"></span>
+                  <div class="hlock"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg></span>
+                    <span class="name">Settlements</span></div>
+                  <span class="htag">Live</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- level 2: the three builder surfaces -->
+            <div class="tier2 gone" id="tier2">
+              <div class="t2head">
+                <div class="k">Cashfree</div>
+                <div class="t">For <span class="thin">Builders</span></div>
+              </div>
+
+              <div class="t2card" data-demo="toolkit">
+                <span class="hblob br b-mint"></span>
+                <div class="row"><span class="gicon ic-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8M3 13h18M10.5 13v2.5h3V13"/></svg></span>
+                  <span class="nm">Agent <span class="thin">Toolkit</span></span></div>
+                <p class="desc">40 payment tools an agent can call. Runs the whole money lifecycle on a real account.</p>
+                <div class="foot"><span class="steps-n" data-count="toolkit"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+
+              <div class="t2card" data-demo="skills">
+                <span class="hblob br b-gold"></span>
+                <div class="row"><span class="gicon ic-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h9.5A2.5 2.5 0 0 1 17 7v13H7.5A2.5 2.5 0 0 1 5 17.5v-13Z"/><path d="M9 9h5M9 13h5"/><path d="M17 7h2v13h-2"/></svg></span>
+                  <span class="nm">Agent <span class="thin">Skills</span></span></div>
+                <p class="desc">Cashfree product knowledge loaded straight into your coding assistant.</p>
+                <div class="foot"><span class="steps-n" data-count="skills"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+
+              <div class="t2card" data-demo="mcp">
+                <span class="hblob br b-cyan"></span>
+                <div class="row"><span class="gicon ic-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6M15 3v6"/><path d="M6 9h12v3a6 6 0 0 1-12 0V9Z"/><path d="M12 18v3"/></svg></span>
+                  <span class="nm">MCP <span class="thin">Server</span></span></div>
+                <p class="desc">Query and operate your account in plain English — Claude, ChatGPT or Cursor.</p>
+                <div class="foot"><span class="steps-n" data-count="mcp"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+            </div>
+
+            <!-- level 2b: Relay's agent shelf. One agent, one payment operation. -->
+            <div class="agentpick gone" id="agents">
+              <div class="aphead">
+                <div class="k">Cashfree</div>
+                <div class="t">Relay <span class="thin">agents</span></div>
+              </div>
+
+              <div class="acard" data-agent="relayCart">
+                <span class="hblob br b-mint"></span>
+                <div class="row">
+                  <span class="orb o1"><span class="eyes"><i></i><i></i></span></span>
+                  <span class="nm">Cart <span class="thin">Recovery</span></span>
+                </div>
+                <p class="desc">Calls the buyer with a personalised offer. You only pay for recovered orders.</p>
+                <div class="foot"><span class="stat">20% carts recovered</span>
+                  <span class="steps-n" data-count="relayCart"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+
+              <div class="acard" data-agent="relayPay">
+                <span class="hblob br b-gold"></span>
+                <div class="row">
+                  <span class="orb o2"><span class="eyes"><i></i><i></i></span></span>
+                  <span class="nm">Payment <span class="thin">Recovery</span></span>
+                </div>
+                <p class="desc">Calls with the specific failure reason and a new link. Suggests the method that will work.</p>
+                <div class="foot"><span class="stat">Relay template</span>
+                  <span class="steps-n" data-count="relayPay"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+
+              <div class="acard" data-agent="relayDun">
+                <span class="hblob br b-coral"></span>
+                <div class="row">
+                  <span class="orb o4"><span class="eyes"><i></i><i></i></span></span>
+                  <span class="nm">Subscription <span class="thin">Dunning</span></span>
+                </div>
+                <p class="desc">Calls to retry the renewal, and offers to pause or switch plans instead of churning.</p>
+                <div class="foot"><span class="stat">Relay template</span>
+                  <span class="steps-n" data-count="relayDun"></span>
+                  <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+              </div>
+            </div>
+
+            <div class="backbtn" id="back" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#1d221f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div class="ph-top" id="ph-top">
+              <span class="chip"><span class="gdot"></span> SANDBOX</span>
+              <span class="chip mono">gpt-4.1</span>
+              <span class="chip mono" id="toolchip" style="margin-left:auto">11/40 tools</span>
+            </div>
+
+            <div class="thread" id="thread"></div>
+
+            <div class="ledger" id="panel"></div>
+
+            <div class="composer">
+              <span class="txt ph" id="composer">Tap to begin</span>
+              <span class="send">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <!-- swaps in for the send arrow when the next prompt is spoken -->
+              <span class="micbtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </div>
+
+    <!-- supporting bento cards -->
+    <div class="card span-5">
+      <div class="blob blob-a"></div>
+      <h3>Scoped<span class="thin">tools</span></h3>
+      <p>Hand an agent five read-only tools and it physically cannot move money. Scope is structural, not a policy prompt.</p>
+      <span class="tag">Safety</span>
+    </div>
+
+    <div class="card span-4">
+      <div class="blob blob-b"></div>
+      <h3>Three<span class="thin">frameworks</span></h3>
+      <p>OpenAI Agents SDK, LangChain and Vercel AI SDK, each run against the same 40 tools. Verified: identical calls, identical ledger.</p>
+      <span class="tag">Portable</span>
+    </div>
+
+    <div class="card span-3">
+      <div class="stat">40<small>tools</small></div>
+      <p>22 payments, 18 verification. Counted from getAgentTools().</p>
+      <span class="tag">Coverage</span>
+    </div>
+
+    <div class="card span-4">
+      <div class="stat">1.8<small>s</small></div>
+      <p>Total tool time for the whole lifecycle — six calls, 64ms to 925ms, median 210ms.</p>
+      <span class="tag">Measured</span>
+    </div>
+
+    <div class="card span-8">
+      <div class="blob blob-c"></div>
+      <h3>npm install<span class="thin">@cashfreepayments/agent-toolkit</span></h3>
+      <p>Five lines to initialise. Node 18+. Sandbox or production, same interface.</p>
+      <span class="tag">Get started</span>
+    </div>
+
+  </div>
+
+</div>
+<script>
+/*
+ * Step engine.
+ *
+ * Every id, amount and latency here was captured from a real run against the
+ * Cashfree sandbox (see run-data.json) — the point of the section is that it is
+ * a recording of something that happened, not a mockup of something that might.
+ */
+/* ------------------------------------------------------------------ *
+ * Demo data
+ *
+ * PROVENANCE IS PER-DEMO AND IS SHOWN ON SCREEN.
+ *  - toolkit: a real captured run against the Cashfree sandbox (see
+ *    run-data.json). Every id, amount and latency actually happened.
+ *  - skills / mcp: ILLUSTRATIVE. Commands, file paths and tool names are
+ *    taken verbatim from the Cashfree docs; amounts, ids and latencies are
+ *    plausible stand-ins, because no run was recorded for them.
+ *
+ * An adversarial fact-check pass removed: an invented
+ * src/webhooks/refund-status.ts path, a fabricated "6 items" checklist count,
+ * a claim that the skills update your order state at runtime (they generate
+ * code, they do not run it), and two taglines that claimed more than the docs.
+ * ------------------------------------------------------------------ */
+
+const CX_ICON = {
+ "app": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9l-3 3 3 3M16 9l3 3-3 3M13.5 6l-3 12\"/></svg>",
+ "claude": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#c15f3c\" stroke-width=\"1.9\" stroke-linecap=\"round\"><path d=\"M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9\"/></svg>",
+ "ide": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2.5\"/><path d=\"M3 8.5h18M8 13l2 2-2 2M12.5 17h3.5\"/></svg>",
+ "dash": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2.5\"/><path d=\"M7 15v3M12 10v8M17 13v5\"/></svg>",
+ "cf": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00ad6c\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 17L12 5l7 12M9 17l3-5 3 5\"/></svg>"
+};
+
+const DEMOS = {
+  toolkit: {
+    connectStep: {"kind":"connect","label":"Connect the account","tool":"CFEnvironment.SANDBOX","ask":"Connect to my Cashfree sandbox","say":"Connected. 40 payment tools available on this account."},
+    connect: {"host":"Your app","hostIcon":"app","target":"Cashfree Sandbox","via":"@cashfreepayments/agent-toolkit","ok":"40 tools available"},
+    title: 'Agent <span class="thin">Toolkit</span>',
+    blurb: 'An agent runs the whole money lifecycle on a real sandbox account.',
+    provenance: { kind: 'real', text: 'Real sandbox run - 31 Aug 2026' },
+    chips: { left: ['SANDBOX', 'gpt-4.1'], right: '11/40 tools', dot: true },
+    panel: {
+      title: 'Merchant ledger',
+      headline: { label: 'net', value: '₹0' },
+      rows: [
+        { key: 'customer', label: 'Customer' },
+        { key: 'order', label: 'Order' },
+        { key: 'payment', label: 'Payment' },
+        { key: 'refund', label: 'Refund' }
+      ]
+    },
+    steps: [
+      {
+        label: 'Create the customer', tool: 'createCustomer()',
+        ask: 'Create a customer for Rahul Sharma, phone 9999999999',
+        call: { name: 'createCustomer', summary: '+91 9999999999', ms: 176 },
+        say: 'Customer created for Rahul Sharma.',
+        patch: { customer: '99999 99999' }
+      },
+      {
+        label: 'Create a ₹500 order', tool: 'createOrder()',
+        ask: 'Create an order for ₹500 for that customer',
+        call: { name: 'createOrder', summary: 'order_4303293IgM.. · ₹500 · ACTIVE', ms: 300 },
+        say: 'Order created for ₹500.',
+        patch: { order: '₹500 ACTIVE', order__warn: true }
+      },
+      {
+        label: 'Pay it by UPI', tool: 'orderPayUsingUpi()',
+        ask: 'Pay it using UPI',
+        call: { name: 'orderPayUsingUpi', summary: '215007619078080 · INITIATED', ms: 925 },
+        say: 'UPI payment initiated and settling.',
+        patch: { payment: '₹500 INITIATED', payment__warn: true }
+      },
+      {
+        label: 'Check the status', tool: 'getOrder()',
+        ask: 'What is the status of that order?',
+        call: { name: 'getOrder', summary: 'order_4303293IgM.. · ₹500 · PAID', ms: 120 },
+        say: 'The order is PAID.',
+        patch: { order: '₹500 PAID', order__warn: false, payment: '₹500 SUCCESS', payment__warn: false, __headline: '₹500' }
+      },
+      {
+        label: 'Refund ₹200', tool: 'createRefund()',
+        ask: 'Rahul wants a partial refund of ₹200',
+        call: { name: 'createRefund', summary: 'rf_9ofCW9oKB_200 · ₹200 · PENDING', ms: 244 },
+        say: 'A partial refund of ₹200 has been initiated.',
+        patch: { refund: '₹200 PENDING', refund__warn: true, __headline: '₹300' }
+      },
+      {
+        label: 'List the refunds', tool: 'getAllRefunds()',
+        ask: 'Show me all refunds on it',
+        call: { name: 'getAllRefunds', summary: '1 refund · ₹200 SUCCESS', ms: 64 },
+        say: 'One refund of ₹200, status SUCCESS. Net ₹300 captured.',
+        patch: { refund: '₹200 SUCCESS', refund__warn: false }
+      }
+    ]
+  },
+
+  /* ---------------------------------------------------------------- *
+   * Relay's agents. One entry per agent on the shelf, because each one
+   * owns a different payment operation and therefore runs a different
+   * conversation. They share a panel shape -- trigger, condition,
+   * action, runs -- since that is what a Relay agent actually is.
+   *
+   * All three run the three segments the journey docs lay out
+   * (../Checkout Screen/{Cart,Payment} Recovery.docx), in that order:
+   *
+   *   SEGMENT 1  setting the agent up. The merchant SPEAKS the opening
+   *              prompt, the agent answers with the month's numbers,
+   *              offers to build the agent, test-runs it, then asks
+   *              before switching it on. Nothing goes live unasked.
+   *   SEGMENT 2  the drop-off, on the BUYER's screen. No merchant
+   *              prompt on these beats -- the whole claim is that it
+   *              carries on without you.
+   *   SEGMENT 3  the call. Relay rings the buyer, works the objection
+   *              and sends a link. Full screen, because that is what a
+   *              call does to a phone.
+   *
+   * Names, one-liners and the recovery figures come from the Relay
+   * landing page copy; the prompts, the dialogue and the checkout
+   * states come from the journey docs. Triggers, Connections and the
+   * Runs tab are the product's own vocabulary; amounts, buyers and ids
+   * are plausible stand-ins, which is what the amber provenance badge
+   * is saying.
+   * ---------------------------------------------------------------- */
+
+  relayCart: {
+    agent: { name: 'Cart Recovery', orb: 'o1' },
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Cart Recovery agent","say":"Relay is open on Cart Recovery — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cart Recovery","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    title: 'Cart <span class="thin">Recovery</span>',
+    blurb: 'Say what you want chased. Relay builds it, tests it, waits for your yes — then calls the buyer back itself.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Cart Recovery journey doc' },
+    chips: { left: [], right: 'no-code', dot: false },
+    panel: {
+      title: 'Agent',
+      headline: { label: 'status', value: 'Draft' },
+      rows: [
+        { key: 'trigger', label: 'Trigger' },
+        { key: 'condition', label: 'Condition' },
+        { key: 'action', label: 'Action' },
+        { key: 'runs', label: 'Runs' }
+      ]
+    },
+    steps: [
+      /* --- segment 1: setting the agent up --- */
+      {
+        label: 'Ask what happened', tool: 'Voice',
+        voice: true,
+        ask: 'Can you tell me my transactions for the past month?',
+        call: { name: 'transactions', summary: '1,755 orders · 412 dropped', ms: 680 },
+        scene: {
+          kind: 'brk', title: 'Last 30 days', total: '1,755 orders',
+          rows: [
+            { k: 'Paid', n: '1,284', v: '₹31.2L' },
+            { k: 'Dropped at checkout', n: '412', v: '₹9.8L', hot: 1 },
+            { k: 'Payment failed', n: '38', v: '₹2.1L' },
+            { k: 'Refunded', n: '21', v: '₹48,900' }
+          ]
+        },
+        say: '1,284 paid, but 412 walked at the payment step — ₹9.8L of it. Want to dig into the dropped ones and set up an agent to recover them?',
+        patch: {}
+      },
+      {
+        label: 'Relay builds it', tool: 'trigger + condition + action',
+        ask: 'Yes, do that.',
+        call: { name: 'build agent', summary: 'Cart Abandoned → voice call', ms: 1240 },
+        say: 'It’s done. Trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Would you like a test run?',
+        patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · 10% cap', action: 'Voice call + offer' }
+      },
+      {
+        label: 'Test run', tool: 'Dry run',
+        ask: 'Yes, let’s do a test run',
+        call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
+        say: 'Test run successful — it held the 30 minutes, placed the call and stopped the discount at 10%. Nothing reached a real buyer. Should I activate the Abandoned Cart Recovery Agent?',
+        patch: { __headline: 'Tested' }
+      },
+      {
+        label: 'Switch it on', tool: 'Agents',
+        ask: 'Yes, please go ahead.',
+        call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
+        say: 'Your Abandoned Cart Recovery Agent is now live. Your newest teammate just clocked in — and it won’t be clocking out.',
+        patch: { __headline: 'Active' }
+      },
+
+      /* --- segment 2: the buyer's screen. No prompt: it runs without you. --- */
+      {
+        label: 'The cart is abandoned', tool: 'One-Stop Shoppy',
+        call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 140 },
+        scene: {
+          kind: 'buy', tone: 'drop', tag: 'Buyer’s screen · live',
+          store: 'One-Stop Shoppy', amount: '₹2,598',
+          head: 'Leaving checkout?',
+          reason: 'Priya closed the payment step with two Arjun Classic Kurta Pajamas still in the cart.',
+          opts: [
+            { t: 'I need to update cart' },
+            { t: 'I didn’t find the payment mode I wanted', on: 1 },
+            { t: 'Other reasons' }
+          ],
+          meta: 'Order OSS-48291 · cart held · 30 min clock'
+        },
+        say: 'There is the trigger. She told the exit prompt why she left, so the agent already knows what to lead with. The 30 minutes start now.',
+        patch: { runs: 'waiting 30 min' }
+      },
+
+      /* --- segment 3: the call --- */
+      {
+        label: 'Relay calls Priya', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'called · offer accepted · link sent', ms: 610 },
+        scene: {
+          kind: 'call', glow: '#10ab50', orb: 'o1',
+          agent: 'Cart Recovery', buyer: 'Priya', initials: 'P',
+          phone: '+91 98••• ••210', lang: 'English', dur: '00:41',
+          result: 'Payment link sent · code 5XCA', amount: '₹2,338',
+          lines: [
+            { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or were you still deciding?' },
+            { b: 1, t: 'Oh yeah — I wanted it, I just got distracted.' },
+            { t: 'Here’s the payment link. Use code 5XCA for 10% off at checkout.' }
+          ]
+        },
+        say: 'It waited the 30 minutes, called her, heard the real reason and sent a link with the 10% you capped it at — not a rupee deeper.',
+        patch: { runs: '1 run' }
+      },
+      {
+        label: 'Check the runs', tool: 'Runs',
+        ask: 'Did that one come back?',
+        call: { name: 'Runs', summary: 'recovered · ₹2,338 · success', ms: 430 },
+        say: '₹2,338 recovered. The Runs tab is the execution history — every agent, when it ran, how long it took and how it ended.',
+        patch: { runs: '1 run · recovered' }
+      }
+    ]
+  },
+
+  relayPay: {
+    agent: { name: 'Payment Recovery', orb: 'o2' },
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Payment Recovery agent","say":"Relay is open on Payment Recovery — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Payment Recovery","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    title: 'Payment <span class="thin">Recovery</span>',
+    blurb: 'Every failed payment gets a second try — with the real reason, and the method that will actually clear.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Payment Recovery journey doc' },
+    chips: { left: [], right: 'no-code', dot: false },
+    panel: {
+      title: 'Agent',
+      headline: { label: 'status', value: 'Draft' },
+      rows: [
+        { key: 'trigger', label: 'Trigger' },
+        { key: 'condition', label: 'Condition' },
+        { key: 'action', label: 'Action' },
+        { key: 'runs', label: 'Runs' }
+      ]
+    },
+    steps: [
+      /* --- segment 1: setting the agent up --- */
+      {
+        label: 'Ask what failed', tool: 'Voice',
+        voice: true,
+        ask: 'How many transactions failed this month?',
+        call: { name: 'failed payments', summary: '38 failed · ₹2,06,400 at risk', ms: 640 },
+        scene: {
+          kind: 'brk', title: 'Failed this month', total: '38 · ₹2,06,400',
+          rows: [
+            { k: 'Declined by bank', n: '14', v: '₹82,400', hot: 1 },
+            { k: 'Insufficient funds', n: '9', v: '₹51,200' },
+            { k: 'UPI timeout', n: '7', v: '₹38,900' },
+            { k: 'Card expired', n: '5', v: '₹21,600' },
+            { k: 'Other', n: '3', v: '₹12,300' }
+          ]
+        },
+        say: '38 failed, ₹2,06,400 sitting there. The biggest slice is a bank-side decline, which usually clears on a second try. Would you like to set up an agent to recover them?',
+        patch: {}
+      },
+      {
+        label: 'Relay builds it', tool: 'trigger + condition + action',
+        ask: 'Yes, do that.',
+        call: { name: 'build agent', summary: 'Payment Failed → call + retry link', ms: 1180 },
+        say: 'It’s done. Trigger Payment Failed, condition above ₹1,000, action a call carrying the real reason and a fresh link on whichever method is clearing. Would you like a test run?',
+        patch: { trigger: 'Payment Failed', condition: 'above ₹1,000', action: 'Call + retry link' }
+      },
+      {
+        label: 'Test run', tool: 'Dry run',
+        ask: 'Yes, let’s do a test run',
+        call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
+        say: 'Test run successful — it read the decline reason, placed the call and issued the link. No buyer was contacted. Should I activate the Payment Recovery Agent?',
+        patch: { __headline: 'Tested' }
+      },
+      {
+        label: 'Switch it on', tool: 'Agents',
+        ask: 'Yes, activate it.',
+        call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
+        say: 'Your Payment Recovery Agent is now live. From here it sits on every failed payment on the account.',
+        patch: { __headline: 'Active' }
+      },
+
+      /* --- segment 2: the buyer's screen. No prompt: it runs without you. --- */
+      {
+        label: 'A payment fails', tool: 'One-Stop Shoppy',
+        call: { name: 'payment.failed', summary: 'OSS-48291 · ₹2,598 · UPI declined', ms: 140 },
+        scene: {
+          kind: 'buy', tone: 'fail', tag: 'Buyer’s screen · live',
+          store: 'One-Stop Shoppy', amount: '₹2,598',
+          head: 'Payment failed',
+          reason: 'UPI transaction declined by your bank. No amount was charged.',
+          meta: 'Order OSS-48291 · retry 1 of 3 · auto-refund in 5–7 days if debited'
+        },
+        say: 'Rahul’s ₹2,598 just bounced — declined bank-side, nothing charged. That is the trigger, and that reason is the thing worth carrying into the call.',
+        patch: { runs: 'triggered' }
+      },
+
+      /* --- segment 3: the call --- */
+      {
+        label: 'Relay calls Rahul', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'reason given · UPI suggested · link sent', ms: 720 },
+        scene: {
+          kind: 'call', glow: '#d5cd2b', orb: 'o2',
+          agent: 'Payment Recovery', buyer: 'Rahul', initials: 'R',
+          phone: '+91 99••• ••847', lang: 'English', dur: '00:38',
+          result: 'Retry link sent · UPI', amount: '₹2,598',
+          lines: [
+            { t: 'Hi Rahul, I noticed your payment didn’t go through earlier. Your bank was having a temporary issue — would you like to try again?' },
+            { b: 1, t: 'Yes.' },
+            { t: 'Here’s the payment link. I’d use UPI — that is the one clearing for your bank right now.' }
+          ]
+        },
+        say: 'It gave him the actual reason instead of “something went wrong”, pointed him at the method that is clearing, and sent a fresh link.',
+        patch: { runs: '1 run' }
+      },
+      {
+        label: 'Check the runs', tool: 'Runs',
+        ask: 'Did he pay?',
+        call: { name: 'Runs', summary: 'recovered · ₹2,598 · success', ms: 430 },
+        say: 'Paid on the second attempt. Every call, reason and retry sits on the run, and the record is exportable.',
+        patch: { runs: '1 run · recovered' }
+      }
+    ]
+  },
+
+  relayDun: {
+    agent: { name: 'Subscription Dunning', orb: 'o4' },
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Relay is open on Subscription Dunning — Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Subscription Dunning","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    title: 'Subscription <span class="thin">Dunning</span>',
+    blurb: 'Keeps the buyer subscribed — retries the renewal on a method that works, or offers a pause instead of a cancel.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run follows the same journey the recovery docs lay out' },
+    chips: { left: [], right: 'no-code', dot: false },
+    panel: {
+      title: 'Agent',
+      headline: { label: 'status', value: 'Draft' },
+      rows: [
+        { key: 'trigger', label: 'Trigger' },
+        { key: 'condition', label: 'Condition' },
+        { key: 'action', label: 'Action' },
+        { key: 'runs', label: 'Runs' }
+      ]
+    },
+    steps: [
+      /* --- segment 1: setting the agent up --- */
+      {
+        label: 'Ask about renewals', tool: 'Voice',
+        voice: true,
+        ask: 'How many renewals failed this month?',
+        call: { name: 'renewals', summary: '96 failed · 34 churned', ms: 700 },
+        scene: {
+          kind: 'brk', title: 'Renewals this month', total: '2,236 due',
+          rows: [
+            { k: 'Renewed', n: '2,140', v: '₹10.6L' },
+            { k: 'Renewal failed', n: '96', v: '₹47,900', hot: 1 },
+            { k: '— of those, churned', n: '34', v: '₹16,900' },
+            { k: 'Mandate expired', n: '12', v: '₹6,000' }
+          ]
+        },
+        say: '96 renewals failed, and 34 of those subscribers cancelled rather than retry — ₹16,900 that did not have to go. Want an agent that calls them before they churn?',
+        patch: {}
+      },
+      {
+        label: 'Relay builds it', tool: 'trigger + condition + action',
+        ask: 'Yes, do that.',
+        call: { name: 'build agent', summary: 'Renewal Failed → call + retry', ms: 1210 },
+        say: 'It’s done. Trigger Renewal Failed, condition the mandate is still active, action a call that retries — or offers a pause instead of a cancel. Would you like a test run?',
+        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call · retry or pause' }
+      },
+      {
+        label: 'Test run', tool: 'Dry run',
+        ask: 'Yes, let’s do a test run',
+        call: { name: 'test run', summary: 'dry run · pause offered · plan held', ms: 820 },
+        say: 'Test run successful — it read the failure, offered the pause and left the plan where it was. No subscriber was contacted. Should I activate the Subscription Dunning Agent?',
+        patch: { __headline: 'Tested' }
+      },
+      {
+        label: 'Switch it on', tool: 'Agents',
+        ask: 'Yes, switch it on for the ₹499 plan.',
+        call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
+        say: 'Your Subscription Dunning Agent is now live on that plan. Switch it off from the Agents tab any time.',
+        patch: { __headline: 'Active' }
+      },
+
+      /* --- segment 2: the subscriber's screen. No prompt: it runs without you. --- */
+      {
+        label: 'A renewal fails', tool: 'Kora Reads',
+        call: { name: 'renewal.failed', summary: 'KR-PRO · ₹499 · card declined', ms: 140 },
+        scene: {
+          kind: 'buy', tone: 'fail', tag: 'Subscriber’s screen · live',
+          store: 'Kora Reads', amount: '₹499',
+          head: 'Renewal failed',
+          reason: 'Card ending 4412 was declined by the issuer. Your plan stays active for 3 more days.',
+          meta: 'Plan KR-PRO · attempt 1 of 3 · mandate still active'
+        },
+        say: 'Anita’s ₹499 renewal failed on the card on file. Shared memory has that card flagged — it has failed for her twice before — so the agent will not lead with it.',
+        patch: { runs: 'triggered' }
+      },
+
+      /* --- segment 3: the call --- */
+      {
+        label: 'Relay calls Anita', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'called · moved to UPI mandate', ms: 680 },
+        scene: {
+          kind: 'call', glow: '#b493ea', orb: 'o4',
+          agent: 'Subscription Dunning', buyer: 'Anita', initials: 'A',
+          phone: '+91 97••• ••305', lang: 'English', dur: '00:44',
+          result: 'UPI mandate active', amount: '₹499/mo',
+          lines: [
+            { t: 'Hi Anita, your ₹499 renewal didn’t go through — the card on file was declined again. I can move you to UPI, or pause the plan for a month if you’d rather.' },
+            { b: 1, t: 'A pause is tempting, but just move me to UPI.' },
+            { t: 'Done — setting up the UPI mandate now. You keep your reading history and nothing else changes.' }
+          ]
+        },
+        say: 'It led with UPI because the memory said the card fails, offered the pause rather than assuming she wanted out, and she stayed.',
+        patch: { runs: '1 run' }
+      },
+      {
+        label: 'Check the runs', tool: 'Runs',
+        ask: 'Did we keep her?',
+        call: { name: 'Runs', summary: 'renewed · ₹499 · success', ms: 430 },
+        say: 'Still subscribed. The Runs tab shows the call, the choice she made and the mandate it landed on.',
+        patch: { runs: '1 run · renewed' }
+      }
+    ]
+  },
+
+  skills: {
+    // Skills is the one product here that does not live on a phone: you run a
+    // command in your repo and the assistant reads the skill files as it writes
+    // code. So this demo renders as a terminal on a laptop, not a chat on a phone.
+    //
+    // The beats follow the recorded voiceover script ("Cashfree Agent Skills +
+    // Claude Code"). The install screen, the picker copy, the framework list and
+    // every skill path below are lifted from @cashfreepayments/agent-skills@0.2.6
+    // itself (dist/cli-ui.js, dist/config.js) -- not from a screenshot.
+    surface: 'terminal',
+    connectStep: {"kind":"connect","label":"Install the skills","tool":"npx @cashfreepayments/agent-skills","ask":"npx @cashfreepayments/agent-skills add skills","mono":true,"say":"It asks which assistants to configure. Claude Code here \u2014 the same one command covers the other eight.",
+      term: { kind: 'shell', ms: 1180, banner: true,
+        setup: '\ud83c\udfaf Agent Skills Setup - Add Cashfree Payments Integration Knowledge to AI Assistants',
+        pick: { q: 'Select AI coding assistants to configure:', items: [
+          { n: 'Cursor' },
+          { n: 'Claude Code', on: true },
+          { n: 'Codex' },
+          { n: 'OpenCode' },
+          { n: 'VS Code Copilot' },
+          { n: 'Gemini CLI' },
+          { n: 'Antigravity' },
+          { n: 'GitHub Copilot CLI' },
+          { n: 'Kiro' }
+        ] } },
+      patch: { __headline: 'installing\u2026' } },
+    connect: {"host":"Claude Code + Cursor","hostIcon":"ide","target":"Cashfree Skills","via":"npx @cashfreepayments/agent-skills","ok":"Skills + manifest installed"},
+    title: 'Agent <span class="thin">Skills</span>',
+    blurb: 'Your assistant stops guessing at our APIs. One command loads real Cashfree product knowledge into Claude Code.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - CLI output and paths from the package' },
+    chips: { left: ['~/ecommerce-app'], right: 'claude code', dot: false },
+    panel: {
+      title: 'Workspace',
+      kind: 'files',
+      headline: { label: 'skills', value: '\u2014' },
+      rows: [
+        { key: 'f_skills', label: 'cashfree-skills/' },
+        { key: 'f_manifest', label: 'CLAUDE.md' },
+        { key: 'f_sdk', label: 'pg/backend-sdks/' },
+        { key: 'f_api', label: 'pg/apis/references/' },
+        { key: 'f_test', label: 'validation-and-testing/' },
+        { key: 'output', label: 'Generated', sum: true }
+      ]
+    },
+    steps: [
+      {
+        // no ask: the installer is still running
+        label: 'What it wrote', tool: '.claude/skills/cashfree-skills/',
+        call: { name: 'install', summary: 'skills + manifest written', ms: 820 },
+        term: { kind: 'shell', ms: 820,
+          out: [{ t: 'ok', s: 'Cashfree Payments skill configuration complete!' }],
+          tree: [
+            '  cashfree-skills/',
+            '  \u251c\u2500\u2500 getting-started/SKILL.md',
+            '  \u251c\u2500\u2500 pg/',
+            '  \u2502   \u251c\u2500\u2500 <span class="hi">apis/SKILL.md + references/SKILL.md</span>',
+            '  \u2502   \u251c\u2500\u2500 <span class="hi">backend-sdks/SKILL.md + references/SKILL.md</span>',
+            '  \u2502   \u2514\u2500\u2500 web-sdk/SKILL.md + references/REFERENCE.md',
+            '  \u251c\u2500\u2500 \u2026',
+            '  \u2514\u2500\u2500 <span class="hi">validation-and-testing/SKILL.md</span>'
+          ] },
+        say: 'The skills land in .claude/skills/cashfree-skills/, and CLAUDE.md at the project root is the routing table \u2014 it tells Claude which one to open for each kind of question.',
+        patch: { __headline: 'installed', f_skills: 'written', f_manifest: 'written' }
+      },
+      {
+        label: 'Restart Claude Code', tool: 'claude',
+        ask: 'claude',
+        call: { name: 'claude', summary: 'CLAUDE.md picked up', ms: 640 },
+        term: { kind: 'shell', ms: 640, out: [
+          { t: 'dim', s: 'Claude Code \u00b7 ready' },
+          { t: 'ok', s: 'CLAUDE.md picked up' }
+        ] },
+        say: 'Restart so it picks all this up. From here the skills load on demand \u2014 whichever one your prompt calls for.',
+        patch: { f_manifest: 'loaded' }
+      },
+      {
+        label: 'The prompt', tool: 'CLAUDE.md',
+        ask: 'Add Cashfree Payments checkout to my app.',
+        call: { name: 'read CLAUDE.md', summary: 'checkout \u2192 pg/', ms: 14 },
+        term: { fn: 'Read(CLAUDE.md)', res: 'checkout \u2192 pg/' },
+        say: 'The manifest routes it. It opens the payment-gateway skills instead of guessing at the API.',
+        patch: { f_manifest: 'read' }
+      },
+      {
+        // no ask: the script has one prompt, everything after it is the assistant working
+        label: 'Keys and SDK', tool: 'pg/backend-sdks/SKILL.md',
+        call: { name: 'read pg/backend-sdks', summary: 'api keys \u00b7 install the SDK', ms: 26 },
+        term: {
+          fn: 'Read(pg/backend-sdks/SKILL.md)',
+          res: 'api keys \u00b7 install the SDK',
+          code: {
+            head: 'generated',
+            body: '<span class="k">const</span> cashfree = <span class="k">new</span> Cashfree(\n' +
+                  '  CFEnvironment.SANDBOX,\n' +
+                  '  process.env.CASHFREE_APP_ID,\n' +
+                  '  process.env.CASHFREE_SECRET_KEY,\n' +
+                  ');'
+          }
+        },
+        say: 'It walks the integration in order, starting where every integration starts: keys and the SDK.',
+        patch: { f_sdk: 'read', output: 'keys + SDK' }
+      },
+      {
+        label: 'Order, then verify', tool: 'pg/apis/references/SKILL.md',
+        call: { name: 'read pg/apis/references', summary: 'create order \u00b7 verify on backend', ms: 44 },
+        term: {
+          fn: 'Read(pg/apis/references/SKILL.md)',
+          res: 'create order \u00b7 verify on backend',
+          code: {
+            head: 'generated',
+            body: '<span class="k">const</span> order = <span class="k">await</span> cashfree.PGCreateOrder({\n' +
+                  '  order_amount: <span class="n">799</span>,\n' +
+                  '  order_currency: <span class="s">"INR"</span>,\n' +
+                  '  customer_details,\n' +
+                  '});\n' +
+                  '<span class="c">// on your backend, before you fulfil:</span>\n' +
+                  '<span class="k">await</span> cashfree.PGFetchOrder(order.data.order_id);'
+          }
+        },
+        say: 'Creating the order, then verifying it on your backend rather than trusting the redirect.',
+        patch: { f_api: 'read', output: 'checkout integration' }
+      },
+      {
+        label: 'Testing checklist', tool: 'validation-and-testing/SKILL.md',
+        call: { name: 'read validation-and-testing', summary: 'testing checklist \u00b7 sandbox test data', ms: 31 },
+        term: { fn: 'Read(validation-and-testing/SKILL.md)', res: 'testing checklist \u00b7 sandbox test data' },
+        say: 'Because it just wrote integration code, it pulls the validation skill too. It generated the code \u2014 running it is still yours.',
+        patch: { f_test: 'read', output: 'code + test checklist' }
+      },
+      {
+        // the script's outro: "Visual: Website check out - payments."
+        label: 'See it work', tool: 'localhost:3000',
+        ask: 'npm run dev',
+        call: { name: 'npm run dev', summary: 'ready on localhost:3000', ms: 1420 },
+        term: { kind: 'store', ms: 1420, out: [
+          { t: 'ok', s: 'ready \u00b7 http://localhost:3000' }
+        ] },
+        say: 'That is the whole loop \u2014 one prompt, and the checkout it wrote is taking a payment.',
+        patch: { output: 'checkout live' }
+      }
+    ]
+  },
+
+  mcp: {
+    connectStep: {"kind":"connect","label":"Connect the server","tool":"mcp.cashfree.com/mcp","ask":"Connect to the Cashfree MCP server","say":"Connected to your merchant account over OAuth."},
+    skin: 'claude',
+    connect: {"host":"Claude","hostIcon":"claude","target":"Cashfree MCP","via":"mcp.cashfree.com/mcp · OAuth","ok":"your merchant account"},
+    title: 'MCP <span class="thin">Server</span>',
+    blurb: 'Query and operate your account in plain English, from Claude or Cursor.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - tool names from the docs' },
+    chips: { left: ['mcp.cashfree.com'], right: 'Claude · Cursor', dot: true },
+    panel: {
+      title: 'Account',
+      headline: { label: 'unsettled', value: '—' },
+      rows: [
+        { key: 'settle', label: 'Next settle' },
+        { key: 'ondemand', label: 'On demand' },
+        { key: 'report', label: 'Report' },
+        { key: 'link', label: 'Link' }
+      ]
+    },
+    steps: [
+      {
+        label: 'Unsettled cash', tool: 'get_unsettled_amount',
+        ask: 'How much is unsettled right now?',
+        call: { name: 'get_unsettled_amount', summary: '₹18,42,650 held', ms: 720 },
+        say: '₹18,42,650 is currently unsettled. Want the credit date?',
+        patch: { __headline: '₹18,42,650' }
+      },
+      {
+        label: 'Next settlement', tool: 'get_next_settlement_date',
+        ask: 'When does that hit my bank account?',
+        call: { name: 'get_next_settlement_date', summary: 'Wed 2 Sep · holiday +1 day', ms: 610 },
+        say: 'Wednesday 2 September. Tuesday is a bank holiday, so it slips a day.',
+        patch: { settle: 'Wed 2 Sep' }
+      },
+      {
+        label: 'Cost to withdraw', tool: 'get_on_demand_charges',
+        ask: 'What would it cost to withdraw ₹1,00,000 today?',
+        call: { name: 'get_on_demand_charges', summary: 'charges on ₹1,00,000', ms: 540 },
+        say: 'It returns the exact charge for that amount before you commit to the withdrawal.',
+        patch: { ondemand: '₹1,00,000' }
+      },
+      {
+        label: 'Recon report', tool: 'generate_recon_report',
+        ask: 'Generate the settlement recon report for May.',
+        call: { name: 'generate_recon_report', summary: 'queued · 1–31 May', ms: 1120 },
+        say: 'Queued for May. It polls get_report_status until the file is ready.',
+        patch: { report: 'queued' }
+      },
+      {
+        label: 'Download it', tool: 'download_report',
+        ask: 'Is it ready? Accounts wants it this morning.',
+        call: { name: 'download_report', summary: 'recon_may.csv · link ready', ms: 460 },
+        say: 'Ready — download link returned. No dashboard login anywhere in that.',
+        patch: { report: 'ready' }
+      },
+      {
+        label: 'Payment link', tool: 'create_payment_link',
+        ask: '₹5,000 link for Rahul Sharma, valid 24 hours.',
+        call: { name: 'create_payment_link', summary: 'live · ORD-2025-441', ms: 830 },
+        say: 'Live for 24 hours, tagged Order #ORD-2025-441. Share it over WhatsApp or email.',
+        patch: { link: 'ORD-2025-441' }
+      }
+    ]
+  }
+};
+
+/* ------------------------------------------------------------------ *
+ * Demo engine
+ *
+ * Three products share one phone, so nothing here is money-specific.
+ * A demo supplies its own steps AND its own bottom panel: the toolkit
+ * tracks a merchant ledger, Agent Skills tracks what got written into the
+ * workspace, MCP tracks the account position. Each step may patch the panel.
+ * ------------------------------------------------------------------ */
+
+let DEMO_KEY = 'toolkit';
+let STEPS = [];
+
+const thread = document.getElementById('thread');
+const stepsEl = document.getElementById('steps');
+const dotsEl = document.getElementById('dots');
+const composer = document.getElementById('composer');
+const panelEl = document.getElementById('panel');
+
+let at = -1;
+let busy = false;
+let autoTimer = null;
+let panelState = {};
+
+const inr = (n) => '₹' + Number(n).toLocaleString('en-IN');
+const CHECK = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const EYES = '<span class="eyes"><i></i><i></i></span>';
+
+/** Rebuild the step list, the dots and the panel for whichever demo is active. */
+function loadDemo(key) {
+  DEMO_KEY = key;
+  // The connect beat is the first turn of the conversation, not a gate before it.
+  STEPS = [DEMOS[key].connectStep, ...DEMOS[key].steps];
+  at = -1;
+  panelState = {};
+
+  stepsEl.innerHTML = '';
+  dotsEl.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const li = document.createElement('li');
+    li.className = 'step';
+    li.setAttribute('role', 'button');
+    li.innerHTML =
+      '<span class="idx">' + (i + 1) + '</span>' +
+      '<span><span class="label">' + s.label + '</span>' +
+      '<span class="tool">' + s.tool + '</span></span>';
+    li.addEventListener('click', () => jump(i));
+    stepsEl.appendChild(li);
+
+    const d = document.createElement('i');
+    d.addEventListener('click', () => jump(i));
+    dotsEl.appendChild(d);
+  });
+
+  const c = DEMOS[key].chips;
+  // A Relay demo names the agent you picked and wears its face, so the chat
+  // never loses track of which of the three you are watching.
+  const a = DEMOS[key].agent;
+  document.getElementById('ph-top').innerHTML =
+    (DEMOS[key].surface === 'terminal' ? '<span class="tlights"><i></i><i></i><i></i></span>' : '') +
+    (a ? '<span class="chip"><span class="orb ' + a.orb + '">' + EYES + '</span>' + a.name + '</span>' : '') +
+    c.left
+      .map((t, i) =>
+        '<span class="chip' + (i === 0 && c.dot && !a ? '' : ' mono') + '">' +
+        (i === 0 && c.dot && !a ? '<span class="gdot"></span>' : '') + t + '</span>')
+      .join('') +
+    '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>';
+
+  document.getElementById('demo-title').innerHTML = DEMOS[key].title;
+  document.getElementById('demo-blurb').textContent = DEMOS[key].blurb;
+
+  thread.innerHTML = '';
+  renderPanel();
+  resetComposer();
+  paintNav();
+}
+
+function renderPanel() {
+  const p = DEMOS[DEMO_KEY].panel;
+  const head = panelState.__headline ?? p.headline.value;
+  panelEl.innerHTML =
+    '<div class="lg-top"><span class="lbl">' + p.title + '</span>' +
+    (head === '—' ? '' : '<span class="net">' + head + '</span>') + '</div>' +
+    '<div class="rows">' +
+    p.rows
+      .map((r) => {
+        const v = panelState[r.key];
+        const on = v !== undefined;
+        return (
+          '<span class="lrow' + (on ? ' on' : '') + (r.sum ? ' sum' : '') +
+          (on && panelState[r.key + '__warn'] ? ' warn' : '') + '">' +
+          '<i class="pip"></i>' + r.label +
+          '<span class="v">' + (on ? v : '—') + '</span></span>'
+        );
+      })
+      .join('') +
+    '</div>';
+}
+
+function applyPatch(patch) {
+  if (!patch) return;
+  Object.keys(patch).forEach((k) => { panelState[k] = patch[k]; });
+  renderPanel();
+}
+
+function paintNav() {
+  if (typeof paintTappable === 'function') paintTappable();
+  [...stepsEl.children].forEach((li, i) => {
+    li.setAttribute('aria-current', String(i === at));
+    li.classList.toggle('done', i < at);
+  });
+  [...dotsEl.children].forEach((d, i) => d.classList.toggle('on', i === at));
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  if (prev) prev.disabled = busy || at < 0;
+  if (next) next.disabled = busy || at >= STEPS.length - 1;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** True while the active demo renders as a terminal rather than a chat. */
+const isTerm = () => !!(DEMOS[DEMO_KEY] && DEMOS[DEMO_KEY].surface === 'terminal');
+
+const CART =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 10.4a1 1 0 0 0 1 .8h8.2a1 1 0 0 0 1-.8L19 8H6" ' +
+  'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '<circle cx="10" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg>';
+
+const TICK =
+  '<svg class="tk" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" ' +
+  'stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function add(html, cls) {
+  const el = document.createElement('div');
+  el.className = 'rise ' + (cls || '');
+  el.innerHTML = html;
+  thread.appendChild(el);
+  // a terminal shows more lines than a chat shows bubbles
+  const cap = isTerm() ? 15 : 7;
+  while (thread.children.length > cap) thread.removeChild(thread.firstChild);
+  return el;
+}
+
+async function typeAsk(text) {
+  composer.classList.remove('ph');
+  composer.textContent = '';
+  for (let i = 1; i <= text.length; i++) {
+    composer.innerHTML = text.slice(0, i) + '<span class="caret"></span>';
+    await sleep(text.length > 46 ? 13 : 22);
+  }
+  await sleep(300);
+  resetComposer();
+}
+
+function resetComposer() {
+  composer.classList.add('ph');
+  // #composer is the inner text span; the prompt marker hangs off the box
+  if (isTerm()) composer.parentElement.dataset.p = promptFor(STEPS[Math.min(at + 1, STEPS.length - 1)]);
+  // The composer says what the next tap actually is, because on a Relay run it
+  // is not always typing: some beats are spoken, and some have no prompt at all.
+  const nxt = at >= STEPS.length - 1 ? null : STEPS[at + 1];
+  composer.parentElement.classList.toggle('voice', !!(nxt && nxt.voice));
+  composer.textContent =
+    at >= STEPS.length - 1 ? 'Tap to replay'
+      : nxt && nxt.voice ? 'Tap to speak'
+      : nxt && !nxt.ask ? 'Tap — it runs without you'
+      : at < 0 ? 'Tap to begin'
+      : 'Tap to continue';
+}
+
+/* ---------------- terminal surface ----------------
+ *
+ * Same steps, same data, rendered as a coding-assistant session: a shell line
+ * for the install, then the Read(...) / result pairs an assistant actually
+ * prints, and the code it generated. Skills write code -- they do not run it --
+ * so the beat this surface ends on is a file, not a state change.
+ */
+
+const promptFor = (s) => (s && s.term && s.term.kind === 'shell' ? '$' : '>');
+
+function tLine(html, cls) { return add(html, 't ' + (cls || '')); }
+
+/** Steps 4-6 of the Skills demo carry no ask: one prompt, then the assistant
+ *  works. Those beats print tool lines with no prompt line above them. */
+function tAsk(s) {
+  if (!s.ask) return;
+  tLine('<span class="tline in"><span class="p">' + promptFor(s) + '</span>' + s.ask + '</span>');
+}
+
+/* The installer's banner, verbatim from the package's own dist/cli-ui.js --
+   ANSI-shadow art in the two hexes chalk paints it with. */
+const BANNER_G = [
+  '   \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557  \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557',
+  '  \u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d',
+  '  \u2588\u2588\u2551     \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2557  ',
+  '  \u2588\u2588\u2551     \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u255a\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u255d  ',
+  '  \u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557',
+  '   \u255a\u2550\u2550\u2550\u2550\u2550\u255d\u255a\u2550\u255d  \u255a\u2550\u255d\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d\u255a\u2550\u255d  \u255a\u2550\u255d\u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d',
+];
+const BANNER_A = [
+  '  \u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557   \u2588\u2588\u2557\u2588\u2588\u2588\u2557   \u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2557   \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557',
+  '  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u255a\u2588\u2588\u2557 \u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2551\u255a\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255d\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d',
+  '  \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551 \u255a\u2588\u2588\u2588\u2588\u2554\u255d \u2588\u2588\u2554\u2588\u2588\u2588\u2588\u2554\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2554\u2588\u2588\u2557 \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557',
+  '  \u2588\u2588\u2554\u2550\u2550\u2550\u255d \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551  \u255a\u2588\u2588\u2554\u255d  \u2588\u2588\u2551\u255a\u2588\u2588\u2554\u255d\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2551\u255a\u2588\u2588\u2557\u2588\u2588\u2551   \u2588\u2588\u2551   \u255a\u2550\u2550\u2550\u2550\u2588\u2588\u2551',
+  '  \u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551 \u255a\u2550\u255d \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551 \u255a\u2588\u2588\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551',
+  '  \u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d   \u255a\u2550\u255d   \u255a\u2550\u255d     \u255a\u2550\u255d\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d\u255a\u2550\u255d  \u255a\u2550\u2550\u2550\u255d   \u255a\u2550\u255d   \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u255d',
+];
+
+function tBanner() {
+  return '<pre class="tbanner"><span class="g">' + BANNER_G.join('\n') + '</span>\n' +
+    '<span class="a">' + BANNER_A.join('\n') + '</span></pre>';
+}
+
+/** The inquirer checkbox prompt, copy and framework list straight from the package. */
+function tPick(pick) {
+  return '<span class="tq"><span class="qm">?</span>' + pick.q + '</span>' +
+    '<span class="thint">(Press <b>&lt;space&gt;</b> to select, <b>&lt;a&gt;</b> to toggle all, ' +
+    '<b>&lt;i&gt;</b> to invert selection, and <b>&lt;enter&gt;</b> to proceed)</span>' +
+    pick.items
+      .map((it) =>
+        it.on
+          ? '<span class="topt on"><span class="ptr">\u276f</span><span class="mk">\u25c9</span>' + it.n + '</span>'
+          : '<span class="topt"><span class="mk">\u25cb</span>' + it.n + '</span>')
+      .join('');
+}
+
+function tTree(lines) {
+  return '<pre class="ttree">' + lines.join('\n') + '</pre>';
+}
+
+function tOut(o) {
+  return '<span class="tline ' + (o.t === 'ok' ? 'ok' : 'dim') + '">' +
+    (o.t === 'ok' ? TICK : '') + o.s + '</span>';
+}
+
+function tCall(s, ms) {
+  return '<span class="tcall"><i class="bul"></i><span class="fn">' + s.term.fn + '</span>' +
+    '<span class="ms">' + ms + '</span></span>';
+}
+
+function tCode(c) {
+  return '<div class="tcode"><div class="hd">' + c.head + '</div><pre>' + c.body + '</pre></div>';
+}
+
+/* The outro leaves the terminal: a browser lifts over the whole laptop screen
+   showing the store the assistant just wired up, taking a payment. */
+let storeEl = null;
+
+function killStore() {
+  if (!storeEl) return;
+  storeEl.remove();
+  storeEl = null;
+}
+
+function buildStore() {
+  killStore();
+  const card = (shot, name, sizes, price) =>
+    '<div class="st-card"><div class="st-shot ' + shot + '"><span class="st-new">NEW</span></div>' +
+      '<div class="st-info"><div class="st-name">' + name + '</div>' +
+        '<div class="st-sizes">' + sizes.map((z, k) =>
+          '<i class="' + (k === 1 ? 'on' : '') + '">' + z + '</i>').join('') + '</div>' +
+        '<div class="st-row"><span class="st-price">\u20b9' + price + '</span>' +
+          '<span class="st-stock">In Stock</span></div>' +
+        '<div class="st-btn">' + CART + 'Add to Cart</div>' +
+      '</div></div>';
+
+  storeEl = document.createElement('div');
+  storeEl.className = 'store';
+  storeEl.innerHTML =
+    '<div class="st-chrome"><span class="tlights"><i></i><i></i><i></i></span>' +
+      '<span class="st-url"><span class="lock">\u25cf</span>localhost:3000</span></div>' +
+    '<div class="st-body">' +
+      '<div class="st-nav">' +
+        '<span class="st-logo">' + CART + '</span>' +
+        '<span class="st-brand">Shirt<span class="thin">Shop</span></span>' +
+        '<span class="st-links"><span class="on">Shop</span><span>Cart</span>' +
+          '<span>Orders</span><span>Profile</span></span>' +
+        '<span class="st-av">AS</span>' +
+      '</div>' +
+      '<div class="st-head"><div class="h">Our Collection</div><div class="c">6 products</div></div>' +
+      '<div class="st-grid">' +
+        card('a', 'Classic Cotton T-Shirt', ['S', 'M', 'L', 'XL'], '799') +
+        card('b', 'Premium Striped Shirt', ['S', 'M', 'L', 'XL'], '1,299') +
+        card('c', 'Vintage Graphic Tee', ['S', 'M', 'L', 'XL'], '999') +
+      '</div>' +
+    '</div>' +
+    '<div class="st-toast"><span class="tick">' + CHECK + '</span>' +
+      '<span>Paid with Cashfree</span><span class="amt">\u20b9799</span></div>';
+  screenEl2.appendChild(storeEl);
+  return storeEl;
+}
+
+/** The no-animation form, for Back and dot-jumps. */
+function paintStepTerm(s) {
+  if (s.term.kind === 'store') { buildStore().classList.add('live', 'paid'); } else { killStore(); }
+  tAsk(s);
+  if (s.term.kind === 'shell' || s.term.kind === 'store') {
+    if (s.term.banner) tLine(tBanner());
+    if (s.term.setup) tLine('<span class="tsetup">' + s.term.setup + '</span>');
+    if (s.term.pick) tLine(tPick(s.term.pick));
+    (s.term.out || []).forEach((o) => tLine(tOut(o)));
+    if (s.term.tree) tLine(tTree(s.term.tree));
+  } else {
+    tLine(tCall(s, s.call.ms + 'ms'));
+    tLine('<span class="tres"><span class="br">\u2514</span>' + s.term.res + '</span>');
+  }
+  if (s.term.code) tLine(tCode(s.term.code));
+  tLine('<span class="tsay">' + s.say + '</span>');
+  applyPatch(s.patch);
+}
+
+async function runStepTerm(i) {
+  const s = STEPS[i];
+  busy = true;
+  paintNav();
+  if (s.term.kind !== 'store') killStore();
+
+  if (s.ask) {
+    await typeAsk(s.ask);
+    tAsk(s);
+    await sleep(200);
+  }
+
+  if (s.term.kind === 'shell' || s.term.kind === 'store') {
+    const spin = tLine('<span class="tline dim">working\u2026</span>');
+    await sleep(Math.min(s.term.ms || 900, 700));
+    spin.remove();
+    if (s.term.banner) { tLine(tBanner()); await sleep(260); }
+    if (s.term.setup) { tLine('<span class="tsetup">' + s.term.setup + '</span>'); await sleep(180); }
+    if (s.term.pick) { tLine(tPick(s.term.pick)); await sleep(320); }
+    for (const o of (s.term.out || [])) {
+      tLine(tOut(o));
+      await sleep(95);
+    }
+    if (s.term.tree) { tLine(tTree(s.term.tree)); await sleep(180); }
+  } else {
+    const row = tLine(tCall(s, '\u2026'));
+    await sleep(Math.min(s.call.ms, 520) + 260);
+    row.innerHTML = tCall(s, s.call.ms + 'ms');
+    await sleep(140);
+    tLine('<span class="tres"><span class="br">\u2514</span>' + s.term.res + '</span>');
+  }
+
+  applyPatch(s.patch);
+
+  if (s.term.code) {
+    await sleep(200);
+    tLine(tCode(s.term.code));
+  }
+
+  if (s.term.kind === 'store') {
+    const el = buildStore();
+    await sleep(60);
+    el.classList.add('live');
+    await sleep(1100);
+    if (storeEl === el) el.classList.add('paid');
+  }
+
+  await sleep(180);
+  tLine('<span class="tsay">' + s.say + '</span>');
+
+  busy = false;
+  paintNav();
+  resetComposer();
+}
+
+async function runStep(i) {
+  const s = STEPS[i];
+  if (isTerm()) return runStepTerm(i);
+  busy = true;
+  paintNav();
+  killCall();
+
+  // Segments 2 and 3 of the Relay story carry no merchant prompt: the buyer
+  // drops off, the agent calls. Those beats open on the event itself, which is
+  // the claim rendered as an interaction — you stop typing and it keeps going.
+  if (s.ask) {
+    if (s.voice) await listenAsk(s.ask); else await typeAsk(s.ask);
+    add('<div class="bubble-me' + (s.mono ? ' mono' : '') + (s.voice ? ' said' : '') + '">' +
+      (s.voice ? MICG : '') + s.ask + '</div>', 'msg me');
+    await sleep(240);
+  }
+
+  if (s.kind === 'connect') {
+    const card = add(connectCardHTML(DEMO_KEY, false), 'msg');
+    await sleep(340);
+    card.firstChild.classList.add('live');
+    card.querySelector('.cxi-state').textContent = 'Connected';
+    applyPatch(s.patch);
+    await sleep(1150);
+    add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+    busy = false;
+    paintNav();
+    resetComposer();
+    return;
+  }
+
+  const row = add(
+    '<div class="toolrow"><span class="nm">' + s.call.name + '</span><span class="sm">running…</span></div>',
+    'msg',
+  );
+  await sleep(Math.min(s.call.ms, 620));
+  row.innerHTML =
+    '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
+    '<span class="sm">' + s.call.summary + '</span>' +
+    '<span class="ms">' + s.call.ms + 'ms</span></div>';
+
+  applyPatch(s.patch);
+  await sleep(200);
+
+  // the set pieces: the month's numbers, the buyer's own screen, the call
+  await playScene(s.scene, true);
+
+  add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+
+  busy = false;
+  paintNav();
+  resetComposer();
+}
+
+/** Jump straight to a state with no animation — used by dots and Back. */
+function rebuild(i) {
+  killStore();
+  killCall();
+  killVoice();
+  thread.innerHTML = '';
+  panelState = {};
+  renderPanel();
+  for (let n = 0; n <= i; n++) {
+    const s = STEPS[n];
+    if (isTerm()) { paintStepTerm(s); continue; }
+    if (s.ask) {
+      add('<div class="bubble-me' + (s.mono ? ' mono' : '') + (s.voice ? ' said' : '') + '">' +
+        (s.voice ? MICG : '') + s.ask + '</div>', 'msg me');
+    }
+    if (s.kind === 'connect') {
+      add(connectCardHTML(DEMO_KEY, true), 'msg');
+      add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+      applyPatch(s.patch);
+      continue;
+    }
+    add(
+      '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
+      '<span class="sm">' + s.call.summary + '</span>' +
+      '<span class="ms">' + s.call.ms + 'ms</span></div>',
+      'msg',
+    );
+    playScene(s.scene, false);
+    // the call is a moment, not a state: it only stands if you landed on it
+    if (s.scene && s.scene.kind === 'call' && n === i) paintCall(s.scene);
+    add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+    applyPatch(s.patch);
+  }
+  at = i;
+  paintNav();
+  resetComposer();
+}
+
+async function next() {
+  if (busy || at >= STEPS.length - 1) return;
+  at += 1;
+  await runStep(at);
+}
+
+function prev() {
+  if (busy || at < 0) return;
+  stopAuto();
+  rebuild(at - 1);
+  if (at < 0) { thread.innerHTML = ''; resetComposer(); }
+}
+
+async function jump(i) {
+  if (busy) return;
+  stopAuto();
+  if (i === at + 1) { await next(); return; }
+  rebuild(i);
+}
+
+function stopAuto() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  const p = document.getElementById('play');
+  if (p) p.textContent = 'Auto-play';
+}
+
+document.getElementById('next').addEventListener('click', () => {
+  stopAuto();
+  // Outside a demo there is no step to advance to; the picker owns the tap.
+  if (typeof mode !== 'undefined' && mode !== 'demo') { return; }
+  next();
+});
+document.getElementById('prev').addEventListener('click', prev);
+document.getElementById('play').addEventListener('click', function () {
+  if (autoTimer) { stopAuto(); return; }
+  this.textContent = 'Stop';
+  if (at >= STEPS.length - 1) rebuild(-1);
+  const tick = async () => {
+    if (busy) return;
+    if (at >= STEPS.length - 1) { stopAuto(); return; }
+    await next();
+  };
+  tick();
+  autoTimer = setInterval(tick, 900);
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); stopAuto(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+});
+
+/* ---------------- tap the phone to advance ---------------- */
+
+const screenNode = document.querySelector('.screen');
+
+/** The device is only tappable when a tap would actually do something. */
+function paintTappable() {
+  const inTour = !!window.__tourActive;
+  const inDemo = typeof mode === 'undefined' || mode === 'demo';
+  screenNode.classList.toggle('tappable', !busy && !inTour && inDemo && !window.__connecting);
+
+  const hint = document.getElementById('taphint');
+  const wantHint = at < 0 && !busy && !inTour && inDemo && !window.__connecting;
+  if (wantHint && !hint) {
+    const el = document.createElement('div');
+    el.id = 'taphint';
+    el.className = 'taphint';
+    el.innerHTML = '<span class="ring"></span> Tap the screen';
+    screenNode.appendChild(el);
+  } else if (!wantHint && hint) {
+    hint.remove();
+  }
+}
+
+screenNode.addEventListener('click', (e) => {
+  if (window.__tourActive) return;   // the tour owns the screen while it runs
+  if (mode !== 'demo') return;       // home and tier 2 have their own targets
+  if (window.__connecting) return;   // the connect beat owns the screen
+  if (busy) return;
+  stopAuto();
+
+  // ripple where the finger landed
+  const r = screenNode.getBoundingClientRect();
+  const dot = document.createElement('span');
+  dot.className = 'ripple';
+  dot.style.left = (e.clientX - r.left) + 'px';
+  dot.style.top = (e.clientY - r.top) + 'px';
+  screenNode.appendChild(dot);
+  setTimeout(() => dot.remove(), 600);
+
+  // at the end, a tap replays it — a prototype should loop, not dead-end
+  if (at >= STEPS.length - 1) { rebuild(-1); thread.innerHTML = ''; resetComposer(); return; }
+  next();
+});
+
+
+/* ---------------- connect screen ---------------- */
+
+const screenEl2 = document.querySelector('.screen');
+let connectEl = null;
+
+
+/** The connect card that sits in the thread for a demo's first turn. */
+function connectCardHTML(key, live) {
+  const c = DEMOS[key].connect;
+  return (
+    '<div class="cxi' + (live ? ' live' : '') + '">' +
+      '<div class="cxi-pair">' +
+        '<div class="cxi-node"><span class="tile">' + CX_ICON[c.hostIcon] + '</span>' +
+          '<span class="nm">' + c.host + '</span></div>' +
+        '<div class="cxi-wire"><span class="fill"></span><span class="bead"></span></div>' +
+        '<div class="cxi-node"><span class="tile">' + CX_ICON.cf + '</span>' +
+          '<span class="nm">' + c.target + '</span></div>' +
+      '</div>' +
+      '<div class="cxi-via">' + c.via + '</div>' +
+      '<div class="cxi-foot"><span class="cxi-sw"><span class="knob"></span></span>' +
+        '<span class="cxi-state">' + (live ? 'Connected' : 'Not connected') + '</span></div>' +
+    '</div>'
+  );
+}
+
+function hideConnect() {
+  window.__connecting = false;
+  if (typeof paintNav === 'function') paintNav();
+  if (!connectEl) return;
+  const el = connectEl;
+  connectEl = null;
+  el.classList.add('gone');
+  setTimeout(() => el.remove(), 460);
+}
+
+
+/* ---------------- Relay: voice in, the buyer's screen, and the call --------
+ *
+ * Both Relay docs run the same three segments, and two of them are not chat:
+ *
+ *   1. the merchant SPEAKS the first prompt      -> listenAsk()
+ *   2. the buyer drops off on their own screen   -> buyscrHTML()
+ *   3. the agent CALLS the buyer                 -> runCall()
+ *
+ * Segments 2 and 3 carry no merchant prompt at all, which is the product
+ * claim rendered as an interaction: you stop typing and it keeps going.
+ */
+
+/* The scripts Relay's voice layer exists for. Not decoration — the reason a
+   voice agent is worth building in this market is that the buyer is not
+   answering in English. Placed as a loose ring, the way the doc frames it. */
+const VGLYPHS = [
+  { c: 'अ', k: '#3b5bdb', t: '30%', l: '50%' },
+  { c: 'অ', k: '#7048e8', t: '35%', l: '73%', sm: 1 },
+  { c: 'અ', k: '#e8590c', t: '46%', l: '84%' },
+  { c: 'అ', k: '#e03131', t: '58%', l: '76%', sm: 1 },
+  { c: 'அ', k: '#c2255c', t: '65%', l: '55%' },
+  { c: 'ಅ', k: '#0b7285', t: '63%', l: '31%', sm: 1 },
+  { c: 'ਅ', k: '#2b8a3e', t: '54%', l: '15%' },
+  { c: 'ଅ', k: '#9c6f00', t: '41%', l: '17%', sm: 1 },
+  { c: 'A',      k: '#1d221f', t: '33%', l: '31%' },
+];
+
+const MICG =
+  '<svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+  'stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/>' +
+  '<path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
+
+let vcapEl = null;
+
+function killVoice() {
+  if (!vcapEl) return;
+  const el = vcapEl;
+  vcapEl = null;
+  el.classList.add('gone');
+  setTimeout(() => el.remove(), 360);
+}
+
+function buildVoice() {
+  if (vcapEl) { vcapEl.remove(); vcapEl = null; }
+  const peaks = [44, 70, 52, 88, 58, 76, 42];
+  const el = document.createElement('div');
+  el.className = 'vcap';
+  el.innerHTML =
+    '<div class="vstage">' +
+      '<div class="vbars">' +
+        peaks.map((h, i) =>
+          '<i style="--h:' + h + 'px;animation-delay:' + (i * 0.085).toFixed(3) + 's"></i>').join('') +
+      '</div>' +
+      '<div class="vlabel"><span class="rec"></span>Listening…</div>' +
+      VGLYPHS.map((g, i) =>
+        '<span class="vg' + (g.sm ? ' sm' : '') + '" style="top:' + g.t + ';left:' + g.l +
+        ';color:' + g.k + ';animation-delay:' + (i * 0.3).toFixed(2) + 's">' + g.c + '</span>').join('') +
+    '</div>';
+  screenEl2.appendChild(el);
+  vcapEl = el;
+  return el;
+}
+
+/** The first prompt in both docs is spoken, so it arrives as a capture that
+ *  resolves into text rather than as typing. Speech lands faster than fingers,
+ *  hence the shorter per-character delay than typeAsk(). */
+async function listenAsk(text) {
+  const box = composer.parentElement;
+  box.classList.add('listening');
+  buildVoice();
+  await sleep(1300);
+  killVoice();
+  composer.classList.remove('ph');
+  for (let i = 1; i <= text.length; i++) {
+    composer.innerHTML = text.slice(0, i) + '<span class="caret"></span>';
+    await sleep(11);
+  }
+  box.classList.remove('listening');
+  await sleep(280);
+  resetComposer();
+}
+
+/* --- the month at a glance ------------------------------------------------ */
+
+/** "The agent lists failed transactions with reasons for failure" — a sentence
+ *  cannot hold five reasons and five amounts, so that answer is a table. */
+function brkHTML(b) {
+  return '<div class="brk">' +
+    '<div class="bk-top"><span class="lbl">' + b.title + '</span>' +
+      '<span class="tot">' + b.total + '</span></div>' +
+    b.rows.map((r) =>
+      '<div class="bk-row' + (r.hot ? ' hot' : '') + '"><i class="pip"></i>' +
+      '<span class="k">' + r.k + '</span>' +
+      '<span class="n">' + r.n + '</span>' +
+      '<span class="v">' + r.v + '</span></div>').join('') +
+  '</div>';
+}
+
+/* --- the buyer's screen --------------------------------------------------- */
+
+const BS_X =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10M17 7L7 17" stroke="#fff" ' +
+  'stroke-width="3.6" stroke-linecap="round"/></svg>';
+const BS_BANG =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v9M12 18.4v.2" stroke="#fff" ' +
+  'stroke-width="3.6" stroke-linecap="round"/></svg>';
+
+/** Drawn as its own small device, labelled, so it can never be misread as the
+ *  merchant's phone. This is the one moment in the run happening to someone
+ *  else, somewhere else. */
+function buyscrHTML(b) {
+  return '<div class="buyscr ' + b.tone + '">' +
+    '<div class="bs-tag"><span class="live"></span>' + b.tag + '</div>' +
+    '<div class="bs-brand"><span class="glyph">\u{1F3EA}</span>' +
+      '<span class="who"><span class="nm">' + b.store + '</span>' +
+      '<span class="tr">Trusted by Cashfree</span></span>' +
+      '<span class="amt">' + b.amount + '</span></div>' +
+    '<div class="bs-body">' +
+      '<div class="bs-h"><span class="bs-ic">' +
+        (b.tone === 'fail' ? BS_X : BS_BANG) + '</span>' + b.head + '</div>' +
+      '<div class="bs-reason">' + b.reason + '</div>' +
+      (b.opts
+        ? '<div class="bs-opts">' + b.opts.map((o) =>
+            '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
+          '</div>'
+        : '') +
+      '<div class="bs-meta">' + b.meta + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* --- Relay Calling -------------------------------------------------------- */
+
+const HANDSET =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M6.7 3.4 9.2 3l1.9 4.4-2.1 1.6a12.7 12.7 0 0 0 ' +
+  '6 6l1.6-2.1L21 14.8l-.4 2.5c-.15.95-.98 1.7-1.95 1.7C10.3 19 5 13.7 5 5.35 5 4.38 5.75 3.55 ' +
+  '6.7 3.4Z" fill="#fff"/></svg>';
+
+let callEl = null;
+
+function killCall() {
+  if (!callEl) return;
+  const el = callEl;
+  callEl = null;
+  el.classList.add('gone');
+  setTimeout(() => el.remove(), 420);
+}
+
+function buildCall(sc, settled) {
+  killCall();
+  if (callEl) callEl.remove();
+  const el = document.createElement('div');
+  el.className = 'callscene' + (settled ? ' live' : ' ringing');
+  el.style.setProperty('--glow', sc.glow);
+  el.innerHTML =
+    '<div class="chead">' +
+      '<div class="ckick">Relay calling</div>' +
+      '<div class="cstat"><span class="s">' + (settled ? 'Connected' : 'Ringing…') + '</span>' +
+        '<span class="t">' + (settled ? sc.dur : '00:00') + '</span></div>' +
+      '<span class="clang">' + sc.lang + '</span>' +
+    '</div>' +
+    '<div class="cpair">' +
+      '<div class="cnode"><span class="cshell a">' +
+        '<span class="orb ' + sc.orb + '">' + EYES + '</span><span class="halo"></span></span>' +
+        '<span class="nm">' + sc.agent + '</span><span class="sub">Relay</span></div>' +
+      '<div class="cwire">' +
+        Array.from({ length: 15 }, (_, i) =>
+          '<i style="--h:' + (9 + ((i * 7) % 21)) + 'px;animation-delay:' +
+          (i * 0.055).toFixed(3) + 's"></i>').join('') +
+      '</div>' +
+      '<div class="cnode"><span class="cshell b">' +
+        '<span class="cava">' + sc.initials + '</span><span class="halo"></span></span>' +
+        '<span class="nm">' + sc.buyer + '</span><span class="sub">' + sc.phone + '</span></div>' +
+    '</div>' +
+    '<div class="csub"></div>' +
+    '<div class="cend">' + HANDSET.replace('<svg ', '<svg style="transform:rotate(134deg)" ') + '</div>';
+  screenEl2.appendChild(el);
+  callEl = el;
+  return el;
+}
+
+function callLine(sc, line) {
+  const d = document.createElement('div');
+  d.className = 'cline' + (line.b ? ' b' : '');
+  d.innerHTML = '<span class="who">' + (line.b ? sc.buyer : 'Relay') + '</span>' + line.t;
+  return d;
+}
+
+function callResult(sc) {
+  const r = document.createElement('div');
+  r.className = 'cres';
+  r.innerHTML = '<span class="tick">' + CHECK + '</span><span>' + sc.result + '</span>' +
+    '<span class="amt">' + sc.amount + '</span>';
+  return r;
+}
+
+/** Rings, connects, runs the transcript one line at a time with the halo and
+ *  the meter leaning toward whoever holds the floor, shows what the call
+ *  produced, then hangs up and drops you back into the thread. */
+async function runCall(sc) {
+  const el = buildCall(sc, false);
+  const stat = el.querySelector('.cstat .s');
+  const clock = el.querySelector('.cstat .t');
+  const sub = el.querySelector('.csub');
+
+  await sleep(1400);
+  if (callEl !== el) return;
+  el.classList.remove('ringing');
+  el.classList.add('live');
+  stat.textContent = 'Connected';
+
+  let t = 0;
+  const tick = setInterval(() => {
+    t += 1;
+    clock.textContent = '00:' + String(t).padStart(2, '0');
+  }, 1000);
+
+  for (const line of sc.lines) {
+    if (callEl !== el) { clearInterval(tick); return; }
+    el.classList.remove('side-a', 'side-b');
+    el.classList.add(line.b ? 'side-b' : 'side-a');
+    sub.appendChild(callLine(sc, line));
+    while (sub.children.length > 3) sub.removeChild(sub.firstChild);
+    // a buyer's "yes" takes a beat; the agent's script takes longer
+    await sleep(line.b ? 1300 : 2200);
+  }
+
+  clearInterval(tick);
+  if (callEl !== el) return;
+  el.classList.remove('side-a', 'side-b');
+  el.insertBefore(callResult(sc), el.querySelector('.cend'));
+  await sleep(1250);
+  if (callEl !== el) return;
+  killCall();
+  await sleep(320);
+}
+
+/** The no-animation form, for Back and dot-jumps that land ON the call beat. */
+function paintCall(sc) {
+  const el = buildCall(sc, true);
+  const sub = el.querySelector('.csub');
+  sc.lines.slice(-3).forEach((line) => sub.appendChild(callLine(sc, line)));
+  el.insertBefore(callResult(sc), el.querySelector('.cend'));
+}
+
+/** Every set piece a Relay step can raise, in the order it raises them. */
+async function playScene(sc, animate) {
+  if (!sc) return;
+  if (sc.kind === 'brk') { add(brkHTML(sc), 'msg'); if (animate) await sleep(420); return; }
+  if (sc.kind === 'buy') { add(buyscrHTML(sc), 'msg'); if (animate) await sleep(560); return; }
+  if (sc.kind === 'call') { if (animate) await runCall(sc); return; }
+}
+
+/* ---------------- navigation: home -> builders -> demo ---------------- */
+
+const homeEl = document.getElementById('home');
+const tier2El = document.getElementById('tier2');
+const agentsEl = document.getElementById('agents');
+const backEl = document.getElementById('back');
+const provEl = document.getElementById('prov');
+
+/** The demos that hang off the Relay shelf rather than off tier 2. */
+const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayDun'];
+
+/** 'home' | 'tier2' | 'agents' | 'demo'. Taps only advance steps while in 'demo'. */
+let mode = 'home';
+
+function setProvenance(key) {
+  const p = DEMOS[key].provenance;
+  provEl.classList.toggle('illustrative', p.kind !== 'real');
+  document.getElementById('prov-text').textContent = p.text;
+}
+
+/** The chassis follows the demo: a phone for the merchant surfaces, a laptop
+ *  for the one that lives in a terminal. Same .screen node either way, so taps,
+ *  dots, the tour and the connect beat carry over untouched. */
+const demoCardEl = document.querySelector('.demo');
+const phoneEl = document.querySelector('.phone');
+
+function setChassis(key) {
+  killStore();
+  killCall();
+  killVoice();
+  const term = !!(key && DEMOS[key] && DEMOS[key].surface === 'terminal');
+  screenEl2.classList.toggle('term', term);
+  phoneEl.classList.toggle('as-laptop', term);
+  demoCardEl.classList.toggle('wide', term);
+}
+
+function goHome() {
+  mode = 'home';
+  hideConnect();
+  setChassis(null);
+  screenEl2.classList.remove('skin-claude');
+  stopAuto();
+  if (window.__tourActive) endTour();
+  homeEl.classList.remove('gone');
+  tier2El.classList.add('gone');
+  agentsEl.classList.add('gone');
+  backEl.style.display = 'none';
+  thread.innerHTML = '';
+  paintNav();
+}
+
+/*
+ * Level 2b. Relay ships a shelf of agents rather than one automation, so the
+ * Relay card opens the shelf and the agent you pick decides the conversation.
+ */
+function goAgents() {
+  mode = 'agents';
+  hideConnect();
+  setChassis(null);
+  screenEl2.classList.remove('skin-claude');
+  stopAuto();
+  if (window.__tourActive) endTour();
+  homeEl.classList.add('gone');
+  tier2El.classList.add('gone');
+  agentsEl.classList.remove('gone');
+  backEl.style.display = 'grid';
+  thread.innerHTML = '';
+  paintNav();
+}
+
+function goTier2() {
+  mode = 'tier2';
+  hideConnect();
+  setChassis(null);
+  screenEl2.classList.remove('skin-claude');
+  stopAuto();
+  if (window.__tourActive) endTour();
+  homeEl.classList.add('gone');
+  tier2El.classList.remove('gone');
+  agentsEl.classList.add('gone');
+  backEl.style.display = 'grid';
+  paintNav();
+}
+
+function openDemo(key) {
+  mode = 'demo';
+  setChassis(key);
+  loadDemo(key);
+  setProvenance(key);
+  // the phone wears the host's clothes where the host is not a Cashfree surface
+  screenEl2.classList.toggle('skin-claude', DEMOS[key].skin === 'claude');
+  tier2El.classList.add('gone');
+  homeEl.classList.add('gone');
+  agentsEl.classList.add('gone');
+  backEl.style.display = 'grid';
+  paintNav();
+
+  setTimeout(() => { if (mode === 'demo') next(); }, 460);
+}
+
+document.getElementById('card-builders').addEventListener('click', (e) => { e.stopPropagation(); goTier2(); });
+document.getElementById('card-relay').addEventListener('click', (e) => { e.stopPropagation(); goAgents(); });
+
+document.querySelectorAll('.acard').forEach((card) => {
+  card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.agent); });
+});
+
+document.querySelectorAll('.t2card').forEach((card) => {
+  card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.demo); });
+});
+
+// step counts on the tier-2 cards, straight from the data
+// scoped to the builder tier: an unrelated agent shelf also uses .steps-n
+document.querySelectorAll('.t2card .steps-n').forEach((el) => {
+  const k = el.dataset.count;
+  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + 1) + ' steps';
+});
+
+// and the same on the agent shelf, so a card says how long its run is
+document.querySelectorAll('.acard .steps-n').forEach((el) => {
+  const k = el.dataset.count;
+  if (DEMOS[k]) el.textContent = (DEMOS[k].steps.length + 1) + ' steps';
+});
+
+backEl.addEventListener('click', (e) => {
+  e.stopPropagation();
+  // Back retraces the way in: a Relay agent falls back to the shelf it was
+  // picked from, the three builder demos to tier 2, everything else to home.
+  if (mode === 'demo') {
+    if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goAgents(); return; }
+    goTier2();
+    return;
+  }
+  goHome();
+});
+
+/*
+ * The orbs blink on their own lazy schedule, the way they do on the beta-access
+ * form. That is the only piece of life carried over: the form's cursor-following
+ * tilt and pupil tracking are left out, because this shelf is a menu you click,
+ * and a ball that leans away from the pointer fights the tap it is inviting.
+ */
+setInterval(() => {
+  document.querySelectorAll('.agentpick:not(.gone) .orb .eyes, .ph-top .orb .eyes')
+    .forEach((eyes) => {
+      if (eyes.classList.contains('blinking')) return;
+      if (Math.random() >= 0.22) return;
+      eyes.classList.add('blinking');
+      setTimeout(() => eyes.classList.remove('blinking'), 320);
+    });
+}, 900);
+
+loadDemo('toolkit');
+setProvenance('toolkit');
+
+paintNav();
+</script>
+
+<style>
+/*
+ * Guided tour — the interaction the Checkout360 section actually uses.
+ *
+ * The checkout demo is not a multi-screen tap-through: a ~90% black scrim drops
+ * over the live page and a spotlight walks DOWN it, one module at a time, with a
+ * lime headline, white body copy and a lime "Next" pill. This reproduces that
+ * pattern over the phone so the two sections behave like siblings, not just look
+ * like them.
+ */
+.tour-on .phone { z-index: 40; }
+.spot {
+  position: absolute;
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.88);
+  transition: all 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 20;
+}
+.tip {
+  position: absolute;
+  left: 16px; right: 16px;
+  z-index: 21;
+  transition: top 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tip h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #cef993;
+  font-weight: 700;
+}
+.tip p { margin: 0; font-size: 13px; line-height: 1.45; color: rgba(255,255,255,0.86); }
+.tip .row { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+.tip .nextpill {
+  appearance: none; border: 0; cursor: pointer;
+  background: #cef993; color: #10321a;
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 7px 17px; border-radius: 999px;
+}
+.tip .count { font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; }
+.tip .skip {
+  margin-left: auto; background: none; border: 0; cursor: pointer;
+  color: rgba(255,255,255,0.55); font: inherit; font-size: 12.5px; text-decoration: underline;
+}
+</style>
+<script>
+/* Beats mirror the checkout tour's cadence: brand/trust, then each module down the screen. */
+const TOUR = [
+  { sel: '.ph-top .chip', h: 'Your real account',
+    b: 'Not a sandbox toy on the side. The agent is pointed at a live Cashfree account — this one just happens to be SANDBOX.' },
+  { sel: '#toolchip', h: 'Scoped tools',
+    b: 'This agent was handed 11 of 40 tools. The other 29 do not exist for it — scope is structural, not a prompt asking it to behave.' },
+  { sel: '.thread .msg:nth-last-child(2)', h: 'Real API calls',
+    b: 'Every mono line is an actual Cashfree call with its real round-trip. 64ms to 925ms, measured, not decorative.' },
+  { sel: '.ledger', h: 'Live merchant ledger',
+    b: 'Captured minus refunded, updating as the money moves. ₹500 in, ₹200 back, ₹300 net — the same figures the dashboard shows.' },
+  { sel: '.composer', h: 'One conversation',
+    b: 'Plain English in, payments out. No endpoints, no payload shapes, no SDK wiring for the merchant to learn.' },
+];
+
+let tourAt = -1;
+const screenEl = document.querySelector('.screen');
+let spotEl = null, tipEl = null;
+
+function endTour() {
+  tourAt = -1;
+  window.__tourActive = false;
+  paintTappable();
+  if (spotEl) { spotEl.remove(); spotEl = null; }
+  if (tipEl) { tipEl.remove(); tipEl = null; }
+  document.body.classList.remove('tour-on');
+  document.getElementById('tour').textContent = 'Guided tour';
+}
+
+function showBeat(i) {
+  const beat = TOUR[i];
+  const target = document.querySelector(beat.sel);
+  if (!target) { endTour(); return; }
+
+  const sr = screenEl.getBoundingClientRect();
+  const tr = target.getBoundingClientRect();
+  const pad = 7;
+  const top = tr.top - sr.top - pad;
+  const height = tr.height + pad * 2;
+
+  spotEl.style.top = top + 'px';
+  spotEl.style.left = (tr.left - sr.left - pad) + 'px';
+  spotEl.style.width = (tr.width + pad * 2) + 'px';
+  spotEl.style.height = height + 'px';
+
+  // Put the copy on whichever side of the spotlight has more room.
+  const below = sr.height - (top + height);
+  tipEl.style.top = (below > 190 ? top + height + 16 : Math.max(56, top - 172)) + 'px';
+  tipEl.innerHTML =
+    '<h4>' + beat.h + '</h4><p>' + beat.b + '</p>' +
+    '<div class="row"><button class="nextpill" id="tnext">' +
+    (i === TOUR.length - 1 ? 'Done' : 'Next') + '</button>' +
+    '<span class="count">' + (i + 1) + ' / ' + TOUR.length + '</span>' +
+    '<button class="skip" id="tskip">Skip tour</button></div>';
+  document.getElementById('tnext').onclick = () =>
+    i === TOUR.length - 1 ? endTour() : showBeat(++tourAt);
+  document.getElementById('tskip').onclick = endTour;
+}
+
+document.getElementById('tour').addEventListener('click', () => {
+  if (tourAt >= 0) { endTour(); return; }
+  stopAuto();
+  if (at < STEPS.length - 1) rebuild(STEPS.length - 1);  // tour needs a filled screen
+  document.body.classList.add('tour-on');
+  document.getElementById('tour').textContent = 'Exit tour';
+  spotEl = document.createElement('div'); spotEl.className = 'spot';
+  tipEl = document.createElement('div'); tipEl.className = 'tip';
+  screenEl.appendChild(spotEl); screenEl.appendChild(tipEl);
+  tourAt = 0;
+  window.__tourActive = true;
+  paintTappable();
+  showBeat(0);
+});
+
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tourAt >= 0) endTour(); });
+</script>
+
+</body>
+</html>

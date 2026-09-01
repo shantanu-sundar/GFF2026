@@ -1,0 +1,428 @@
+=========================================================
+ CASHFREE AGENT TOOLKIT 1.1.0 - TOOL SCHEMA DUMP
+ generated: 2026-08-31T11:06:28.513Z
+=========================================================
+TOTAL TOOLS (getTools):       40
+TOTAL TOOLS (getAgentTools):  40
+
+ALL TOOL NAMES:
+  1. createOrder
+  2. getOrder
+  3. terminateOrder
+  4. getOrderExtendedData
+  5. updateOrderExtendedData
+  6. authorizeOrder
+  7. createRefund
+  8. getAllRefunds
+  9. getRefund
+ 10. orderPayUsingUpi
+ 11. orderPayUsingNetbanking
+ 12. orderPayUsingApp
+ 13. orderPayUsingPlainCard
+ 14. orderPayUsingSavedCard
+ 15. getPaymentsForOrder
+ 16. getPaymentById
+ 17. getEligiblePaymentMethods
+ 18. getEligibleOffers
+ 19. createCustomer
+ 20. fetchCustomerInstruments
+ 21. fetchCustomerInstrument
+ 22. deleteCustomerInstrument
+ 23. verifyPan360
+ 24. verifyGstin
+ 25. verifyNameMatch
+ 26. createReversePennyDrop
+ 27. getReversePennyDropStatus
+ 28. verifyBankAccount
+ 29. verifyIfsc
+ 30. mobile360SendOtp
+ 31. mobile360VerifyOtp
+ 32. generateKycLink
+ 33. getKycLinkStatus
+ 34. generateStaticKycLink
+ 35. deactivateStaticKycLink
+ 36. smartOcr
+ 37. createVkycUser
+ 38. initiateVkyc
+ 39. generateVkycAuthToken
+ 40. getVkycStatus
+
+=========================================================
+ RUNTIME SHAPE OF AN AGENT TOOL OBJECT (tk.tools.createOrder)
+=========================================================
+typeof            : object
+Object.keys       : ["type","name","description","parameters","strict","invoke","needsApproval","isEnabled","inputGuardrails","outputGuardrails"]
+  .type -> string = "function"
+  .name -> string = "createOrder"
+  .description -> string = "Creates a new payment order using Cashfree. Requires order amount, currency, an
+  .parameters -> object
+  .strict -> boolean
+  .invoke -> function
+  .needsApproval -> function
+  .isEnabled -> function
+  .inputGuardrails -> object
+  .outputGuardrails -> object
+has .invoke       : function
+has .execute      : undefined
+needsApproval     : undefined
+
+RAW TOOL DEFINITIONS (tk.toolDefinitions[0]) keys: ["method","name","description","inputSchema","execute"]
+tk.handleToolCall : function   <-- PREFERRED no-LLM execution path
+
+=========================================================
+ TOOL: createCustomer
+=========================================================
+DESCRIPTION:
+  Creates a new customer at Cashfree. Requires customer phone, email, and name.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "customer_phone": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 10,
+      "description": "The unique identifier for the order whose status is to be fetched"
+    },
+    "customer_email": {
+      "type": "string",
+      "description": "The unique identifier for the order whose status is to be fetched"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "The unique identifier for the order whose status is to be fetched"
+    }
+  },
+  "required": [
+    "customer_phone",
+    "customer_email",
+    "customer_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: createOrder
+=========================================================
+DESCRIPTION:
+  Creates a new payment order using Cashfree. Requires order amount, currency, and customer details (id, email, phone). Optionally accepts customer name, return URL, and order note.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "order_amount": {
+      "type": "number",
+      "description": "The amount for the order"
+    },
+    "order_currency": {
+      "type": "string",
+      "default": "INR",
+      "description": "The currency for the order (e.g., INR)"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "Unique identifier for the customer"
+    },
+    "customer_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Name of the customer. Can be null if not available."
+    },
+    "customer_email": {
+      "type": "string",
+      "description": "Email address of the customer"
+    },
+    "customer_phone": {
+      "type": "string",
+      "description": "Phone number of the customer"
+    },
+    "return_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "URL to redirect after payment completion. Can be null if not needed."
+    },
+    "order_note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Any note or description for the order. Can be null if not needed."
+    }
+  },
+  "required": [
+    "order_amount",
+    "customer_id",
+    "customer_name",
+    "customer_email",
+    "customer_phone",
+    "return_url",
+    "order_note"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: orderPayUsingUpi
+=========================================================
+DESCRIPTION:
+  Pay an order using UPI (link, collect, or qrcode channel) via Cashfree. Requires payment_session_id and channel. Optionally accepts upi_id (required for collect), upi_redirect_url, upi_expiry_minutes, authorize_only, authorization, save_instrument, and offer_id.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "payment_session_id": {
+      "type": "string",
+      "description": "The payment session id for the order."
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "link",
+        "collect",
+        "qrcode"
+      ],
+      "description": "UPI channel: link, collect, or qrcode."
+    },
+    "upi_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Customer UPI VPA to process payment. Required for channel=collect."
+    },
+    "upi_redirect_url": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Show loader for collect. Only supported for collect channel."
+    },
+    "upi_expiry_minutes": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "UPI collect expiry in minutes (5-15). Only for collect channel."
+    },
+    "authorize_only": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "For one time mandate on UPI. Only for collect channel."
+    },
+    "authorization": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "approve_by": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Time by which this authorization should be approved by the customer."
+            },
+            "start_time": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "This is the time when the UPI one time mandate will start."
+            },
+            "end_time": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "This is the time when the UPI mandate will be over. If the mandate has not been executed by this time, the funds will be returned back to the customer after this time."
+            }
+          },
+          "required": [
+            "approve_by",
+            "start_time",
+            "end_time"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "UPI authorize details object for one time mandate."
+    },
+    "save_instrument": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Whether to save the instrument for future use."
+    },
+    "offer_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Offer ID to apply to the order."
+    }
+  },
+  "required": [
+    "payment_session_id",
+    "channel",
+    "upi_id",
+    "upi_redirect_url",
+    "upi_expiry_minutes",
+    "authorize_only",
+    "authorization",
+    "save_instrument",
+    "offer_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: getOrder
+=========================================================
+DESCRIPTION:
+  Fetches the details of an existing payment order using Cashfree. Requires the order ID.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "The unique identifier for the order whose status is to be fetched"
+    }
+  },
+  "required": [
+    "order_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: getPaymentsForOrder
+=========================================================
+DESCRIPTION:
+  Fetches all payment attempts made for an order using Cashfree. Returns a list of payments with their status, amount, method, and cf_payment_id. Requires the order ID.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "The unique identifier of the order to fetch payments for"
+    }
+  },
+  "required": [
+    "order_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: createRefund
+=========================================================
+DESCRIPTION:
+  Initiates a refund for a given order. Requires order_id, refund_amount, and refund_id. Optionally accepts refund_note, refund_speed, refund_splits.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "The order ID for which the refund is to be created"
+    },
+    "refund_amount": {
+      "type": "number",
+      "description": "Amount to be refunded. Should be <= transaction amount."
+    },
+    "refund_id": {
+      "type": "string",
+      "description": "A unique ID to associate the refund with. Alphanumeric."
+    },
+    "refund_note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "A refund note for your reference. Can be null."
+    },
+    "refund_speed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Speed at which the refund is processed. STANDARD or INSTANT. Can be null."
+    },
+    "refund_splits": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "vendor_id": {
+                "type": "string",
+                "description": "Vendor ID for split."
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount to split to this vendor."
+              }
+            },
+            "required": [
+              "vendor_id",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Array of refund splits for vendors. Can be null."
+    }
+  },
+  "required": [
+    "order_id",
+    "refund_amount",
+    "refund_id",
+    "refund_note",
+    "refund_speed",
+    "refund_splits"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+
+=========================================================
+ TOOL: getAllRefunds
+=========================================================
+DESCRIPTION:
+  Retrieves details of all refunds for a given order. Requires order_id.
+PARAMETERS (JSON Schema):
+{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "The order ID for which the refund details are to be fetched"
+    }
+  },
+  "required": [
+    "order_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
