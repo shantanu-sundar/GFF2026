@@ -19,6 +19,36 @@ v1.1.0 — 40 tools (payment gateway + verification/KYC).
 
 ---
 
+## Repository
+
+Everything lives in **<https://github.com/shantanu-sundar/GFF2026>**, on `main`.
+
+**Push every change.** This repo is the only copy of the demo — the app, the docs and the
+recording collateral. Treat nothing as finished until it is on `main`: commit and push as
+soon as a change works, rather than batching a day of edits into one drop. The console is
+demoed live, so `main` must always be the thing you would put on screen.
+
+```bash
+git add -A
+git commit -m "<what changed>"
+git push
+```
+
+On a fresh clone, wire the remote once:
+
+```bash
+git remote add origin https://github.com/shantanu-sundar/GFF2026.git
+git push -u origin main
+```
+
+If a push is rejected, someone pushed first — `git pull --rebase && git push`.
+
+**Never commit credentials.** `.env.local` holds the real sandbox and OpenAI keys and is
+gitignored; `.env.example` is the credential-free template that ships in its place.
+`node_modules/`, `.next/`, `_probe/` and `*.tsbuildinfo` are ignored too. Check `git status`
+before you commit — if `.env.local` ever shows up as staged, stop and fix `.gitignore`
+before anything leaves the machine.
+
 ## Quickstart (60 seconds)
 
 ```bash

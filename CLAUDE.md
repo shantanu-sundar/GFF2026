@@ -4,6 +4,14 @@ Demo app for a ~3 min product video: an AI merchant-support agent that runs a re
 money lifecycle against the **Cashfree sandbox**, shown in a purpose-built agent
 console (left of screen) next to the real Cashfree dashboard (right of screen).
 
+## Repo
+
+`main` on <https://github.com/shantanu-sundar/GFF2026>. **Push every change** — commit and
+push as soon as a change works, don't batch. `main` must always be demo-ready.
+
+Never commit `.env.local` (real sandbox + OpenAI keys, gitignored); `.env.example` is the
+template that ships. `node_modules/`, `.next/`, `_probe/`, `*.tsbuildinfo` are ignored.
+
 ## Layout
 - `lib/events.ts` — **the contract.** `RunEvent` discriminated union, streamed over SSE.
   Server emits, client narrows. Single source of truth; don't widen it.
