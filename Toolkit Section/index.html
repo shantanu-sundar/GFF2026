@@ -1066,11 +1066,72 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .buyscr .bs-opt.on { color: var(--graphite); font-weight: 500 }
 .buyscr .bs-opt.on i { border-color: var(--gold); box-shadow: inset 0 0 0 2.5px var(--gold) }
 
-/* failed vs abandoned: red for money that bounced, amber for money that walked */
+/* failed vs abandoned vs settled: red for money that bounced, amber for money
+   that walked, green for money that finally landed */
 .buyscr.fail .bs-ic { background: #d64545 }
 .buyscr.fail .bs-reason { background: #fdeeee; border: 1px solid rgba(214, 69, 69, 0.2); color: #8d2b2b }
 .buyscr.drop .bs-ic { background: var(--gold) }
 .buyscr.drop .bs-reason { background: #fff6e6; border: 1px solid rgba(255, 174, 21, 0.28); color: #7a5312 }
+.buyscr.ok .bs-ic { background: var(--evergreen) }
+.buyscr.ok .bs-reason { background: #edfaf3; border: 1px solid rgba(0, 173, 108, 0.24); color: #0d5f40 }
+
+/*
+ * The push, and the banner under it.
+ *
+ * A renewal is the one failure the customer is not standing in front of: they
+ * are not at a checkout, so the only way they learn about it is a notification.
+ * The Subscription Dunning doc opens on exactly that, so the notification is
+ * drawn as a real push sitting on top of the app rather than described in a
+ * sentence, and the "Subscription paused" state slides up under it.
+ */
+.buyscr .bs-notif {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 9px 10px 0; padding: 8px 10px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(29, 34, 31, 0.1);
+  box-shadow: 0 8px 20px rgba(29, 34, 31, 0.13);
+  animation: notifIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes notifIn {
+  from { opacity: 0; transform: translateY(-11px) scale(0.97) }
+  to   { opacity: 1; transform: none }
+}
+.buyscr .bs-notif .ic {
+  flex: none; width: 20px; height: 20px; border-radius: 6px;
+  display: grid; place-items: center; font-size: 10px;
+  background: linear-gradient(150deg, #6d2620 0%, #571c17 100%);
+}
+.buyscr .bs-notif .nx { min-width: 0; flex: 1 }
+.buyscr .bs-notif .nt {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.5);
+}
+.buyscr .bs-notif .nt .when {
+  margin-left: auto; font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: 0; text-transform: none; color: rgba(29, 34, 31, 0.36);
+}
+.buyscr .bs-notif .nh { display: block; margin-top: 3px; font-size: 12px; font-weight: 700; letter-spacing: -0.015em }
+.buyscr .bs-notif .nb { display: block; margin-top: 2px; font-size: 10.5px; line-height: 1.4; color: rgba(29, 34, 31, 0.6) }
+
+.buyscr .bs-banner {
+  margin: 8px 0 0; padding: 6px 9px;
+  border-radius: 9px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
+  display: flex; align-items: center; gap: 6px;
+  animation: bannerUp 0.44s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+.buyscr .bs-banner i { width: 5px; height: 5px; border-radius: 50%; background: currentColor }
+.buyscr.fail .bs-banner { background: #f4e6e6; color: #8d2b2b }
+.buyscr.ok .bs-banner { background: #e4f6ec; color: #0d5f40 }
+@keyframes bannerUp {
+  from { opacity: 0; transform: translateY(9px) }
+  to   { opacity: 1; transform: none }
+}
+@media (prefers-reduced-motion: reduce) {
+  .buyscr .bs-notif, .buyscr .bs-banner { animation: none }
+}
 
 /* --- 2b. the month at a glance -------------------------------------------
  *
@@ -1110,6 +1171,127 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   color: var(--graphite); font-variant-numeric: tabular-nums;
 }
 .brk .bk-row.hot .v { color: #8a5a06 }
+
+/* --- 2c. the approval gate ------------------------------------------------
+ *
+ * Spark's whole control claim in one card: "Reading is free. Anything that
+ * moves money stops and asks." So the refund does NOT happen on the turn the
+ * merchant asks for it -- it happens on the turn they say yes, and the card
+ * stays in the thread afterwards wearing who approved it. That is also the
+ * audit-trail line rendered as an interaction: a person approved it, so a
+ * person did it.
+ */
+.gate {
+  width: 100%; padding: 11px 12px 12px;
+  border-radius: 16px; background: #fffaf0;
+  border: 1px solid rgba(255, 174, 21, 0.34);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+.gate .g-top { display: flex; align-items: center; gap: 8px; }
+.gate .g-top .lbl {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+  color: #8a5a06;
+}
+.gate .g-top .tag {
+  margin-left: auto; padding: 2px 7px; border-radius: 999px;
+  background: rgba(255, 174, 21, 0.18); color: #8a5a06;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.02em;
+}
+.gate .g-amt {
+  margin-top: 7px; display: flex; align-items: baseline; gap: 8px;
+  font-size: 21px; font-weight: 700; letter-spacing: -0.03em; color: var(--graphite);
+  font-variant-numeric: tabular-nums;
+}
+.gate .g-amt .w { font-size: 11px; font-weight: 400; color: rgba(29, 34, 31, 0.55); letter-spacing: 0; }
+.gate .g-rows { margin-top: 9px; display: flex; flex-direction: column; gap: 4px; }
+.gate .g-rows span {
+  display: flex; align-items: baseline; gap: 8px; font-size: 10.5px;
+  padding-bottom: 4px; border-bottom: 1px solid rgba(29, 34, 31, 0.06);
+}
+.gate .g-rows span:last-child { border-bottom: 0; padding-bottom: 0 }
+.gate .g-rows i { font-style: normal; color: rgba(29, 34, 31, 0.5) }
+.gate .g-rows b {
+  margin-left: auto; font-weight: 500; color: var(--graphite);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+}
+.gate .g-btns { margin-top: 11px; display: flex; gap: 7px; }
+.gate .g-btns button {
+  appearance: none; border: 0; cursor: default; font: inherit;
+  font-size: 11.5px; font-weight: 600; padding: 7px 14px; border-radius: 999px;
+}
+.gate .g-btns .yes { background: var(--evergreen); color: #fff; }
+.gate .g-btns .no { background: rgba(29, 34, 31, 0.07); color: rgba(29, 34, 31, 0.6); }
+.gate .g-done { display: none; margin-top: 10px; align-items: center; gap: 7px; font-size: 10.5px; }
+.gate .g-done .tk {
+  flex: none; width: 15px; height: 15px; border-radius: 50%;
+  background: var(--evergreen); display: grid; place-items: center;
+}
+.gate .g-done .tk svg { width: 8px; height: 8px }
+.gate .g-done .who { color: #0d5f40; font-weight: 600 }
+.gate .g-done .trail { color: rgba(29, 34, 31, 0.5) }
+
+.gate.ok { background: #f5fbf7; border-color: rgba(0, 173, 108, 0.28); }
+.gate.ok .g-top .lbl { color: #0d5f40 }
+.gate.ok .g-top .tag { background: rgba(0, 173, 108, 0.14); color: #0d5f40 }
+.gate.ok .g-btns { display: none }
+.gate.ok .g-done { display: flex }
+
+/* --- 2d. the buyer's WhatsApp --------------------------------------------
+ *
+ * Segment 3 of the narrative doc is not a Cashfree screen at all: the merchant
+ * takes what Spark gave them and tells the customer. Drawn as its own labelled
+ * device for the same reason as the buyer's screen -- so it can never be
+ * misread as the merchant's phone.
+ */
+.wa {
+  width: 100%; overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(29, 34, 31, 0.13);
+  background: #ece5dd;
+  box-shadow: 0 10px 24px rgba(29, 34, 31, 0.09);
+}
+.wa .wa-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 11px; background: rgba(29, 34, 31, 0.055);
+  font-size: 9px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.5);
+}
+.wa .wa-tag .live {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--evergreen);
+}
+.wa .wa-top {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 11px; background: #0f5c50; color: #fff;
+}
+.wa .wa-top .av {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22); display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+}
+.wa .wa-top .nm { display: block; font-size: 12px; font-weight: 600; letter-spacing: -0.01em }
+.wa .wa-top .st { display: block; font-size: 9px; color: rgba(255, 255, 255, 0.7) }
+.wa .wa-body { padding: 10px 11px 11px; display: flex; flex-direction: column; gap: 6px }
+.wa .wb {
+  max-width: 84%; padding: 7px 9px 5px; border-radius: 10px;
+  font-size: 11px; line-height: 1.42; color: var(--graphite);
+  box-shadow: 0 1px 1px rgba(29, 34, 31, 0.11);
+  position: relative;
+}
+.wa .wb.out { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 3px }
+.wa .wb.in { align-self: flex-start; background: #fff; border-top-left-radius: 3px }
+.wa .wb .t { display: block; text-align: right; margin-top: 2px; font-size: 8.5px; color: rgba(29, 34, 31, 0.42) }
+.wa .wb .t .rr { color: #34b7f1; font-weight: 700; letter-spacing: -0.1em }
+.wa .wlink {
+  display: block; margin-bottom: 5px; padding: 7px 8px; border-radius: 7px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.wa .wlink .lt { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 600 }
+.wa .wlink .lt .cf { flex: none; width: 14px; height: 14px }
+.wa .wlink .lu {
+  display: block; margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(29, 34, 31, 0.5);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 
 /* --- 3. Relay Calling ----------------------------------------------------- */
 
@@ -1161,9 +1343,15 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .callscene .cnode .nm {
   font-size: 11px; font-weight: 700; letter-spacing: -0.01em; text-align: center;
   max-width: 12ch; line-height: 1.25;
+  /* two lines' worth either way, so "Payment Recovery" wrapping does not drop
+     its number a line below the buyer's */
+  min-height: 28px;
 }
-.callscene .cnode .sub {
-  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(244, 245, 244, 0.4);
+.callscene .cnode .cwho {
+  /* NB: not .sub -- that is the section subtitle up top, and it carries an
+     18px margin that would push this off the node. */
+  margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(244, 245, 244, 0.4);
 }
 .callscene .cnode .orb { width: 58px; height: 58px; outline: none }
 .callscene .cava {
@@ -1674,7 +1862,11 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 }
 .st-url .lock { color: var(--evergreen); margin-right: 5px; }
 
-.st-body { flex: 1; min-height: 0; background: #ffffff; display: flex; flex-direction: column; }
+.st-body {
+  flex: 1; min-height: 0; background: #ffffff;
+  display: flex; flex-direction: column; position: relative;
+  overflow: hidden;   /* a tall view clips, it never pushes the caption out */
+}
 .st-nav {
   flex: none;
   display: flex; align-items: center; gap: 8px;
@@ -1700,6 +1892,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   display: grid; place-items: center;
 }
 
+/* --- view 1: the collection --- */
 .st-head { flex: none; padding: 10px 14px 0; font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; }
 .st-head .h { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
 .st-head .c { font-size: 9px; color: #9ca3af; margin-top: 1px; }
@@ -1707,7 +1900,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .st-grid {
   flex: 1; min-height: 0;
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px;
-  padding: 9px 14px 6px;
+  padding: 9px 14px 8px;
   font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 }
 .st-card {
@@ -1751,28 +1944,201 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 }
 .st-btn svg { width: 9px; height: 9px; }
 
-/* the confirmation slides up once the payment lands */
-.st-toast {
-  flex: none;
-  margin: 0 14px 11px;
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 11px;
-  border-radius: 10px;
-  background: #fff;
-  border: 1px solid rgba(0, 173, 108, 0.32);
-  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.12);
+/* --- view 2: the payment step --- */
+.st-pay {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  padding: 10px 14px 8px;
   font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  font-size: 10.5px; font-weight: 600; color: #111827;
-  opacity: 0; transform: translateY(10px);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.store.paid .st-toast { opacity: 1; transform: none; }
-.st-toast .tick {
-  flex: none; width: 17px; height: 17px; border-radius: 50%;
+.st-steps { flex: none; display: flex; justify-content: center; gap: 7px; }
+.stp {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 8.5px; font-weight: 700;
+  padding: 4px 10px; border-radius: 999px;
+  background: #f3f4f6; color: #9ca3af;
+}
+.stp.done { background: #d1fae5; color: #047857; }
+.stp.on { background: #4f46e5; color: #fff; }
+.stp svg { width: 8px; height: 8px; }
+
+.st-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 190px; gap: 12px; margin-top: 10px; }
+.st-h2 { font-size: 12px; font-weight: 700; color: #111827; letter-spacing: -0.02em; }
+.st-method {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 7px; padding: 8px 9px;
+  border: 1px solid #c7d2fe; background: #eef2ff; border-radius: 9px;
+}
+.st-method .ic { width: 18px; height: 18px; border-radius: 5px; background: #4f46e5; display: grid; place-items: center; }
+.st-method .ic svg { width: 10px; height: 10px; color: #fff; }
+.st-method b { display: block; font-size: 9.5px; color: #111827; }
+.st-method i { display: block; font-style: normal; font-size: 8px; color: #6b7280; margin-top: 1px; }
+.st-secure { display: flex; align-items: center; gap: 5px; margin-top: 7px; font-size: 8px; color: #047857; }
+.st-secure svg { width: 9px; height: 9px; }
+.st-cta {
+  margin-top: 9px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 9px;
+  background: #4f46e5; color: #fff;
+  font-size: 11px; font-weight: 700;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
+  transition: transform 0.16s ease, background 0.2s ease;
+}
+/* the click, on the way into the drop-in */
+.store.pressing .st-cta { transform: scale(0.975); background: #4338ca; }
+
+.st-sum {
+  border: 1px solid rgba(17, 24, 39, 0.1); border-radius: 10px;
+  padding: 9px 10px; align-self: start;
+  background: #fafafa;
+}
+.st-sum .r { display: flex; align-items: center; font-size: 8.5px; color: #6b7280; padding: 3px 0; }
+.st-sum .r b { margin-left: auto; color: #374151; font-weight: 600; font-variant-numeric: tabular-nums; }
+.st-sum .r.tot { border-top: 1px solid rgba(17, 24, 39, 0.1); margin-top: 4px; padding-top: 6px; font-size: 10px; color: #111827; font-weight: 700; }
+.st-sum .r.tot b { color: #4f46e5; font-size: 12px; font-weight: 700; }
+
+/* --- view 3: the Cashfree drop-in --- */
+.st-dim {
+  position: absolute; inset: 0; background: rgba(17, 24, 39, 0.45);
+  opacity: 0; transition: opacity 0.32s ease;
+}
+.store.cfopen .st-dim, .store.paid .st-dim { opacity: 1; }
+.cf {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.97);
+  width: 452px; height: 252px;
+  display: grid; grid-template-columns: 172px 1fr;
+  border-radius: 12px; overflow: hidden;
+  background: #fff;
+  box-shadow: 0 26px 60px rgba(17, 24, 39, 0.4);
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  opacity: 0;
+  transition: opacity 0.34s ease, transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store.cfopen .cf { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.store.paid .cf { opacity: 0; transform: translate(-50%, -50%) scale(0.98); pointer-events: none; }
+
+.cfL {
+  background: linear-gradient(170deg, #0b2f6b 0%, #123f86 58%, #0e356f 100%);
+  color: #fff; padding: 12px 11px 10px;
+  display: flex; flex-direction: column;
+}
+.cf-mark { width: 30px; height: 30px; border-radius: 8px; background: #fff; color: #4f46e5; display: grid; place-items: center; margin: 0 auto; }
+.cf-mark svg { width: 17px; height: 17px; }
+.cf-biz { text-align: center; font-size: 11px; font-weight: 700; margin-top: 7px; }
+.cf-trust {
+  margin: 5px auto 0; display: inline-flex; align-items: center; gap: 4px;
+  font-size: 7px; font-weight: 600;
+  background: rgba(255, 255, 255, 0.14); border-radius: 999px; padding: 3px 8px;
+}
+.cf-trust svg { width: 7px; height: 7px; color: #34d399; }
+.cf-amt {
+  margin-top: 9px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cf-panel { margin-top: 9px; background: #eef2f7; border-radius: 8px; padding: 7px 8px; color: #1f2937; }
+.cf-off { display: flex; align-items: center; gap: 6px; font-size: 7px; color: #4b5563; white-space: nowrap; }
+.cf-off b { margin-left: auto; color: #1d4ed8; font-weight: 700; }
+.cf-cp {
+  margin-top: 6px; display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 7px;
+  font-size: 7.5px; color: #9ca3af;
+}
+.cf-cp span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-cp b { margin-left: auto; color: #1d4ed8; font-weight: 700; }
+.cf-sec { margin-top: auto; text-align: center; font-size: 6.5px; color: rgba(255, 255, 255, 0.62); padding-top: 8px; }
+.cf-sec b { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+
+.cfR { padding: 10px 11px; overflow: hidden; color: #111827; }
+.cf-note {
+  display: flex; align-items: center; gap: 5px;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 999px;
+  padding: 4px 9px; font-size: 7px; color: #1e40af;
+}
+.cf-po { display: flex; align-items: center; margin-top: 8px; font-size: 7.5px; color: #6b7280; }
+.cf-po b { margin-left: auto; color: #1d4ed8; font-weight: 700; }
+.cf-lbl { font-size: 7.5px; font-weight: 700; color: #6b7280; margin: 7px 0 4px; }
+.cf-fav { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.fav {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 7px;
+}
+.fav.on { border-color: #1d4ed8; box-shadow: 0 0 0 1px #1d4ed8; }
+.fav .fi { width: 16px; height: 16px; border-radius: 4px; background: #eef2f7; display: grid; place-items: center; flex: none; }
+.fav .fi svg { width: 9px; height: 9px; color: #1d4ed8; }
+.fav b { display: block; font-size: 7.5px; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav i { display: block; font-style: normal; font-size: 6px; color: #9ca3af; letter-spacing: 0.04em; }
+
+.cf-qr {
+  margin-top: 7px; display: flex; align-items: center; gap: 14px;
+  border: 1px solid #e5e7eb; border-radius: 9px; padding: 6px 8px;
+}
+.qr {
+  position: relative; flex: none; width: 40px; height: 40px; border-radius: 4px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(90deg, #111827 25%, transparent 25% 50%, #111827 50% 62%, transparent 62%),
+    linear-gradient(#111827 18%, transparent 18% 38%, #111827 38% 52%, transparent 52% 74%, #111827 74%);
+  background-size: 8px 8px;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
+  opacity: 0.85;
+}
+.qr-b {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  background: #1d4ed8; color: #fff; font-size: 5.5px; font-weight: 700;
+  padding: 2px 5px; border-radius: 3px; white-space: nowrap;
+}
+.qr-t { font-size: 7.5px; color: #4b5563; line-height: 1.35; }
+.qr-t b { display: block; color: #111827; font-weight: 700; }
+.cf-row {
+  display: flex; align-items: center;
+  border: 1px solid #e5e7eb; border-radius: 7px;
+  padding: 5px 8px; margin-top: 4px;
+  font-size: 7.5px; color: #111827;
+}
+.cf-row i { margin-left: auto; font-style: normal; color: #9ca3af; }
+
+/* the success card the drop-in hands back */
+.cf-done {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.96);
+  width: 250px; padding: 18px 16px;
+  border-radius: 13px; background: #fff;
+  box-shadow: 0 26px 60px rgba(17, 24, 39, 0.34);
+  text-align: center;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.36s ease, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store.paid .cf-done { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.cf-done .big {
+  width: 34px; height: 34px; border-radius: 50%; margin: 0 auto 9px;
   background: var(--evergreen); display: grid; place-items: center;
 }
-.st-toast .tick svg { width: 9px; height: 9px; }
-.st-toast .amt { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b7280; }
+.cf-done .big svg { width: 17px; height: 17px; }
+.cf-done .t { font-size: 13px; font-weight: 700; color: #111827; letter-spacing: -0.02em; }
+.cf-done .amt { font-size: 20px; font-weight: 700; color: #111827; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.cf-done .sub { font-size: 8px; color: #6b7280; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+
+/* the caption strip: what this beat is showing */
+.st-cap {
+  flex: none;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px 10px;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+  background: #fbfbfc;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 10.5px; line-height: 1.35; color: #4b5563;
+}
+.st-cap .tick {
+  flex: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--evergreen); display: none; place-items: center;
+}
+.st-cap .tick svg { width: 9px; height: 9px; }
+.store.paid .st-cap { background: #f0fdf6; border-top-color: rgba(0, 173, 108, 0.28); color: #065f46; font-weight: 600; }
+.store.paid .st-cap .tick { display: grid; }
+.st-cap .amt { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b7280; white-space: nowrap; }
+.store.paid .st-cap .amt { color: #047857; font-weight: 700; }
 
 @media (max-width: 700px) {
   /* too narrow for a rail beside the transcript -- stack it under, and let both
@@ -1789,34 +2155,55 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
     overflow: hidden;
   }
   .screen.term .ledger .rows { grid-template-columns: 1fr 1fr; margin-top: 7px; }
-  /* the storefront keeps both columns; it just gets quieter type */
+  /* ShirtShop under a phone-width lid: three cards across become unreadable,
+     so show the first one only -- which is what the store does on a phone anyway */
   .st-chrome { padding: 6px 10px 6px 44px; }
-  .st-nav { padding: 8px 12px; }
-  .st-brand { font-size: 12px; }
-  .st-cart { font-size: 9px; padding: 3px 8px; }
-  /* a phone-width lid is ~204px of screen: there is no room for the product
-     shot beside the buy column, and squeezing it wraps the button over the
-     confirmation. Drop the shot, give the buy column the full width. */
-  .st-grid { grid-template-columns: 1fr; gap: 0; padding: 12px 12px 6px; }
-  .st-shot { display: none; }
-  .st-name { font-size: 12.5px; }
-  /* there is no room for these under a phone-width lid */
-  .st-sub, .st-methods { display: none; }
-  .st-price { font-size: 16px; margin: 5px 0 8px; }
-  .st-btn { font-size: 10.5px; padding: 7px 10px; border-radius: 10px; gap: 6px; }
-  .st-btn svg { width: 11px; height: 11px; }
-  /* the confirmation goes into the flow instead of floating over the button --
-     it reserves its own band while still invisible, so nothing shifts */
-  .st-toast {
-    position: static; flex: none;
-    margin: 0 12px 10px;
-    transform: none;
-    padding: 8px 10px; font-size: 10px; border-radius: 11px;
+  .st-nav { padding: 7px 10px; gap: 6px; }
+  .st-brand { font-size: 11px; }
+  .st-links { font-size: 8px; gap: 2px; }
+  .st-links span { padding: 3px 6px; }
+  /* the section heading and the size chips are the first things to go: the grid
+     row is ~130px under a phone-width lid and the card has to fit inside it.
+     The nav already says ShirtShop, so the heading is the cheapest thing to cut. */
+  .st-head, .st-sizes { display: none; }
+  .st-grid { grid-template-columns: 1fr; gap: 0; padding: 6px 10px 4px; }
+  .st-card:nth-child(n + 2) { display: none; }
+  .st-info { padding: 6px 7px 7px; }
+  .st-shot { height: 38px; }
+  .st-name { font-size: 10.5px; }
+  .st-price { font-size: 13px; }
+  .st-btn { font-size: 9px; padding: 6px 8px; }
+  .st-cap { padding: 6px 10px 8px; font-size: 9px; gap: 6px; }
+  .st-cap .tick { width: 14px; height: 14px; }
+  .st-cap .tick svg { width: 8px; height: 8px; }
+  .st-cap .amt { font-size: 9px; }
+
+  /* the payment step keeps the total and the button; the explainer card goes */
+  .st-pay { padding: 8px 10px 6px; }
+  .st-method, .st-secure { display: none; }
+  .st-cols { grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+  .st-h2 { font-size: 11px; }
+  .st-cta { margin-top: 8px; padding: 8px; font-size: 10px; }
+  .st-sum { padding: 7px 8px; }
+  .st-sum .r:not(.tot) { display: none; }
+  .st-sum .r.tot { border-top: 0; margin-top: 0; padding-top: 0; }
+
+  /* the drop-in goes single-column: the blue panel collapses to a header strip,
+     and the QR block is the first thing to go */
+  .cf {
+    width: calc(100% - 18px); height: calc(100% - 26px);
+    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr);
   }
-  .store.paid .st-toast { transform: none; }
-  .st-toast .tick { width: 15px; height: 15px; }
-  .st-toast .tick svg { width: 8px; height: 8px; }
-  .st-toast .amt { font-size: 9.5px; }
+  .cfL { flex-direction: row; align-items: center; gap: 8px; padding: 7px 9px; }
+  .cf-mark { width: 20px; height: 20px; margin: 0; }
+  .cf-mark svg { width: 12px; height: 12px; }
+  .cf-biz { font-size: 10px; margin: 0; }
+  .cf-amt { margin: 0 0 0 auto; padding: 5px 9px; font-size: 10px; }
+  .cf-trust, .cf-panel, .cf-sec { display: none; }
+  .cfR { padding: 8px 9px; }
+  .cf-note, .cf-qr { display: none; }
+  .cf-done { width: 190px; padding: 14px 12px; }
+  .cf-done .amt { font-size: 17px; }
 }
 
 @media (max-width: 980px) {
@@ -1904,11 +2291,11 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
                   <span class="htag">Live product</span>
                 </div>
 
-                <div class="hcard locked" style="grid-column:span 7">
+                <div class="hcard" id="card-spark" style="grid-column:span 7">
                   <span class="hblob br b-mint"></span>
-                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg></span>
-                    <span class="name">Secure<span class="thin">ID</span></span></div>
-                  <span class="htag">Live product</span>
+                  <div class="hlock"><span class="gicon ic-lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg></span>
+                    <span class="name">Cashfree<span class="thin"> Spark</span></span></div>
+                  <span class="htag">Ask. It&rsquo;s done.</span>
                 </div>
 
                 <!-- the hero slot: where Checkout360 sits in the reference -->
@@ -2439,11 +2826,11 @@ const DEMOS = {
 
   relayDun: {
     agent: { name: 'Subscription Dunning', orb: 'o4' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Relay is open on Subscription Dunning — Agents, Runs and Connections."},
-    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Subscription Dunning","via":"Agents · Runs · Connections","ok":"canvas, agents and runs"},
+    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Relay is open on Subscription Dunning \u2014 Agents, Runs and Connections."},
+    connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Subscription Dunning","via":"Agents \u00b7 Runs \u00b7 Connections","ok":"canvas, agents and runs"},
     title: 'Subscription <span class="thin">Dunning</span>',
-    blurb: 'Keeps the buyer subscribed — retries the renewal on a method that works, or offers a pause instead of a cancel.',
-    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run follows the same journey the recovery docs lay out' },
+    blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, and retries on the day the money actually lands.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
     chips: { left: [], right: 'no-code', dot: false },
     panel: {
       title: 'Agent',
@@ -2461,80 +2848,109 @@ const DEMOS = {
         label: 'Ask about renewals', tool: 'Voice',
         voice: true,
         ask: 'How many renewals failed this month?',
-        call: { name: 'renewals', summary: '96 failed · 34 churned', ms: 700 },
+        call: { name: 'renewals', summary: '96 failed \u00b7 34 churned', ms: 700 },
         scene: {
           kind: 'brk', title: 'Renewals this month', total: '2,236 due',
           rows: [
-            { k: 'Renewed', n: '2,140', v: '₹10.6L' },
-            { k: 'Renewal failed', n: '96', v: '₹47,900', hot: 1 },
-            { k: '— of those, churned', n: '34', v: '₹16,900' },
-            { k: 'Mandate expired', n: '12', v: '₹6,000' }
+            { k: 'Renewed', n: '2,140', v: '\u20b910.6L' },
+            { k: 'Renewal failed', n: '96', v: '\u20b947,900', hot: 1 },
+            { k: '\u2014 of those, churned', n: '34', v: '\u20b916,900' },
+            { k: 'Mandate expired', n: '12', v: '\u20b96,000' }
           ]
         },
-        say: '96 renewals failed, and 34 of those subscribers cancelled rather than retry — ₹16,900 that did not have to go. Want an agent that calls them before they churn?',
+        say: '96 renewals failed and 34 of those subscribers lapsed \u2014 \u20b916,900 gone. Only about 3 in 10 ever go and fix the card themselves. Want an agent that calls the rest before the plan lapses?',
         patch: {}
       },
       {
         label: 'Relay builds it', tool: 'trigger + condition + action',
         ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Renewal Failed → call + retry', ms: 1210 },
-        say: 'It’s done. Trigger Renewal Failed, condition the mandate is still active, action a call that retries — or offers a pause instead of a cancel. Would you like a test run?',
-        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call · retry or pause' }
+        call: { name: 'build agent', summary: 'Renewal Failed \u2192 call + reschedule', ms: 1210 },
+        say: 'It\u2019s done. Trigger Renewal Failed, condition the mandate is still active, action a call that either retries on the spot or reschedules to a day they pick. Would you like a test run?',
+        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call \u00b7 retry or reschedule' }
       },
       {
         label: 'Test run', tool: 'Dry run',
-        ask: 'Yes, let’s do a test run',
-        call: { name: 'test run', summary: 'dry run · pause offered · plan held', ms: 820 },
-        say: 'Test run successful — it read the failure, offered the pause and left the plan where it was. No subscriber was contacted. Should I activate the Subscription Dunning Agent?',
+        ask: 'Yes, let\u2019s do a test run',
+        call: { name: 'test run', summary: 'dry run \u00b7 retry booked \u00b7 plan held', ms: 820 },
+        say: 'Test run successful \u2014 it read the failure, took a date and booked the retry without touching the plan. No subscriber was contacted. Should I activate the Subscription Dunning Agent?',
         patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
-        ask: 'Yes, switch it on for the ₹499 plan.',
+        ask: 'Yes, switch it on for the \u20b9499 plan.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
         say: 'Your Subscription Dunning Agent is now live on that plan. Switch it off from the Agents tab any time.',
         patch: { __headline: 'Active' }
       },
 
-      /* --- segment 2: the subscriber's screen. No prompt: it runs without you. --- */
+      /* --- segment 2: the subscriber's screen. No prompt: it runs without you.
+             A renewal is the one failure nobody is standing in front of, so what
+             reaches Anita is a notification, not a checkout error. --- */
       {
-        label: 'A renewal fails', tool: 'Kora Reads',
-        call: { name: 'renewal.failed', summary: 'KR-PRO · ₹499 · card declined', ms: 140 },
+        label: 'She gets the notification', tool: 'Kora Reads',
+        call: { name: 'renewal.failed', summary: 'KR-PRO \u00b7 \u20b9499 \u00b7 push sent', ms: 140 },
         scene: {
-          kind: 'buy', tone: 'fail', tag: 'Subscriber’s screen · live',
-          store: 'Kora Reads', amount: '₹499',
-          head: 'Renewal failed',
-          reason: 'Card ending 4412 was declined by the issuer. Your plan stays active for 3 more days.',
-          meta: 'Plan KR-PRO · attempt 1 of 3 · mandate still active'
+          kind: 'buy', tone: 'fail', tag: 'Subscriber\u2019s screen \u00b7 live',
+          store: 'Kora Reads', amount: '\u20b9499',
+          notif: {
+            app: 'Kora Reads', when: 'now',
+            title: 'Payment failed',
+            body: 'We couldn\u2019t renew your Pro plan. Your subscription is paused for now.'
+          },
+          head: 'Payment failed',
+          reason: 'Card ending 4412 was declined \u2014 insufficient funds. Nothing was charged.',
+          banner: 'Subscription paused',
+          meta: 'Plan KR-PRO \u00b7 attempt 1 of 3 \u00b7 mandate still active'
         },
-        say: 'Anita’s ₹499 renewal failed on the card on file. Shared memory has that card flagged — it has failed for her twice before — so the agent will not lead with it.',
-        patch: { runs: 'triggered' }
+        say: 'Anita is not at a checkout, so all she sees is that push and a paused plan. That is exactly where the 7 in 10 quietly go \u2014 nobody sits down to fix a card.',
+        patch: { runs: 'notified' }
       },
 
       /* --- segment 3: the call --- */
       {
         label: 'Relay calls Anita', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called · moved to UPI mandate', ms: 680 },
+        call: { name: 'agent run', summary: 'called \u00b7 retry booked for Friday', ms: 680 },
         scene: {
           kind: 'call', glow: '#b493ea', orb: 'o4',
           agent: 'Subscription Dunning', buyer: 'Anita', initials: 'A',
-          phone: '+91 97••• ••305', lang: 'English', dur: '00:44',
-          result: 'UPI mandate active', amount: '₹499/mo',
+          phone: '+91 97\u2022\u2022\u2022 \u2022\u2022305', lang: 'English', dur: '00:36',
+          result: 'Retry scheduled \u00b7 Friday', amount: '\u20b9499/mo',
           lines: [
-            { t: 'Hi Anita, your ₹499 renewal didn’t go through — the card on file was declined again. I can move you to UPI, or pause the plan for a month if you’d rather.' },
-            { b: 1, t: 'A pause is tempting, but just move me to UPI.' },
-            { t: 'Done — setting up the UPI mandate now. You keep your reading history and nothing else changes.' }
+            { t: 'Hi Anita, your \u20b9499 renewal didn\u2019t go through. Should we retry now, or would another day work better?' },
+            { b: 1, t: 'Salary hasn\u2019t come in yet. Try again in 2 days?' },
+            { t: 'Got it \u2014 we\u2019ll retry on Friday. Nothing for you to do, and you keep your Pro access until then.' }
           ]
         },
-        say: 'It led with UPI because the memory said the card fails, offered the pause rather than assuming she wanted out, and she stayed.',
-        patch: { runs: '1 run' }
+        say: 'It did not push her to pay today, because she could not. It asked, took Friday, and booked the retry. Payment failed just became retry scheduled.',
+        patch: { runs: '1 run \u00b7 retry Fri' }
+      },
+
+      /* --- segment 4: Friday. The payoff the doc ends on. --- */
+      {
+        label: 'Friday, the retry lands', tool: 'Kora Reads',
+        call: { name: 'renewal.retry', summary: 'KR-PRO \u00b7 \u20b9499 \u00b7 SUCCESS', ms: 260 },
+        scene: {
+          kind: 'buy', tone: 'ok', tag: 'Subscriber\u2019s screen \u00b7 Friday',
+          store: 'Kora Reads', amount: '\u20b9499',
+          notif: {
+            app: 'Kora Reads', when: 'now',
+            title: 'Subscription active',
+            body: 'Your Pro plan renewed for \u20b9499. Nothing else to do.'
+          },
+          head: 'Renewal successful',
+          reason: 'Retried on the card ending 4412, as agreed on the call. Charged \u20b9499.',
+          banner: 'Subscription active',
+          meta: 'Plan KR-PRO \u00b7 attempt 2 of 3 \u00b7 next renewal 4 Oct'
+        },
+        say: 'Friday came, the retry cleared, and she never had to do anything. She was never really leaving \u2014 the money just was not there on Tuesday.',
+        patch: { runs: '1 run \u00b7 renewed' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
         ask: 'Did we keep her?',
-        call: { name: 'Runs', summary: 'renewed · ₹499 · success', ms: 430 },
-        say: 'Still subscribed. The Runs tab shows the call, the choice she made and the mandate it landed on.',
-        patch: { runs: '1 run · renewed' }
+        call: { name: 'Runs', summary: 'renewed \u00b7 \u20b9499 \u00b7 success', ms: 430 },
+        say: 'Still subscribed. The Runs tab holds the call, the date she chose and the retry it landed on \u2014 every agent, when it ran, how long it took and how it ended.',
+        patch: { runs: '1 run \u00b7 renewed' }
       }
     ]
   },
@@ -2567,6 +2983,7 @@ const DEMOS = {
         { key: 'f_manifest', label: 'CLAUDE.md' },
         { key: 'f_sdk', label: 'pg/backend-sdks/' },
         { key: 'f_api', label: 'pg/apis/references/' },
+        { key: 'f_web', label: 'pg/web-sdk/' },
         { key: 'f_test', label: 'validation-and-testing/' },
         { key: 'output', label: 'Generated', sum: true }
       ]
@@ -2639,7 +3056,7 @@ const DEMOS = {
           fn: 'Read(pg/backend-sdks/SKILL.md)',
           res: 'api keys \u00b7 install the SDK',
           code: {
-            head: 'generated',
+            head: 'generated \u00b7 server',
             body: '<span class="k">const</span> cashfree = <span class="k">new</span> Cashfree(\n' +
                   '  CFEnvironment.SANDBOX,\n' +
                   '  process.env.CASHFREE_APP_ID,\n' +
@@ -2657,18 +3074,40 @@ const DEMOS = {
           fn: 'Read(pg/apis/references/SKILL.md)',
           res: 'create order \u00b7 verify on backend',
           code: {
-            head: 'generated',
+            head: 'generated \u00b7 server',
             body: '<span class="k">const</span> order = <span class="k">await</span> cashfree.PGCreateOrder({\n' +
-                  '  order_amount: <span class="n">799</span>,\n' +
+                  '  order_amount: <span class="n">1042</span>,\n' +
                   '  order_currency: <span class="s">"INR"</span>,\n' +
                   '  customer_details,\n' +
                   '});\n' +
-                  '<span class="c">// on your backend, before you fulfil:</span>\n' +
-                  '<span class="k">await</span> cashfree.PGFetchOrder(order.data.order_id);'
+                  '<span class="c">// after the redirect, on your backend:</span>\n' +
+                  '<span class="k">const</span> res = <span class="k">await</span> cashfree.PGOrderFetchPayments(id);\n' +
+                  '<span class="k">const</span> ok = res.data.some(\n' +
+                  '  (t) => t.payment_status === <span class="s">"SUCCESS"</span>);'
           }
         },
-        say: 'Creating the order, then verifying it on your backend rather than trusting the redirect.',
-        patch: { f_api: 'read', output: 'checkout integration' }
+        say: 'It creates the order for the cart total, and verifies on your backend rather than trusting the redirect.',
+        patch: { f_api: 'read', output: 'order + verification' }
+      },
+      {
+        // the browser half: this is what makes Proceed to Pay do anything
+        label: 'Checkout in the browser', tool: 'pg/web-sdk/SKILL.md',
+        call: { name: 'read pg/web-sdk', summary: 'sdk v3 \u00b7 checkout()', ms: 22 },
+        term: {
+          fn: 'Read(pg/web-sdk/SKILL.md)',
+          res: 'sdk.cashfree.com/js/v3 \u00b7 checkout()',
+          code: {
+            head: 'generated \u00b7 browser',
+            body: '<span class="k">const</span> cashfree = Cashfree({ mode: <span class="s">"sandbox"</span> });\n' +
+                  '\n' +
+                  'cashfree.checkout({\n' +
+                  '  paymentSessionId,   <span class="c">// from the order</span>\n' +
+                  '  redirectTarget: <span class="s">"_self"</span>,\n' +
+                  '});'
+          }
+        },
+        say: 'The other half runs in the browser: the v3 SDK opens the Cashfree drop-in with that order\u2019s payment_session_id.',
+        patch: { f_web: 'read', output: 'checkout integration' }
       },
       {
         label: 'Testing checklist', tool: 'validation-and-testing/SKILL.md',
@@ -2682,11 +3121,27 @@ const DEMOS = {
         label: 'See it work', tool: 'localhost:3000',
         ask: 'npm run dev',
         call: { name: 'npm run dev', summary: 'ready on localhost:3000', ms: 1420 },
-        term: { kind: 'store', ms: 1420, out: [
+        term: { kind: 'store', view: 'collection', ms: 1420, out: [
           { t: 'ok', s: 'ready \u00b7 http://localhost:3000' }
         ] },
-        say: 'That is the whole loop \u2014 one prompt, and the checkout it wrote is taking a payment.',
+        say: 'ShirtShop, running the checkout the assistant just wrote.',
         patch: { output: 'checkout live' }
+      },
+      {
+        // no ask: from here it is clicks in the browser, not commands
+        label: 'Proceed to Pay', tool: 'Payment step',
+        call: { name: 'payment step', summary: 'address \u00b7 review \u00b7 payment', ms: 320 },
+        term: { kind: 'store', view: 'payment', ms: 320, amt: '\u20b91,042' },
+        say: 'Address and review are done. \u20b9799 plus shipping and GST is \u20b91,042 \u2014 the amount the order was created for.',
+        patch: {}
+      },
+      {
+        label: 'Pay with Cashfree', tool: 'cashfree.checkout()',
+        call: { name: 'cashfree.checkout', summary: 'drop-in \u00b7 upi, cards, netbanking', ms: 640 },
+        term: { kind: 'store', view: 'checkout', ms: 640, amt: '\u20b91,042',
+          paidCap: 'Paid. Your backend confirms it with payment_status: SUCCESS before it fulfils.' },
+        say: 'Proceed to Pay calls cashfree.checkout() with that payment_session_id, and the drop-in takes it from there.',
+        patch: { output: 'paid \u00b7 SUCCESS' }
       }
     ]
   },
@@ -2883,6 +3338,18 @@ const CART =
   'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
   '<circle cx="10" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg>';
 
+const CARD =
+  '<svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="19" height="14" rx="2.5" ' +
+  'stroke="currentColor" stroke-width="2"/><path d="M2.5 10h19" stroke="currentColor" stroke-width="2"/></svg>';
+const WALLET =
+  '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2.5" ' +
+  'stroke="currentColor" stroke-width="2"/><path d="M16 12.5h2" stroke="currentColor" stroke-width="2.4" ' +
+  'stroke-linecap="round"/></svg>';
+const BANK =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M3.5 9.5 12 4l8.5 5.5M5.5 10.5v7M10 10.5v7M14 10.5v7' +
+  'M18.5 10.5v7M3.5 20h17" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+  'stroke-linejoin="round"/></svg>';
+
 const TICK =
   '<svg class="tk" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" ' +
   'stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -3009,8 +3476,17 @@ function killStore() {
   storeEl = null;
 }
 
-function buildStore() {
-  killStore();
+const STORE_NAV =
+  '<div class="st-nav">' +
+    '<span class="st-logo">' + CART + '</span>' +
+    '<span class="st-brand">Shirt<span class="thin">Shop</span></span>' +
+    '<span class="st-links"><span class="on">Shop</span><span>Cart</span>' +
+      '<span>Orders</span><span>Profile</span></span>' +
+    '<span class="st-av">AS</span>' +
+  '</div>';
+
+/** view 1 -- the collection the assistant's checkout hangs off */
+function viewCollection() {
   const card = (shot, name, sizes, price) =>
     '<div class="st-card"><div class="st-shot ' + shot + '"><span class="st-new">NEW</span></div>' +
       '<div class="st-info"><div class="st-name">' + name + '</div>' +
@@ -3020,36 +3496,112 @@ function buildStore() {
           '<span class="st-stock">In Stock</span></div>' +
         '<div class="st-btn">' + CART + 'Add to Cart</div>' +
       '</div></div>';
+  return '<div class="st-head"><div class="h">Our Collection</div><div class="c">6 products</div></div>' +
+    '<div class="st-grid">' +
+      card('a', 'Classic Cotton T-Shirt', ['S', 'M', 'L', 'XL'], '799') +
+      card('b', 'Premium Striped Shirt', ['S', 'M', 'L', 'XL'], '1,299') +
+      card('c', 'Vintage Graphic Tee', ['S', 'M', 'L', 'XL'], '999') +
+    '</div>';
+}
 
+/** view 2 -- the payment step, where Proceed to Pay lives.
+ *  799 + 99 shipping + 144 GST (18% of 799) = the 1,042 the drop-in charges. */
+function viewPayment() {
+  return '<div class="st-pay">' +
+    '<div class="st-steps">' +
+      '<span class="stp done">' + TICK + 'Address</span>' +
+      '<span class="stp done">' + TICK + 'Review</span>' +
+      '<span class="stp on">Payment</span>' +
+    '</div>' +
+    '<div class="st-cols">' +
+      '<div>' +
+        '<div class="st-h2">Payment</div>' +
+        '<div class="st-method"><span class="ic">' + CARD + '</span>' +
+          '<span><b>Pay securely with Cashfree</b>' +
+          '<i>UPI \u00b7 Cards \u00b7 Net Banking \u00b7 Wallets</i></span></div>' +
+        '<div class="st-secure">' + TICK + 'Your payment is secured by Cashfree</div>' +
+        '<div class="st-cta">Proceed to Pay</div>' +
+      '</div>' +
+      '<div class="st-sum">' +
+        '<div class="r"><span>Subtotal</span><b>\u20b9799</b></div>' +
+        '<div class="r"><span>Shipping</span><b>\u20b999</b></div>' +
+        '<div class="r"><span>GST (18%)</span><b>\u20b9144</b></div>' +
+        '<div class="r tot"><span>Total</span><b>\u20b91,042</b></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/** view 3 -- the drop-in cashfree.checkout() opens, over the dimmed payment step */
+function viewCheckout() {
+  const row = (n) => '<div class="cf-row"><span>' + n + '</span><i>\u203a</i></div>';
+  return viewPayment() +
+    '<div class="st-dim"></div>' +
+    '<div class="cf">' +
+      '<div class="cfL">' +
+        '<div class="cf-mark">' + CART + '</div>' +
+        '<div class="cf-biz">ShirtShop</div>' +
+        '<div class="cf-trust">' + TICK + 'Trusted by Cashfree</div>' +
+        '<div class="cf-amt">\u20b91,042 <span>\u203a</span></div>' +
+        '<div class="cf-panel">' +
+          '<div class="cf-off"><span>Offers and Coupons</span><b>3 Offers Available \u203a</b></div>' +
+          '<div class="cf-cp"><span>Have a coupon? Paste here</span><b>APPLY</b></div>' +
+        '</div>' +
+        '<div class="cf-sec">Secured by <b>Cashfree Payments</b></div>' +
+      '</div>' +
+      '<div class="cfR">' +
+        '<div class="cf-note">Convenience fee applies for payments made using Card</div>' +
+        '<div class="cf-po"><span>Payment Options for +91 98\u2022\u2022\u2022\u2022\u202210</span><b>Change</b></div>' +
+        '<div class="cf-lbl">Favourites</div>' +
+        '<div class="cf-fav">' +
+          '<div class="fav"><span class="fi">' + WALLET + '</span>' +
+            '<span><b>Test Wallet</b><i>WALLET</i></span></div>' +
+          '<div class="fav on"><span class="fi">' + BANK + '</span>' +
+            '<span><b>State Bank</b><i>NET BANKING</i></span></div>' +
+        '</div>' +
+        '<div class="cf-qr"><div class="qr"><span class="qr-b">Click to see QR</span></div>' +
+          '<div class="qr-t"><b>Scan and pay</b>with any UPI app</div></div>' +
+        '<div class="cf-lbl">Other Payment Options</div>' +
+        row('Cashfree Pay') + row('Cardless EMI') +
+      '</div>' +
+    '</div>' +
+    '<div class="cf-done">' +
+      '<div class="big">' + CHECK + '</div>' +
+      '<div class="t">Payment successful</div>' +
+      '<div class="amt">\u20b91,042</div>' +
+      '<div class="sub">payment_status: SUCCESS</div>' +
+    '</div>';
+}
+
+const STORE_VIEWS = { collection: viewCollection, payment: viewPayment, checkout: viewCheckout };
+
+/** Swap the browser to a view. Rebuilt rather than mutated -- if one was already
+ *  on screen the new element skips the entrance so the chrome does not blink. */
+function showStore(view, cap, amt) {
+  const had = !!storeEl;
+  killStore();
   storeEl = document.createElement('div');
-  storeEl.className = 'store';
+  storeEl.className = 'store' + (had ? ' live' : '');
   storeEl.innerHTML =
     '<div class="st-chrome"><span class="tlights"><i></i><i></i><i></i></span>' +
       '<span class="st-url"><span class="lock">\u25cf</span>localhost:3000</span></div>' +
-    '<div class="st-body">' +
-      '<div class="st-nav">' +
-        '<span class="st-logo">' + CART + '</span>' +
-        '<span class="st-brand">Shirt<span class="thin">Shop</span></span>' +
-        '<span class="st-links"><span class="on">Shop</span><span>Cart</span>' +
-          '<span>Orders</span><span>Profile</span></span>' +
-        '<span class="st-av">AS</span>' +
-      '</div>' +
-      '<div class="st-head"><div class="h">Our Collection</div><div class="c">6 products</div></div>' +
-      '<div class="st-grid">' +
-        card('a', 'Classic Cotton T-Shirt', ['S', 'M', 'L', 'XL'], '799') +
-        card('b', 'Premium Striped Shirt', ['S', 'M', 'L', 'XL'], '1,299') +
-        card('c', 'Vintage Graphic Tee', ['S', 'M', 'L', 'XL'], '999') +
-      '</div>' +
-    '</div>' +
-    '<div class="st-toast"><span class="tick">' + CHECK + '</span>' +
-      '<span>Paid with Cashfree</span><span class="amt">\u20b9799</span></div>';
+    '<div class="st-body">' + STORE_NAV + (STORE_VIEWS[view] || viewCollection)() + '</div>' +
+    '<div class="st-cap"><span class="tick">' + CHECK + '</span><span class="cap-t">' + (cap || '') + '</span>' +
+      (amt ? '<span class="amt">' + amt + '</span>' : '') + '</div>';
   screenEl2.appendChild(storeEl);
   return storeEl;
 }
 
 /** The no-animation form, for Back and dot-jumps. */
 function paintStepTerm(s) {
-  if (s.term.kind === 'store') { buildStore().classList.add('live', 'paid'); } else { killStore(); }
+  if (s.term.kind === 'store') {
+    const el = showStore(s.term.view, s.say, s.term.amt);
+    el.classList.add('live');
+    if (s.term.view === 'checkout') {
+      el.classList.add('cfopen', 'paid');
+      if (s.term.paidCap) el.querySelector('.st-cap .cap-t').textContent = s.term.paidCap;
+    }
+  } else { killStore(); }
   tAsk(s);
   if (s.term.kind === 'shell' || s.term.kind === 'store') {
     if (s.term.banner) tLine(tBanner());
@@ -3106,11 +3658,22 @@ async function runStepTerm(i) {
   }
 
   if (s.term.kind === 'store') {
-    const el = buildStore();
+    const el = showStore(s.term.view, s.say, s.term.amt);
     await sleep(60);
     el.classList.add('live');
-    await sleep(1100);
-    if (storeEl === el) el.classList.add('paid');
+    if (s.term.view === 'checkout') {
+      // press Proceed to Pay, let the drop-in come up, then settle
+      await sleep(460);
+      el.classList.add('pressing');
+      await sleep(300);
+      el.classList.remove('pressing');
+      el.classList.add('cfopen');
+      await sleep(1900);
+      if (storeEl === el) {
+        el.classList.add('paid');
+        if (s.term.paidCap) el.querySelector('.st-cap .cap-t').textContent = s.term.paidCap;
+      }
+    }
   }
 
   await sleep(180);
@@ -3451,6 +4014,10 @@ const BS_X =
 const BS_BANG =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v9M12 18.4v.2" stroke="#fff" ' +
   'stroke-width="3.6" stroke-linecap="round"/></svg>';
+const BS_TICK =
+  '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" ' +
+  'stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const BS_ICON = { fail: BS_X, ok: BS_TICK, drop: BS_BANG };
 
 /** Drawn as its own small device, labelled, so it can never be misread as the
  *  merchant's phone. This is the one moment in the run happening to someone
@@ -3462,10 +4029,17 @@ function buyscrHTML(b) {
       '<span class="who"><span class="nm">' + b.store + '</span>' +
       '<span class="tr">Trusted by Cashfree</span></span>' +
       '<span class="amt">' + b.amount + '</span></div>' +
+    (b.notif
+      ? '<div class="bs-notif"><span class="ic">\u{1F4D6}</span><span class="nx">' +
+          '<span class="nt">' + b.notif.app + '<span class="when">' + b.notif.when + '</span></span>' +
+          '<span class="nh">' + b.notif.title + '</span>' +
+          '<span class="nb">' + b.notif.body + '</span></span></div>'
+      : '') +
     '<div class="bs-body">' +
       '<div class="bs-h"><span class="bs-ic">' +
-        (b.tone === 'fail' ? BS_X : BS_BANG) + '</span>' + b.head + '</div>' +
+        (BS_ICON[b.tone] || BS_BANG) + '</span>' + b.head + '</div>' +
       '<div class="bs-reason">' + b.reason + '</div>' +
+      (b.banner ? '<div class="bs-banner"><i></i>' + b.banner + '</div>' : '') +
       (b.opts
         ? '<div class="bs-opts">' + b.opts.map((o) =>
             '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
@@ -3509,7 +4083,7 @@ function buildCall(sc, settled) {
     '<div class="cpair">' +
       '<div class="cnode"><span class="cshell a">' +
         '<span class="orb ' + sc.orb + '">' + EYES + '</span><span class="halo"></span></span>' +
-        '<span class="nm">' + sc.agent + '</span><span class="sub">Relay</span></div>' +
+        '<span class="nm">' + sc.agent + '</span><span class="cwho">Relay</span></div>' +
       '<div class="cwire">' +
         Array.from({ length: 15 }, (_, i) =>
           '<i style="--h:' + (9 + ((i * 7) % 21)) + 'px;animation-delay:' +
@@ -3517,7 +4091,7 @@ function buildCall(sc, settled) {
       '</div>' +
       '<div class="cnode"><span class="cshell b">' +
         '<span class="cava">' + sc.initials + '</span><span class="halo"></span></span>' +
-        '<span class="nm">' + sc.buyer + '</span><span class="sub">' + sc.phone + '</span></div>' +
+        '<span class="nm">' + sc.buyer + '</span><span class="cwho">' + sc.phone + '</span></div>' +
     '</div>' +
     '<div class="csub"></div>' +
     '<div class="cend">' + HANDSET.replace('<svg ', '<svg style="transform:rotate(134deg)" ') + '</div>';

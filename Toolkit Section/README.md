@@ -26,11 +26,11 @@ and its own status chips:
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
-| **Relay · Cart Recovery** *(from home → shelf)* | describe the chase → Relay builds trigger/condition/action → set the 10% cap → activate → it fires on a ₹3,400 cart → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Relay · Payment Recovery** *(from the shelf)* | describe the retry → Relay builds it → connect WhatsApp → activate → a ₹6,200 UPI failure → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Relay · Subscription Dunning** *(from the shelf)* | describe the dunning → Relay builds it → it reads the shared memory → activate → a ₹499 renewal fails → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Cart Recovery** *(from home → shelf)* | **spoken** prompt → the month in a table → Relay builds trigger/condition/action → test run → activate → the buyer's own screen leaves a ₹2,598 cart → **Relay calls Priya** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Payment Recovery** *(from the shelf)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Subscription Dunning** *(from the shelf)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Agent Toolkit** | 6 tool calls: customer → ₹500 order → UPI → status → ₹200 refund → list | Merchant ledger, net position | **Real** captured sandbox run |
-| **Agent Skills** *(light terminal, on a laptop)* | install → restart Claude → one prompt → keys + SDK → order + backend verification → validation skill → the store takes a payment | Workspace: the files it wrote and is reading | Illustrative |
+| **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + backend verification → validation skill → ShirtShop takes a payment | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
 | **MCP Server** | unsettled → next settlement → withdrawal cost → recon report → download → payment link | Account: settlement, report, link | Illustrative |
 
 **Provenance is shown on screen, per demo.** Only the Toolkit demo is a recording of
@@ -89,6 +89,65 @@ names and ids are plausible stand-ins — which is exactly what the amber proven
 Adding the other two agents from the landing page (Dispute Responder, COD Confirmation) is a
 `DEMOS` entry plus one `.acard` in `#agents`, with the orb recipe copied from the beta form.
 
+## A Relay run is three segments, and two of them are not a chat
+
+The three journey docs (`../Checkout Screen/Cart Recovery.docx`, `Payment Recovery.docx` and
+`../Subscription Dunning.docx`) tell the same story in the same order, so all three agents on
+the shelf run it:
+
+| segment | what happens | who is on screen |
+|---|---|---|
+| **1 · set the agent up** | the merchant **speaks** the opening prompt, Relay answers with the month's numbers, offers to build the agent, **test-runs it**, then asks before switching it on | the merchant |
+| **2 · the drop-off** | the payment fails, or the cart is left at the payment step | **the buyer** |
+| **3 · the call** | Relay rings the buyer, works the objection, sends a link | both |
+| **4 · the payoff** *(Dunning only)* | the day the subscriber picked arrives and the retry clears | **the buyer** |
+
+**Subscription Dunning is the one that ends on a fourth beat, because its doc does.** A failed
+renewal is the only failure in the set where the customer is not standing in front of a
+checkout: they are asleep, or at work, and the only thing that reaches them is a *push*. So
+segment 2 there is a notification and a "Subscription paused" banner rather than an error page,
+the call takes a date instead of a payment (`"Salary hasn't come in yet. Try again in 2 days?"`
+→ `"Got it — we'll retry on Friday."`), and segment 4 is Friday: the retry clears, a second push
+says the plan is active, and she never had to do anything. That last beat is the whole point of
+the agent, so it gets its own step rather than being summarised in the Runs line.
+
+Segments 2 and 3 carry **no merchant prompt at all** — the composer reads "Tap — it runs
+without you" rather than "Tap to continue". That is the product claim rendered as an
+interaction: you stop typing and it keeps going. Nothing goes live unasked either; the test
+run and the activation are both a separate yes, exactly as the docs script them.
+
+Three set pieces carry the parts a chat bubble cannot:
+
+- **`.vcap` — the voice capture.** A bar meter and a loose ring of Indic glyphs, the way the
+  doc frames it. Not decoration: the reason a voice agent is worth building in this market is
+  that the buyer is not answering in English. A step opts in with `voice: true`, and
+  `listenAsk()` replaces `typeAsk()` — the words then resolve into the composer faster than
+  fingers would type them.
+- **`.buyscr` — the buyer's screen.** Drawn as its own small labelled device inside the thread
+  so it can never be misread as the merchant's phone. Red for money that bounced, amber for
+  money that walked, green for money that finally landed; the abandoned variant shows the exit
+  prompt with the reason the buyer actually picked, which is what the agent leads the call with.
+  Two optional parts serve the renewal story: `notif` draws a real push sitting on top of the
+  app, and `banner` slides the plan's new state up under the reason — *Subscription paused*,
+  then *Subscription active*. A renewal failure has no page to fail on, so if the notification
+  were only described in a sentence the beat would not land.
+- **`.callscene` — Relay Calling.** Full screen, because that is what a call does to a phone.
+  It rings, connects, runs a clock, and the halo and the meter between the two faces lean
+  toward whoever is talking. The agent's own orb and colour come along, so a call always looks
+  like it came from the agent you were just watching. It ends on what the call **produced** —
+  a link, a code, a mandate — then hangs up and drops you back into the thread.
+
+A fourth, `.brk`, answers the opening prompt: "the agent lists failed transactions with reasons
+for failure" is five reasons and five amounts, which a sentence cannot hold, so it is a table.
+
+Steps declare these with `scene: { kind: 'brk' | 'buy' | 'call', … }`. `playScene()` runs them
+in `runStep()`; `rebuild()` repaints `brk` and `buy` statically, and repaints the call **only
+if you landed on that beat**, because a call is a moment rather than a state.
+
+> One trap worth remembering: the section subtitle up top is a bare `.sub { margin: 18px 0 0 }`,
+> and it leaked into the call scene's caption spans and pushed them off their node. Those are
+> `.cwho` now. Bare single-class rules in this file are shared ground — scope new ones.
+
 ## Agent Skills is a terminal, on a laptop
 
 Every other demo is a chat on a phone, because every other product is something a merchant
@@ -114,10 +173,11 @@ So that demo swaps the device. `surface: 'terminal'` on the demo does three thin
 
 **The last beat leaves the terminal.** The script's outro is the browser, not the console
 ("Visual: Website check out - payments"), so `term.kind: 'store'` lifts a browser over the
-whole laptop screen: the store the assistant just wired up, a **Pay with Cashfree** button,
-then a payment-successful confirmation. It is a plain demo storefront ("Kora Supply") —
-deliberately not dressed as any third-party store, since this is a Cashfree asset. `killStore`
-tears it down on Back, on a dot-jump and on any chassis change, so it cannot outlive its step.
+whole laptop screen: **ShirtShop** — the same store as the recording, with its indigo nav,
+Our Collection grid, size chips and Add to Cart buttons — and then a *Paid with Cashfree*
+confirmation. `killStore` tears it down on Back, on a dot-jump and on any chassis change,
+so it cannot outlive its step. Under a phone-width lid the grid row is only ~130px, so the
+mobile rules drop the section heading, the size chips and the second and third cards.
 
 **It is the same `.screen` element throughout.** Nothing is swapped in the DOM, so
 tap-to-advance, the dots, Back, auto-play, the guided tour and the connect turn all carry
@@ -130,31 +190,58 @@ it generated the code and running it is still yours.
 
 ## The Skills beats follow the recorded script
 
-The seven beats are cut from the voiceover script in
+The nine beats are cut from the voiceover script in
 `../Checkout Screen/Tutorial Video Scripts.docx` ("Cashfree Agent Skills + Claude Code"), so
 the section and the tutorial video tell the same story in the same order:
 
 | script beat | demo step |
 |---|---|
 | prerequisites, Node 18+ | folded into the install output, not its own step |
-| `npx @cashfreepayments/agent-skills add skills`, pick Claude Code | 1 · Install the skills |
-| it wrote `.claude/skills/cashfree-skills/` and `CLAUDE.md`, the routing table | 1 · the ✔ lines and the file rail |
-| restart Claude Code so it picks this up | 2 · Restart Claude Code |
-| "Add Cashfree Payments checkout to my app." | 3 · The prompt |
-| API keys, install the SDK | 4 · Keys and SDK |
-| create an order, verify it on your backend | 5 · Order, then verify |
-| it pulls the validation skill → checklist + sandbox data | 6 · Testing checklist |
-| outro: "Website check out - payments" | 7 · See it work — the storefront takes a payment |
+| `npx @cashfreepayments/agent-skills add skills` | 1 · Install the skills — the real banner |
+| "It asks which assistants you want. Choose Claude." | 2 · Pick your assistant |
+| it wrote `.claude/skills/cashfree-skills/` and `CLAUDE.md`, the routing table | 3 · What it wrote |
+| restart Claude Code so it picks this up | 4 · Restart Claude Code |
+| "Add Cashfree Payments checkout to my app." | 5 · The prompt |
+| API keys, install the SDK | 6 · Keys and SDK |
+| create an order, verify it on your backend | 7 · Order, then verify |
+| it pulls the validation skill → checklist + sandbox data | 8 · Testing checklist |
+| outro: "Website check out - payments" | 9 · See it work — ShirtShop takes a payment |
 
-**Steps 4–6 have no `ask`.** The script has exactly one prompt and everything after it is the
+**The banner and the picker are two beats, not one.** They are one screen in a real terminal,
+but banner + a nine-item checkbox + a narration line is ~330px against a ~280px transcript,
+so the banner was being clipped off the top. Splitting them also matches the script, which
+narrates them separately.
+
+**Steps 6–8 have no `ask`.** The script has exactly one prompt and everything after it is the
 assistant working, which is the point of the product — so those beats print tool lines with
 no prompt line above them. `tAsk` and `runStepTerm` skip the typing when `ask` is absent.
 
-**On the paths.** `.claude/skills/cashfree-skills/` and `CLAUDE.md` are verbatim from the
-script; `SKILL.md`, `references/REFERENCE.md` and `validation-and-testing/` are the file
-names the existing demo already carried from the docs. No topic sub-folder is asserted for
-the checkout skill, because nothing on hand names one — the manifest routes to
-`cashfree-skills/` and the read is of `SKILL.md`. Keep it that way if you edit the copy.
+## The install screen is the package's own output
+
+Not a redraw from a screenshot. `npm pack @cashfreepayments/agent-skills` (0.2.6) into a
+scratch dir, then read `dist/cli-ui.js` and `dist/config.js`. From there, verbatim:
+
+| thing | source |
+|---|---|
+| the ANSI-shadow `CASHFREE` / `PAYMENTS` art | `BANNER_TOP_LINES` / `BANNER_BOTTOM_LINES` |
+| `#10b981` green, `#f59e0b` amber | the two `chalk.bold.hex(...)` calls that paint them |
+| `🎯 Agent Skills Setup - Add Cashfree Payments…` | `printBanner()` |
+| "Select AI coding assistants to configure:" + the `<space>/<a>/<i>/<enter>` hint | the inquirer `checkbox` prompt |
+| the nine frameworks, in order, all unchecked | `FRAMEWORKS` |
+| `CLAUDE.md`, `.claude/skills` | `getManifest()` / `getSkillsBasePath('claude-code')` |
+| `✅ Cashfree Payments skill configuration complete!` and the skill tree | `printInstallSuccess()` / `INSTALLED_TREE_LINES` |
+
+Two deliberate departures, both visible on screen: the tree is **elided** (a `├── …` line
+stands in for the entries not shown — the real one is 31 lines, far taller than the
+transcript), and the recording predates **Kiro**, so the video shows eight frameworks where
+the section shows nine. The section follows the package, since that is what a viewer running
+the command today gets. If you want them identical, drop the last picker item.
+
+**The skill paths are now the real ones** — `pg/backend-sdks/SKILL.md`,
+`pg/apis/references/SKILL.md`, `validation-and-testing/SKILL.md` all appear verbatim in
+`INSTALLED_TREE_LINES`. An earlier draft used a placeholder `cashfree-skills/SKILL.md`
+because nothing on hand named the checkout skill; that guess is no longer needed, so don't
+reintroduce one.
 
 **The SDK calls are real**, checked against the installed `cashfree-pg`:
 `new Cashfree(CFEnvironment.SANDBOX, id, secret)`, `PGCreateOrder({order_amount,
