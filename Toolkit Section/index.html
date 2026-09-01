@@ -4047,11 +4047,24 @@ function viewPayment() {
         '<div class="st-secure">' + TICK + 'Your payment is secured by Cashfree</div>' +
         '<div class="st-cta">Proceed to Pay</div>' +
       '</div>' +
+      '<div class="st-side">' +
+      '<div class="st-cart">' +
+        '<div class="hd">Your cart<span class="n">' +
+          (CART_ITEMS.length === 1 ? '1 item' : CART_ITEMS.length + ' items') +
+        '</span></div>' +
+        CART_ITEMS.map((p) =>
+          '<div class="st-cline">' +
+            '<span class="pic">' + ART[p.art] + '</span>' +
+            '<span class="tx"><b>' + p.name + '</b><i>' + p.meta + '</i></span>' +
+            '<span class="pz">' + p.price + '</span>' +
+          '</div>').join('') +
+      '</div>' +
       '<div class="st-sum">' +
         '<div class="r"><span>Subtotal</span><b>\u20b9799</b></div>' +
         '<div class="r"><span>Shipping</span><b>\u20b999</b></div>' +
         '<div class="r"><span>GST (18%)</span><b>\u20b9144</b></div>' +
         '<div class="r tot"><span>Total</span><b>\u20b91,042</b></div>' +
+      '</div>' +
       '</div>' +
     '</div>' +
   '</div>';
@@ -4059,14 +4072,14 @@ function viewPayment() {
 
 /** view 3 -- the drop-in cashfree.checkout() opens, over the dimmed payment step */
 function viewCheckout() {
-  const item = (p, inCart) =>
-    '<div class="occ-item' + (inCart ? ' in' : '') + '">' +
+  const item = (p) =>
+    '<div class="occ-item">' +
       '<span class="pic">' + ART[p.art] + '</span>' +
       '<span class="tx"><span class="nm">' + p.name + '</span>' +
         '<span class="pr"><b>' + p.price + '</b>' +
           (p.was ? '<s>' + p.was + '</s>' : '') +
           (p.save ? '<i>' + p.save + '</i>' : '') + '</span>' +
-        '<span class="add">' + (inCart ? 'In cart \u00b7 ' + p.meta : 'ADD +') + '</span>' +
+        '<span class="add">ADD +</span>' +
       '</span>' +
     '</div>';
 
@@ -4090,11 +4103,9 @@ function viewCheckout() {
           '<div class="occ-ship">' + TRUCK + 'Get it in 24 Hours \u00b7 <em>Free</em>' +
             '<span class="ch">\u2304</span></div>' +
         '</div>' +
-        '<div class="occ-tabs"><span class="on">Your cart</span><span>Frequently Paired</span></div>' +
-        '<div class="occ-items">' +
-          CART_ITEMS.map((p) => item(p, true)).join('') +
-          item(PAIRED[0], false) +
-        '</div>' +
+        '<div class="occ-lbl"><span class="l">Frequently paired with your order</span>' +
+          '<span class="r">' + PAIRED[0].save + '</span></div>' +
+        '<div class="occ-items">' + item(PAIRED[0]) + '</div>' +
         '<div class="occ-off"><span class="cd">FESTIVE10</span>' +
           '<span class="ds">5% off · 9 more offers ›</span>' +
           '<span class="ap">Apply</span></div>' +

@@ -510,8 +510,8 @@ over the whole laptop screen and `term.view` says which page it is on:
 | `view` | what is on screen |
 |---|---|
 | `collection` | **ShirtShop** — indigo nav, Our Collection, size chips, Add to Cart |
-| `payment` | the Address ✓ / Review ✓ / **Payment** stepper, "Pay securely with Cashfree", the order summary and **Proceed to Pay** |
-| `checkout` | the same page dimmed under the **Cashfree drop-in** — business panel, ₹1,042, offers and coupon, favourites, the UPI QR, other payment options — then the success card |
+| `payment` | the Address ✓ / Review ✓ / **Payment** stepper, "Pay securely with Cashfree", **what is in the cart**, the order summary and **Proceed to Pay** |
+| `checkout` | the same page dimmed under the **Cashfree drop-in** — the OCC sheet: promo strip, saved address, the frequently-paired cross-sell, offers, payment methods and the black Pay Now bar — then the success card |
 
 `showStore(view, cap, amt)` rebuilds the overlay per beat but skips the entrance animation
 when one is already up, so the browser chrome does not blink between the three. The
@@ -522,6 +522,13 @@ strip green. `killStore` tears it all down on Back, on a dot-jump and on any cha
 **The caption strip exists because the overlay covers the transcript.** `.store` is
 `inset: 0`, so the beat's `say` would otherwise be hidden behind it — `.st-cap` puts it back
 at the bottom of the browser, and turns green with the amount once the payment lands.
+
+**The cart is on ShirtShop's page, not inside the Cashfree sheet.** Both used to list it, which
+read as the drop-in asking the buyer to re-approve a basket they had already agreed to two steps
+earlier. So `viewPayment` carries the cart (`.st-cart`, beside the summary) and the sheet carries
+only what is *new* there — the frequently-paired cross-sell, which is a Cashfree feature rather
+than a restatement of the order. The sheet still shows the total in three places, so nothing about
+what is being paid for is lost.
 
 **₹799 + ₹99 shipping + ₹144 GST = ₹1,042**, which is the figure the summary, the drop-in and
 `PGCreateOrder({order_amount: 1042})` all carry. If you change the product price, change all
