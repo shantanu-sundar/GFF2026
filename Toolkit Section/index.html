@@ -935,6 +935,109 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 }
 .acard .go svg { width: 11px; height: 11px; color: rgba(244,245,244,0.75); }
 
+/*
+ * Relay's onboarding screen -- the first thing a merchant meets.
+ *
+ * This is the one level in the section that is NOT dressed in the black bento
+ * or in Cashfree green: it is Relay's own product surface, and Relay's is a
+ * light card on a light ground with an indigo accent. Keeping it in the house
+ * palette would have made it read as a third Cashfree dashboard rather than as
+ * the thing the merchant is actually looking at.
+ *
+ * Only .ob-row.on is live, the way only .md-spark is live on the dashboard: the
+ * screen is scenery for the agent you already picked off the shelf, and the eye
+ * needs telling which row that was.
+ */
+.onboard {
+  position: absolute; inset: 0; z-index: 11;
+  background: #f4f5f8;
+  overflow-y: auto;
+  padding: 42px 12px 18px;
+  display: flex; flex-direction: column; justify-content: center;
+  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
+}
+.onboard.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
+.onboard::-webkit-scrollbar { width: 0; }
+
+.ob-card {
+  background: #fff;
+  border: 1px solid rgba(24, 27, 44, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(24, 27, 44, 0.09);
+  padding: 20px 16px 16px;
+  text-align: center;
+}
+.ob-spark {
+  width: 34px; height: 34px; margin: 0 auto; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(155deg, #6b76ec 0%, #4b57d8 100%);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(75, 87, 216, 0.34);
+}
+.ob-spark svg { width: 18px; height: 18px; }
+.ob-h {
+  margin-top: 12px;
+  font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: #181b2c;
+}
+.ob-sub {
+  margin: 6px auto 0; max-width: 30ch;
+  font-size: 10.5px; line-height: 1.45; color: rgba(24, 27, 44, 0.55);
+}
+
+.ob-list { margin-top: 13px; display: flex; flex-direction: column; gap: 7px; }
+.ob-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: #eceffe;
+  border: 1px solid transparent;
+  font-size: 11px; font-weight: 500; color: #3b46b8;
+  text-align: left;
+}
+.ob-row i {
+  flex: none; font-style: normal; font-size: 12px; font-weight: 600;
+  color: #6b76ec; line-height: 1;
+}
+/* the row for the agent picked off the shelf: the one hotspot on the screen */
+.ob-row.on {
+  cursor: pointer;
+  background: #f4f6ff;
+  border-color: #4b57d8;
+  font-weight: 600; color: #2b34a0;
+  animation: obPulse 2.1s ease-in-out infinite;
+}
+.ob-row.on:hover { background: #eceffe; }
+@keyframes obPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(75, 87, 216, 0.34); }
+  55%      { box-shadow: 0 0 0 6px rgba(75, 87, 216, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .ob-row.on { animation: none; } }
+
+.ob-more {
+  margin-top: 9px; text-align: right;
+  font-size: 10px; font-weight: 700; color: rgba(24, 27, 44, 0.6);
+}
+.ob-or {
+  position: relative; margin: 11px 0 10px;
+  border-top: 1px solid rgba(24, 27, 44, 0.09);
+}
+.ob-or span {
+  position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+  padding: 0 8px; background: #fff;
+  font-size: 10px; color: rgba(24, 27, 44, 0.42);
+}
+.ob-build {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px; border-radius: 11px;
+  background: #14161f; color: #fff;
+  font-size: 11.5px; font-weight: 600; letter-spacing: -0.01em;
+}
+.ob-build i { font-style: normal; font-size: 13px; font-weight: 400; line-height: 1; }
+.ob-foot {
+  margin: 9px auto 0; max-width: 32ch;
+  font-size: 9.5px; line-height: 1.4; color: rgba(24, 27, 44, 0.42);
+}
+
 /* --- the orbs --- */
 .orb {
   position: relative; flex: none;
@@ -1227,7 +1330,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 /* the merchant panel, in the brick the Cashfree checkout actually uses */
 .buyscr .bs-brand {
   display: flex; align-items: center; gap: 9px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: linear-gradient(150deg, #6d2620 0%, #571c17 100%);
   color: #fff;
 }
@@ -1247,7 +1350,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   font-variant-numeric: tabular-nums;
 }
 
-.buyscr .bs-body { padding: 11px 12px 12px }
+.buyscr .bs-body { padding: 10px 11px 11px }
 .buyscr .bs-h { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; letter-spacing: -0.015em }
 .buyscr .bs-ic { flex: none; width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center }
 .buyscr .bs-ic svg { width: 9px; height: 9px }
@@ -1277,6 +1380,210 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .buyscr.drop .bs-reason { background: #fff6e6; border: 1px solid rgba(255, 174, 21, 0.28); color: #7a5312 }
 .buyscr.ok .bs-ic { background: var(--evergreen) }
 .buyscr.ok .bs-reason { background: #edfaf3; border: 1px solid rgba(0, 173, 108, 0.24); color: #0d5f40 }
+
+/* The buttons a failed checkout actually puts in front of the buyer, and the
+   line of small print under them. Payment Recovery's whole argument is that
+   these two are not enough: Retry is the same bank that just said no, and
+   "try another method" is a menu with no advice in it. Drawn, so the call in
+   segment 3 is visibly doing what this screen could not. */
+.buyscr .bs-acts { margin-top: 9px; display: flex; flex-direction: column; gap: 6px }
+.buyscr .bs-act {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px; border-radius: 9px;
+  font-size: 11px; font-weight: 600; letter-spacing: -0.01em;
+  border: 1px solid rgba(29, 34, 31, 0.14); color: var(--graphite);
+}
+.buyscr .bs-act.pri { background: #6b76ec; border-color: #6b76ec; color: #fff }
+.buyscr .bs-act svg { width: 12px; height: 12px; flex: none }
+.buyscr .bs-note {
+  margin-top: 8px; display: flex; align-items: flex-start; gap: 5px;
+  font-size: 9.5px; line-height: 1.4; color: rgba(29, 34, 31, 0.46);
+}
+.buyscr .bs-note svg { width: 10px; height: 10px; flex: none; margin-top: 1px }
+
+/* --- the buyer's cart, and the sheets that land on top of it -------------- *
+ *
+ * Cart Recovery's segment 2 is two beats on ONE screen: the cart, then the exit
+ * prompt over it. Drawn as two unrelated cards they lose the only thing that
+ * makes an abandoned cart read as abandoned -- that the basket is still sitting
+ * there when she walks. So the sheet is positioned over the same device and the
+ * cart dims underneath it rather than being replaced.
+ */
+.buyscr { position: relative; }
+.buyscr.sheeted .bs-body { opacity: 0.32; }
+
+.bs-cart .hd {
+  display: flex; align-items: baseline;
+  padding: 0 1px 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.44);
+}
+.bs-cart .hd .n {
+  margin-left: auto; font-weight: 600; letter-spacing: 0; text-transform: none;
+  font-size: 9.5px;
+}
+.bs-cline {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 9px;
+  background: #fff;
+  border: 1px solid rgba(29, 34, 31, 0.1);
+  border-radius: 11px;
+}
+.bs-cline + .bs-cline { margin-top: 5px; }
+.bs-cline .pic {
+  flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: grid; place-items: center; background: #f4f4f2;
+}
+.bs-cline .pic svg { width: 22px; height: 22px; }
+.bs-cline .tx { flex: 1; min-width: 0; }
+.bs-cline .tx b {
+  display: block; font-size: 10.5px; font-weight: 700; line-height: 1.25;
+  color: var(--graphite);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bs-cline .tx i {
+  display: block; margin-top: 2px; font-style: normal;
+  font-size: 9px; color: rgba(29, 34, 31, 0.5);
+}
+/* "+1 more item" -- the reference's own way of holding a second identical line
+   without spending a second 45px row on it */
+.bs-cline .tx em {
+  display: block; margin-top: 2px; font-style: normal;
+  font-size: 9px; font-weight: 600; color: rgba(29, 34, 31, 0.38);
+}
+.bs-cline .pz {
+  font-size: 10.5px; font-weight: 700; color: var(--graphite);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the offers strip the Cashfree checkout puts above the cart */
+.bs-offer {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 7px; padding: 5px 8px;
+  border-radius: 9px;
+  background: #f4fcf8; border: 1px dashed rgba(0, 173, 108, 0.34);
+}
+.bs-offer .cd {
+  flex: none; font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.03em;
+  padding: 3px 6px; border-radius: 5px;
+  background: rgba(0, 173, 108, 0.13); color: #0d5f40;
+}
+.bs-offer .ds {
+  flex: 1; min-width: 0; font-size: 9.5px; color: rgba(29, 34, 31, 0.62);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bs-offer .ap {
+  flex: none; font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--evergreen);
+}
+
+.bs-sum {
+  margin-top: 7px; padding: 7px 9px;
+  border-radius: 10px; background: #f6f6f4;
+}
+.bs-sum .r {
+  display: flex; align-items: center; padding: 2px 0;
+  font-size: 9.5px; color: rgba(29, 34, 31, 0.55);
+}
+.bs-sum .r b {
+  margin-left: auto; font-weight: 600; color: rgba(29, 34, 31, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+.bs-sum .r b.free { color: var(--evergreen); letter-spacing: 0.06em; }
+.bs-sum .r.tot {
+  margin-top: 5px; padding-top: 6px;
+  border-top: 1px solid rgba(29, 34, 31, 0.1);
+  font-size: 10.5px; font-weight: 700; color: var(--graphite);
+}
+.bs-sum .r.tot b { font-size: 12.5px; color: var(--graphite); }
+
+/* the sheet: same box for the exit prompt and for the receipt */
+.bs-sheet {
+  position: absolute; left: 9px; right: 9px; bottom: 9px;
+  padding: 12px 12px 11px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(29, 34, 31, 0.1);
+  box-shadow: 0 -6px 24px rgba(29, 34, 31, 0.16);
+  animation: sheetUp 0.44s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .bs-sheet { animation: none; } }
+
+.bs-exit .xh { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: var(--graphite); }
+.bs-exit .xs { margin-top: 3px; font-size: 10px; color: rgba(29, 34, 31, 0.55); }
+.bs-exit .bs-opts { margin-top: 9px; }
+/* the reference's second reason runs to two lines, and a radio centred against
+   a two-line label reads as though it belongs to neither. Hang it off the top
+   instead, so the wrap indents under its own first line. */
+.bs-exit .bs-opt { align-items: flex-start; line-height: 1.4; }
+.bs-exit .bs-opt i { margin-top: 1.5px; }
+.bs-exit .xgo {
+  margin-top: 11px; padding: 9px;
+  border-radius: 9px; text-align: center;
+  background: #6b76ec; color: #fff;
+  font-size: 11px; font-weight: 600; letter-spacing: -0.01em;
+}
+.bs-exit .xleave {
+  margin-top: 8px; text-align: center;
+  font-size: 10.5px; font-weight: 700; color: #d64545;
+}
+
+.bs-failed { text-align: center; }
+.bs-failed .fh {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: var(--graphite);
+}
+.bs-failed .fs { margin-top: 3px; font-size: 10px; color: rgba(29, 34, 31, 0.55); }
+.bs-failed .bs-reason { margin-top: 9px; text-align: left; }
+.bs-failed .bs-acts { text-align: left; }
+.bs-failed .bs-note { text-align: left; }
+
+.bs-done { text-align: center; }
+.bs-done .big {
+  width: 34px; height: 34px; margin: 0 auto 8px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--evergreen);
+  animation: donePop 0.46s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+.bs-done .big svg { width: 17px; height: 17px; }
+@keyframes donePop { from { transform: scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bs-done .big { animation: none; } }
+.bs-done .t { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: -0.02em; color: var(--graphite); }
+.bs-done .amt {
+  display: block; margin-top: 2px;
+  font-size: 19px; font-weight: 700; letter-spacing: -0.03em; color: var(--graphite);
+  font-variant-numeric: tabular-nums;
+}
+.bs-done .sub {
+  display: block; margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(29, 34, 31, 0.44);
+}
+
+/* --- "It's live" ---------------------------------------------------------- */
+.livecard {
+  width: 100%;
+  padding: 11px 12px 12px;
+  border-radius: 15px;
+  background: #edfaf3;
+  border: 1px solid rgba(0, 173, 108, 0.26);
+}
+.livecard .lv-top {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: -0.01em; color: #0d5f40;
+}
+.livecard .lv-top .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--evergreen);
+  box-shadow: 0 0 0 0 rgba(0, 173, 108, 0.5);
+  animation: recpulse 1.6s ease-in-out infinite;
+}
+.livecard .lv-b {
+  margin-top: 6px; font-size: 11.5px; line-height: 1.45; color: #14624a;
+}
 
 /*
  * The push, and the banner under it.
@@ -2981,6 +3288,37 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
               </div>
             </div>
 
+            <!--
+              level 2b-ii: Relay's onboarding screen.
+
+              Picking an agent off the shelf used to open a connect card -- a wire
+              filling between "Merchant Dashboard" and the sandbox. That is the
+              Agent Toolkit's story, not Relay's. Relay is already inside the
+              dashboard the merchant logged into, so there is nothing to connect;
+              what they actually meet first is a list of ready-made agents with a
+              "build your own" underneath it. So the shelf hands off to this, and
+              the row for the agent you picked is the one live thing on the screen.
+            -->
+            <div class="onboard gone" id="onboard">
+              <div class="ob-card">
+                <div class="ob-spark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6l1.85 5.05L18.9 10.5l-5.05 1.85L12 17.4l-1.85-5.05L5.1 10.5l5.05-1.85L12 3.6Z"/><path d="M18.3 15.2l.55 1.5 1.5.55-1.5.55-.55 1.5-.55-1.5-1.5-.55 1.5-.55.55-1.5Z"/></svg></div>
+                <div class="ob-h">Let’s get an agent on the clock</div>
+                <div class="ob-sub">Say it in your own words — I’ll build it and it runs
+                  without you. Or start from one of these:</div>
+                <div class="ob-list">
+                  <div class="ob-row" data-tpl="dispute"><i>+</i><span>Dispute Defender Agent</span></div>
+                  <div class="ob-row" data-tpl="relayPay"><i>+</i><span>Failed Payment Recovery Agent</span></div>
+                  <div class="ob-row" data-tpl="relayDun"><i>+</i><span>Subscription Dunning Agent</span></div>
+                  <div class="ob-row" data-tpl="relayCart"><i>+</i><span>Abandoned Cart Recovery Agent</span></div>
+                </div>
+                <div class="ob-more">Show more</div>
+                <div class="ob-or"><span>or</span></div>
+                <div class="ob-build"><i>+</i>Build your own</div>
+                <div class="ob-foot">Tell me what you want automated and I’ll build it
+                  from scratch.</div>
+              </div>
+            </div>
+
         
             <!-- level 2c: the merchant dashboard Spark sits on -->
             <div class="mdash gone" id="mdash">
@@ -3134,6 +3472,42 @@ const CX_ICON = {
  "cf": '<img class="cfmark" alt="Cashfree" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABQxJREFUeAHtWM1uHEUQruoxRkFivUduXvECGZ6A9RPElm0ih0jZOXLzCgkhLp5ckCUOyQUhkCAbaZ1AYsvmCdi8ANgvgIZbjhbkQNYzXVT/zE/Pzv6FzWot7Wd5erq7uru+6arq6gVYYoklrjVQP395tAmreCtrlbYUQ96LGNUOFX2SLiCGM9gLIpgBMHs7/qmDSPdMKwIR6U71TIWI//KB6NTzVqhor1pSduBvrw1BcAn/A+jUnn/fAYH3yp1GIa4pUoqc7aOyHPcr8pCWBTksTKq7zYiI+nID9j6LYCYEFE6+C3niA72w1VDrVBhAFZOMastJVO5PBP3XTKIdwRsAK1tPvm2BlA14E1TavjQdSD5/jFtFQ7Q0LyFOArjdPoMpgTBvnD7w2ZF/46XreSNZn5IhbH9+f4rZsu81P2y1z4GSX4FDUfqPkLDy6p0JnHxzMM10K+ME6PSDRh9Ea1i0ZFMDIURqJE4J9j3miHNj62WUD4rt5EX/MnvACOn4ax/+6QcQhGMj1FgCyAtfnXzIb96BcGJKwRWlUtS4qLD9wmqoWj2gdYCXQSYv4nUkNBEJXDvWdYRNqgkfnobs3GE0Sr+JTOid7T9DiN+/D0kNMF4DTNYAEluqeqzqNX6v6fbyO/f/VZyPTcZXJqPNhnT5IqurkpRZyQausq88DRujdBu7AxmJ27+HV0dNXt07MEqkytgvYeN7WhY3Cyk5zyZ69pVPMq47EyRyn+2wwZ/+EQ/KnJuHN+Bd4DbYGKbX1FGo393cF4n0B2xdaHdQ/sDmgs18Af7eQn60+umZIXH8xSZ/hNPsHFePnUOjx+mXDZDIEYoaUMgDSNIG7B72qvSZeAdSrN49eziqP/6x1UKPCVDmI5erQSffAZI+b0laARR4nkluHUZMYgNk/EcpzPr86FWtN/MwilTzc/tfY31rF46Al3yMxfApY8c/NAlUJqdkEv6/UrL1YetNvQNjCcRrN22AMS5AdO4IUOwXE0Q+E3oDk8irOqIoJB1yaDidOQFI6j7aRAo1EYqyvtP9OsjX9cz1dCFcglqmzySLp448H7bcTAnQgx98SLBOhdSNtyRfPP7XB0GQ5rM6e33Vd5VjGRTSPR9evTcfAklyo+GhZxZOQ+j+nV4mIPp+Ls0EkdPpoOOah1Bf30CXiBEED+djQp63Ui8e0FS2f3nV1AdFmjSo21kZWsbEFm2JVTIFzDQKYXuvw4XOJk2MJzfCoEopVOKW6AjE2g2YBqJc131Kjqpliph9GG3vhWBJcL7TczvJmhCZCINQcuBWnRB97RvqjMAKmRLeSjqtSKAiwYdU1vj8btP25k8pI2dgHPtp9MrMzFsZSWD2YdTC7kQOwclZdqXUGl7CJ0eucoJ3iFL/13t0CVudaNQ687vQEPhpANVVCRcVMk3zYgPoGAdWmB8BIW7mFWXbVc6J64iFXaLR9q+nhXmB4IVzfUGvQjny818yVG4uejAG8yOw3Q1ZLXthRxXvI6dfOXl2AtqnV3LyCsz3Uq9ISBNiYffnntMnKDul7R6xAz9ZIBNKsdsN+fMHA+3qnqAx4pSuwPwJKGw/6Qy0CW/dWFD6c+B4B9bDYEHA94amSd5sA3ESNwEWg8CzOz6Vf1wFvEY7YH6RcH/p2O32JhoKi4Cd7hk77eO0SjSZ/SssjA/A7lGLCC2JUho+AotDQGGn2+IY+pi3oAfXGnwvgCWWWGKJa4H/ALQqGaixCsdCAAAAAElFTkSuQmCC">'
 };
 
+/*
+ * One cart, read by all three of Cart Recovery's buyer beats -- the checkout,
+ * the exit prompt that lands over it and the receipt that closes it -- so the
+ * three can never quietly disagree about what she was buying. Same discipline
+ * the Skills store's CART_ITEMS follows, for the same reason.
+ *
+ * 1,299 x 2 = the 2,598 the exit prompt shows, and 10% of that is the 260 the
+ * agent is allowed to give away on the call.
+ */
+const OSS_ITEMS = [
+  {
+    name: 'Arjun Classic Kurta Pajama', meta: 'Size L · Qty 1',
+    more: '+1 more item', price: '₹1,299', art: 'k',
+  },
+];
+const OSS_OFFER = { code: 'PREPAID_GIFT', text: 'Free gift worth ₹1,200', cta: 'Apply' };
+const OSS_CART = {
+  offer: OSS_OFFER, items: OSS_ITEMS,
+  rows: [
+    { k: 'Cart Total', v: '₹2,598' },
+    { k: 'Shipping Charges', v: 'FREE', free: 1 },
+    { k: 'Total Amount', v: '₹2,598', tot: 1 },
+  ],
+};
+/* the same cart after the agent's 10%: 2,598 - 260 = the 2,338 the call quotes,
+   the receipt shows and the Runs tab reports */
+const OSS_CART_PAID = {
+  offer: OSS_OFFER, items: OSS_ITEMS,
+  rows: [
+    { k: 'Cart Total', v: '₹2,598' },
+    { k: 'Discount · 5XCA', v: '-₹260' },
+    { k: 'Shipping Charges', v: 'FREE', free: 1 },
+    { k: 'Total Amount', v: '₹2,338', tot: 1 },
+  ],
+};
+
 const DEMOS = {
   toolkit: {
     connectStep: {"kind":"connect","label":"Connect the account","tool":"CFEnvironment.SANDBOX","ask":"Connect to my Cashfree sandbox","say":"Connected. 40 payment tools available on this account."},
@@ -3228,7 +3602,9 @@ const DEMOS = {
 
   relayCart: {
     agent: { name: 'Cart Recovery', orb: 'o1' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Cart Recovery agent","say":"Connected to your Cashfree sandbox. Relay is open on Cart Recovery — Agents, Runs and Connections."},
+    /* No connectStep. Relay is already inside the dashboard the merchant logged
+       into, so the run opens on the merchant speaking rather than on a wire
+       filling; the onboarding screen (#onboard) is the beat that used to be. */
     connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Cart <span class="thin">Recovery</span>',
     blurb: 'Say what you want chased. Relay builds it, tests it, waits for your yes — then calls the buyer back itself.',
@@ -3245,7 +3621,13 @@ const DEMOS = {
       ]
     },
     steps: [
-      /* --- segment 1: setting the agent up --- */
+      /* --- segment 1: setting the agent up -------------------------------- *
+       *
+       * The merchant speaks, Relay answers with the month, and from there every
+       * switch is a separate yes: pick the template, test it, then turn it on.
+       * Nothing goes live unasked, which is the product's claim rendered as an
+       * interaction rather than asserted in a bubble.
+       */
       {
         label: 'Ask what happened', tool: 'Voice',
         voice: true,
@@ -3260,52 +3642,81 @@ const DEMOS = {
             { k: 'Refunded', n: '21', v: '₹48,900' }
           ]
         },
-        say: '1,284 paid, but 412 walked at the payment step — ₹9.8L of it. Want to dig into the dropped ones and set up an agent to recover them?',
+        say: '1,284 paid — but 412 walked at the payment step, ₹9.8L of it, and 38 payments failed outright. Which of those do you want an agent on first?',
         patch: {}
       },
       {
-        label: 'Relay builds it', tool: 'trigger + condition + action',
-        ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Cart Abandoned → voice call', ms: 1240 },
-        say: 'It’s done. Trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Would you like a test run?',
+        label: 'Pick the template', tool: 'Abandoned Cart Recovery',
+        ask: 'Abandoned cart. Based on the metrics you’ve shared, that one is the more important one for me.',
+        call: { name: 'load template', summary: 'Abandoned Cart Recovery · wired', ms: 1240 },
+        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go — trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Want to take it for a quick spin and give it a test run?',
         patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · 10% cap', action: 'Voice call + offer' }
       },
       {
         label: 'Test run', tool: 'Dry run',
-        ask: 'Yes, let’s do a test run',
+        ask: 'Okay — take it for a spin.',
         call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
-        say: 'Test run successful — it held the 30 minutes, placed the call and stopped the discount at 10%. Nothing reached a real buyer. Should I activate the Abandoned Cart Recovery Agent?',
+        say: 'Took it for a spin and it ran clean. It held the 30 minutes, placed the call and stopped the discount at 10% — and nothing reached a real buyer. Ready to turn it on and start recovering those abandoned carts?',
         patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
         ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        say: 'Your Abandoned Cart Recovery Agent is now live. Your newest teammate just clocked in — and it won’t be clocking out.',
+        scene: {
+          kind: 'live', title: 'It’s live',
+          body: 'It’ll now reach out to customers who leave something in their cart and help them finish their purchase.'
+        },
+        say: 'Your newest teammate just clocked in — and it won’t be clocking out.',
         patch: { __headline: 'Active' }
       },
 
-      /* --- segment 2: the buyer's screen. No prompt: it runs without you. --- */
+      /* --- segment 2: the buyer's screen ---------------------------------- *
+       *
+       * Two beats on ONE screen, and in this order on purpose: you have to see
+       * the cart before it can be abandoned. The exit prompt then lands as a
+       * sheet over the same cart rather than as a separate card, so the basket
+       * she is walking away from is still on screen behind the question.
+       *
+       * No merchant prompt on either -- the composer reads "Tap, it runs
+       * without you", which is the point of the whole segment.
+       */
       {
-        label: 'The cart is abandoned', tool: 'One-Stop Shoppy',
+        label: 'Her cart', tool: 'One-Stop Shoppy',
+        call: { name: 'checkout.opened', summary: 'OSS-48291 · 2 items · ₹2,598', ms: 140 },
+        scene: {
+          kind: 'buy', tone: 'drop', tag: 'Buyer’s screen · checkout',
+          store: 'One-Stop Shoppy', amount: '₹2,598',
+          cart: OSS_CART,
+          meta: 'Order OSS-48291 · at the payment step'
+        },
+        say: 'Priya is at the payment step with two kurta pajamas — ₹2,598, and nothing charged yet.',
+        patch: {}
+      },
+      {
+        label: 'She leaves', tool: 'Cart Abandoned',
         call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 140 },
         scene: {
           kind: 'buy', tone: 'drop', tag: 'Buyer’s screen · live',
           store: 'One-Stop Shoppy', amount: '₹2,598',
-          head: 'Leaving checkout?',
-          reason: 'Priya closed the payment step with two Arjun Classic Kurta Pajamas still in the cart.',
-          opts: [
-            { t: 'I need to update cart' },
-            { t: 'I didn’t find the payment mode I wanted', on: 1 },
-            { t: 'Other reasons' }
-          ],
-          meta: 'Order OSS-48291 · cart held · 30 min clock'
+          cart: OSS_CART,
+          exit: {
+            head: 'Leaving Checkout?',
+            sub: 'Please share the reason:',
+            opts: [
+              { t: 'I need to update cart' },
+              { t: 'I didn’t find the payment mode I was looking for', on: 1 },
+              { t: 'Other reasons' }
+            ],
+            go: 'No, Continue to checkout',
+            leave: 'Yes, Leave'
+          }
         },
         say: 'There is the trigger. She told the exit prompt why she left, so the agent already knows what to lead with. The 30 minutes start now.',
         patch: { runs: 'waiting 30 min' }
       },
 
-      /* --- segment 3: the call --- */
+      /* --- segment 3: the call and what it produced ------------------------ */
       {
         label: 'Relay calls Priya', tool: 'Voice call',
         call: { name: 'agent run', summary: 'called · offer accepted · link sent', ms: 610 },
@@ -3315,13 +3726,25 @@ const DEMOS = {
           phone: '+91 98••• ••210', lang: 'English', dur: '00:41',
           result: 'Payment link sent · code 5XCA', amount: '₹2,338',
           lines: [
-            { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or were you still deciding?' },
-            { b: 1, t: 'Oh yeah — I wanted it, I just got distracted.' },
-            { t: 'Here’s the payment link. Use code 5XCA for 10% off at checkout.' }
+            { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or just still deciding?' },
+            { b: 1, t: 'Oh yeah, I wanted it but got distracted.' },
+            { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' }
           ]
         },
         say: 'It waited the 30 minutes, called her, heard the real reason and sent a link with the 10% you capped it at — not a rupee deeper.',
         patch: { runs: '1 run' }
+      },
+      {
+        label: 'She pays', tool: 'Payment link',
+        call: { name: 'payment.success', summary: 'OSS-48291 · ₹2,338 · SUCCESS', ms: 220 },
+        scene: {
+          kind: 'buy', tone: 'ok', tag: 'Buyer’s screen · live',
+          store: 'One-Stop Shoppy', amount: '₹2,338',
+          cart: OSS_CART_PAID,
+          done: { t: 'Payment successful', amt: '₹2,338', sub: 'OSS-48291 · code 5XCA · ₹260 off' }
+        },
+        say: 'She tapped the link and paid — ₹2,338 back, at the cap and not a rupee deeper.',
+        patch: { runs: 'recovered ₹2,338' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
@@ -3335,7 +3758,6 @@ const DEMOS = {
 
   relayPay: {
     agent: { name: 'Payment Recovery', orb: 'o2' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Payment Recovery agent","say":"Connected to your Cashfree sandbox. Relay is open on Payment Recovery — Agents, Runs and Connections."},
     connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Payment <span class="thin">Recovery</span>',
     blurb: 'Every failed payment gets a second try — with the real reason, and the method that will actually clear.',
@@ -3352,7 +3774,15 @@ const DEMOS = {
       ]
     },
     steps: [
-      /* --- segment 1: setting the agent up --- */
+      /* --- segment 1: setting the agent up -------------------------------- *
+       *
+       * Same shape as Cart Recovery, because the two journey docs are the same
+       * story: the merchant speaks, Relay answers with the month, and from
+       * there every switch is a separate yes -- pick the template, test it,
+       * then turn it on. What differs is what the numbers are FOR. Cart
+       * Recovery's table is where the money went; this one is why it bounced,
+       * and that reason column is what the agent carries into the call.
+       */
       {
         label: 'Ask what failed', tool: 'Voice',
         voice: true,
@@ -3368,47 +3798,71 @@ const DEMOS = {
             { k: 'Other', n: '3', v: '₹12,300' }
           ]
         },
-        say: '38 failed, ₹2,06,400 sitting there. The biggest slice is a bank-side decline, which usually clears on a second try. Would you like to set up an agent to recover them?',
+        say: '38 payments failed this month — ₹2,06,400 the account never collected. The biggest slice is a bank-side decline, and that one usually clears on a second attempt. Want me to put an agent on these?',
         patch: {}
       },
       {
-        label: 'Relay builds it', tool: 'trigger + condition + action',
-        ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Payment Failed → call + retry link', ms: 1180 },
-        say: 'It’s done. Trigger Payment Failed, condition above ₹1,000, action a call carrying the real reason and a fresh link on whichever method is clearing. Would you like a test run?',
+        label: 'Pick the template', tool: 'Failed Payment Recovery',
+        ask: 'Failed payment recovery. With this many payments dropping off, that one hits home.',
+        call: { name: 'load template', summary: 'Failed Payment Recovery · wired', ms: 1180 },
+        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go — trigger Payment Failed, condition above ₹1,000, and a call that carries the real decline reason and a fresh link on whichever method is clearing. Want to take it for a quick spin and give it a test run?',
         patch: { trigger: 'Payment Failed', condition: 'above ₹1,000', action: 'Call + retry link' }
       },
       {
         label: 'Test run', tool: 'Dry run',
-        ask: 'Yes, let’s do a test run',
+        ask: 'Okay — take it for a spin.',
         call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
-        say: 'Test run successful — it read the decline reason, placed the call and issued the link. No buyer was contacted. Should I activate the Payment Recovery Agent?',
+        say: 'Took it for a spin and it ran clean. It read the decline reason off the failed payment, placed the call and issued the retry link — and nothing reached a real buyer. Ready to turn it on and start winning those payments back?',
         patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
-        ask: 'Yes, activate it.',
+        ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        say: 'Your Payment Recovery Agent is now live. From here it sits on every failed payment on the account.',
+        scene: {
+          kind: 'live', title: 'It’s live',
+          body: 'It’ll now reach out to customers whose payment didn’t go through and help them finish paying.'
+        },
+        say: 'Your newest teammate just clocked in — and it won’t be clocking out.',
         patch: { __headline: 'Active' }
       },
 
-      /* --- segment 2: the buyer's screen. No prompt: it runs without you. --- */
+      /* --- segment 2: the buyer's screen ---------------------------------- *
+       *
+       * One beat, not Cart Recovery's two. She walked away from a basket, so
+       * there the cart had to be seen BEFORE it could be abandoned; he never
+       * walked anywhere -- he tapped pay and the bank said no over the cart he
+       * was already holding. So the decline arrives as a sheet on that cart in
+       * a single beat, and the two buttons under it are the whole recovery the
+       * checkout can manage by itself.
+       *
+       * No merchant prompt here -- the composer reads "Tap, it runs without
+       * you", which is the point of the segment.
+       */
       {
-        label: 'A payment fails', tool: 'One-Stop Shoppy',
+        label: 'His payment fails', tool: 'One-Stop Shoppy',
         call: { name: 'payment.failed', summary: 'OSS-48291 · ₹2,598 · UPI declined', ms: 140 },
         scene: {
           kind: 'buy', tone: 'fail', tag: 'Buyer’s screen · live',
           store: 'One-Stop Shoppy', amount: '₹2,598',
-          head: 'Payment failed',
-          reason: 'UPI transaction declined by your bank. No amount was charged.',
-          meta: 'Order OSS-48291 · retry 1 of 3 · auto-refund in 5–7 days if debited'
+          cart: OSS_CART,
+          fail: {
+            head: 'Payment failed',
+            sub: 'Your payment of ₹2,598 could not be completed.',
+            reason: 'UPI transaction declined by your bank. No amount was charged.',
+            btns: [
+              { t: 'Retry payment', ic: 'retry', pri: 1 },
+              { t: 'Try another payment method', ic: 'card' }
+            ],
+            note: 'Money debited? It’ll be auto-refunded within 5–7 business days.'
+          },
+          meta: 'Order OSS-48291 · retry 1 of 3'
         },
-        say: 'Rahul’s ₹2,598 just bounced — declined bank-side, nothing charged. That is the trigger, and that reason is the thing worth carrying into the call.',
+        say: 'Rahul tapped pay on ₹2,598 and his bank declined it — nothing charged. He is looking at a Retry button that goes back to the same bank, which is why most of these never come back on their own. That is the trigger, and that reason is what the agent leads with.',
         patch: { runs: 'triggered' }
       },
 
-      /* --- segment 3: the call --- */
+      /* --- segment 3: the call, and what it produced ----------------------- */
       {
         label: 'Relay calls Rahul', tool: 'Voice call',
         call: { name: 'agent run', summary: 'reason given · UPI suggested · link sent', ms: 720 },
@@ -3418,19 +3872,31 @@ const DEMOS = {
           phone: '+91 99••• ••847', lang: 'English', dur: '00:38',
           result: 'Retry link sent · UPI', amount: '₹2,598',
           lines: [
-            { t: 'Hi Rahul, I noticed your payment didn’t go through earlier. Your bank was having a temporary issue — would you like to try again?' },
+            { t: 'Hi Rahul, I noticed your payment didn’t go through earlier. Your bank was facing a temporary issue — would you like to try again?' },
             { b: 1, t: 'Yes.' },
-            { t: 'Here’s the payment link. I’d use UPI — that is the one clearing for your bank right now.' }
+            { t: 'Here’s the payment link. We recommend using UPI for the payment.' }
           ]
         },
-        say: 'It gave him the actual reason instead of “something went wrong”, pointed him at the method that is clearing, and sent a fresh link.',
+        say: 'It gave him the actual reason instead of “something went wrong”, pointed him at the method that is clearing, and sent a fresh link. No discount — a failed payment does not need one.',
         patch: { runs: '1 run' }
+      },
+      {
+        label: 'He pays', tool: 'Payment link',
+        call: { name: 'payment.success', summary: 'OSS-48291 · ₹2,598 · SUCCESS', ms: 220 },
+        scene: {
+          kind: 'buy', tone: 'ok', tag: 'Buyer’s screen · live',
+          store: 'One-Stop Shoppy', amount: '₹2,598',
+          cart: OSS_CART,
+          done: { t: 'Payment successful', amt: '₹2,598', sub: 'OSS-48291 · UPI · retry 2 of 3' }
+        },
+        say: 'He tapped the link and paid by UPI. The full ₹2,598 — the cart never had to be discounted, it just had to be told what actually went wrong.',
+        patch: { runs: 'recovered ₹2,598' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
         ask: 'Did he pay?',
         call: { name: 'Runs', summary: 'recovered · ₹2,598 · success', ms: 430 },
-        say: 'Paid on the second attempt. Every call, reason and retry sits on the run, and the record is exportable.',
+        say: 'Paid on the second attempt, at full price. Every call, reason and retry sits on the run — the Runs tab is the execution history, and the record is exportable.',
         patch: { runs: '1 run · recovered' }
       }
     ]
@@ -3438,7 +3904,6 @@ const DEMOS = {
 
   relayDun: {
     agent: { name: 'Subscription Dunning', orb: 'o4' },
-    connectStep: {"kind":"connect","label":"Open Relay","tool":"Merchant Dashboard","ask":"Open the Subscription Dunning agent","say":"Connected to your Cashfree sandbox. Relay is open on Subscription Dunning — Agents, Runs and Connections."},
     connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Subscription <span class="thin">Dunning</span>',
     blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, and retries on the day the money actually lands.',
@@ -4269,6 +4734,7 @@ const ART = {
   b: '<svg viewBox="0 0 32 32" fill="none"><path d="M11 5 6 8l2 5 3-1v14h12V12l3 1 2-5-5-3-3 2h-4l-3-2Z" fill="#4a3b31" stroke="#2f2a2e" stroke-width="1.2" stroke-linejoin="round"/><path d="M16 8v18M13 5l3 3 3-3" stroke="#cbbfae" stroke-width="1.1"/></svg>',
   c: '<svg viewBox="0 0 32 32" fill="none"><path d="M11 5 6 8l2 5 3-1v14h12V12l3 1 2-5-5-3-3 2h-4l-3-2Z" fill="#f3c3cd" stroke="#d98ea0" stroke-width="1.2" stroke-linejoin="round"/><circle cx="16" cy="17" r="3.4" stroke="#d98ea0" stroke-width="1.2"/></svg>',
   d: '<svg viewBox="0 0 32 32" fill="none"><path d="M10 5h5v9c0 3-1.2 4.6-1.2 7.4 0 2.4-1.4 4.6-3.4 4.6S7 24.2 7 21.6C7 17.4 10 15 10 11V5Z" fill="#dfe9e2" stroke="#8fa79a" stroke-width="1.2" stroke-linejoin="round"/><path d="M17 5h5v6c0 4 3 6.4 3 10.6 0 2.6-1.4 4.4-3.4 4.4S18 24.4 18 21.4c0-2.8-1-4.4-1-7.4V5Z" fill="#eef4f0" stroke="#8fa79a" stroke-width="1.2" stroke-linejoin="round"/></svg>',
+  k: '<svg viewBox="0 0 32 32" fill="none"><path d="M12 4 7 7l1.8 5 2.6-1v16h9.2V11l2.6 1L25 7l-5-3-1.5 1.6h-5L12 4Z" fill="#e9d9c2" stroke="#b39a76" stroke-width="1.2" stroke-linejoin="round"/><path d="M16 8.4V27" stroke="#b39a76" stroke-width="1.1"/><path d="M13.5 5.6h5v2.2h-5z" fill="#d8c3a2" stroke="#b39a76" stroke-width="1"/><circle cx="16" cy="13" r="0.9" fill="#b39a76"/><circle cx="16" cy="17.5" r="0.9" fill="#b39a76"/></svg>',
   e: '<svg viewBox="0 0 32 32" fill="none"><path d="M7 11h18l-1.6 15H8.6L7 11Z" fill="#e8e2d2" stroke="#b3a98f" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 11V8.5a4 4 0 0 1 8 0V11" stroke="#b3a98f" stroke-width="1.3"/></svg>',
 };
 
@@ -4867,12 +5333,107 @@ const BS_TICK =
   '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" ' +
   'stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const BS_ICON = { fail: BS_X, ok: BS_TICK, drop: BS_BANG };
+const BS_RETRY =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+  'stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.1"/>' +
+  '<path d="M20 4.5V11h-6.5"/></svg>';
+const BS_CARD =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+  'stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" ' +
+  'rx="2.5"/><path d="M2.5 10h19"/></svg>';
+const BS_INFO =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+  'stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.2"/></svg>';
+const BS_ACT_ICON = { retry: BS_RETRY, card: BS_CARD };
+
+/* The buyer's cart, built the way the Agent Skills demo builds ShirtShop's --
+   one line per item with its picture, then the totals block underneath. Same
+   structure, redrawn at phone scale: the Skills store's 8px type is only
+   legible because a 596px laptop lid puts it there, and reusing .st-cart here
+   would have shipped a cart nobody at a booth can read. */
+function bsCartHTML(c) {
+  return '<div class="bs-cart">' +
+    (c.offer
+      ? '<div class="bs-offer"><span class="cd">' + c.offer.code + '</span>' +
+        '<span class="ds">' + c.offer.text + '</span>' +
+        '<span class="ap">' + c.offer.cta + '</span></div>'
+      : '') +
+    c.items.map((it) =>
+      '<div class="bs-cline"><span class="pic">' + (ART[it.art] || ART.a) + '</span>' +
+        '<span class="tx"><b>' + it.name + '</b><i>' + it.meta + '</i>' +
+          (it.more ? '<em>' + it.more + '</em>' : '') + '</span>' +
+        '<span class="pz">' + it.price + '</span></div>').join('') +
+    '<div class="bs-sum">' +
+      c.rows.map((r) =>
+        '<div class="r' + (r.tot ? ' tot' : '') + '"><span>' + r.k + '</span>' +
+        '<b' + (r.free ? ' class="free"' : '') + '>' + r.v + '</b></div>').join('') +
+    '</div>' +
+  '</div>';
+}
+
+/* The exit prompt as the buyer actually meets it: a sheet ON TOP of her own
+   cart, not a card beside it. That is what gives the reason she picks any
+   weight -- she is walking away from a basket that is still sitting there, and
+   it is still on screen behind the question. */
+function bsExitHTML(x) {
+  return '<div class="bs-sheet bs-exit">' +
+    '<div class="xh">' + x.head + '</div>' +
+    '<div class="xs">' + x.sub + '</div>' +
+    '<div class="bs-opts">' +
+      x.opts.map((o) =>
+        '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
+    '</div>' +
+    '<div class="xgo">' + x.go + '</div>' +
+    '<div class="xleave">' + x.leave + '</div>' +
+  '</div>';
+}
+
+/* The same sheet at the other end of the story: she came back through the link
+   and paid. It lands on the same cart, so the run visibly closes on the screen
+   it opened on. */
+function bsDoneHTML(d) {
+  return '<div class="bs-sheet bs-done">' +
+    '<span class="big">' + CHECK + '</span>' +
+    '<span class="t">' + d.t + '</span>' +
+    '<span class="amt">' + d.amt + '</span>' +
+    '<span class="sub">' + d.sub + '</span>' +
+  '</div>';
+}
+
+/* The decline, as a sheet on the same cart. A failed payment is not a page the
+   buyer navigated to -- it is a thing that happened over the basket she was
+   already holding, and the two buttons under it are the entire recovery the
+   checkout can offer on its own: Retry, which is the same bank that just said
+   no, and "another method", which is a menu with no advice in it. Drawing them
+   is what makes segment 3 legible -- the call does what this screen cannot,
+   because it knows WHY the bank declined. */
+function bsFailHTML(f) {
+  return '<div class="bs-sheet bs-failed">' +
+    '<div class="fh"><span class="bs-ic">' + BS_X + '</span>' + f.head + '</div>' +
+    '<div class="fs">' + f.sub + '</div>' +
+    '<div class="bs-reason">' + f.reason + '</div>' +
+    '<div class="bs-acts">' +
+      f.btns.map((t) => '<div class="bs-act' + (t.pri ? ' pri' : '') + '">' +
+        (BS_ACT_ICON[t.ic] || '') + t.t + '</div>').join('') +
+    '</div>' +
+    (f.note ? '<div class="bs-note">' + BS_INFO + '<span>' + f.note + '</span></div>' : '') +
+  '</div>';
+}
 
 /** Drawn as its own small device, labelled, so it can never be misread as the
  *  merchant's phone. This is the one moment in the run happening to someone
- *  else, somewhere else. */
+ *  else, somewhere else.
+ *
+ *  Everything below the brand bar is optional. A failed renewal has a push, a
+ *  banner and no cart; an abandoned cart has a cart and a sheet and no head
+ *  line. Passing only the parts a beat owns is what lets one builder serve four
+ *  quite different screens without four copies of the chrome.
+ */
 function buyscrHTML(b) {
-  return '<div class="buyscr ' + b.tone + '">' +
+  const sheet = b.exit ? bsExitHTML(b.exit)
+    : b.fail ? bsFailHTML(b.fail)
+    : b.done ? bsDoneHTML(b.done) : '';
+  return '<div class="buyscr ' + b.tone + (sheet ? ' sheeted' : '') + '">' +
     '<div class="bs-tag"><span class="live"></span>' + b.tag + '</div>' +
     '<div class="bs-brand"><span class="glyph">\u{1F3EA}</span>' +
       '<span class="who"><span class="nm">' + b.store + '</span>' +
@@ -4885,19 +5446,37 @@ function buyscrHTML(b) {
           '<span class="nb">' + b.notif.body + '</span></span></div>'
       : '') +
     '<div class="bs-body">' +
-      '<div class="bs-h"><span class="bs-ic">' +
-        (BS_ICON[b.tone] || BS_BANG) + '</span>' + b.head + '</div>' +
-      '<div class="bs-reason">' + b.reason + '</div>' +
+      (b.cart ? bsCartHTML(b.cart) : '') +
+      (b.head
+        ? '<div class="bs-h"><span class="bs-ic">' +
+          (BS_ICON[b.tone] || BS_BANG) + '</span>' + b.head + '</div>'
+        : '') +
+      (b.reason ? '<div class="bs-reason">' + b.reason + '</div>' : '') +
       (b.banner ? '<div class="bs-banner"><i></i>' + b.banner + '</div>' : '') +
       (b.opts
         ? '<div class="bs-opts">' + b.opts.map((o) =>
             '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
           '</div>'
         : '') +
-      '<div class="bs-meta">' + b.meta + '</div>' +
+      (b.meta ? '<div class="bs-meta">' + b.meta + '</div>' : '') +
     '</div>' +
+    sheet +
   '</div>';
 }
+
+/* --- "It's live" ---------------------------------------------------------- *
+ *
+ * The one reply in the setup segment that is not a sentence. Switching the
+ * agent on is the moment the merchant has been asked to consent to three times
+ * over, so it lands as a card that says so rather than as a fourth bubble that
+ * reads exactly like the three before it.
+ */
+function liveHTML(l) {
+  return '<div class="livecard"><div class="lv-top"><span class="dot"></span>' +
+    l.title + '</div><div class="lv-b">' + l.body + '</div></div>';
+}
+
+
 
 /* --- the approval gate ---------------------------------------------------- *
  *
@@ -5079,6 +5658,7 @@ async function playScene(sc, animate) {
   if (!sc) return;
   if (sc.kind === 'brk') { add(brkHTML(sc), 'msg'); if (animate) await sleep(420); return; }
   if (sc.kind === 'buy') { add(buyscrHTML(sc), 'msg'); if (animate) await sleep(560); return; }
+  if (sc.kind === 'live') { add(liveHTML(sc), 'msg'); if (animate) await sleep(480); return; }
   if (sc.kind === 'wa') { add(waHTML(sc), 'msg'); if (animate) await sleep(620); return; }
   if (sc.kind === 'gate') { add(gateHTML(sc), 'msg'); if (animate) await sleep(520); return; }
   // not a new card: the gate already in the thread is the one that gets signed
@@ -5092,6 +5672,7 @@ const homeEl = document.getElementById('home');
 const tier2El = document.getElementById('tier2');
 const agentsEl = document.getElementById('agents');
 const mdashEl = document.getElementById('mdash');
+const onboardEl = document.getElementById('onboard');
 // the dashboard bar wears the same mark the connect cards do, rather than a
 // second hand-drawn copy of it
 document.getElementById('md-mark').innerHTML = CX_ICON.cf;
@@ -5101,7 +5682,8 @@ const provEl = document.getElementById('prov');
 /** The demos that hang off the Relay shelf rather than off tier 2. */
 const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayDun'];
 
-/** 'home' | 'tier2' | 'agents' | 'dash' | 'demo'. Taps only advance steps in 'demo'. */
+/** 'home' | 'tier2' | 'agents' | 'onboard' | 'dash' | 'demo'.
+ *  Taps only advance steps in 'demo'. */
 let mode = 'home';
 
 function setProvenance(key) {
@@ -5137,6 +5719,7 @@ function goHome() {
   tier2El.classList.add('gone');
   agentsEl.classList.add('gone');
   mdashEl.classList.add('gone');
+  onboardEl.classList.add('gone');
   backEl.style.display = 'none';
   thread.innerHTML = '';
   paintNav();
@@ -5157,6 +5740,42 @@ function goAgents() {
   tier2El.classList.add('gone');
   agentsEl.classList.remove('gone');
   mdashEl.classList.add('gone');
+  onboardEl.classList.add('gone');
+  backEl.style.display = 'grid';
+  thread.innerHTML = '';
+  paintNav();
+}
+
+/*
+ * Level 2b-ii. What a Relay agent opens on.
+ *
+ * Not the connect card the builder demos open on: Relay lives inside the
+ * dashboard the merchant is already logged into, so there is nothing to wire up
+ * and a filling wire would be animating a step that does not exist. What is
+ * actually in front of them is Relay's onboarding -- a shelf of ready-made
+ * agents and a "build your own". The row for the agent picked upstairs is
+ * highlighted and is the only live thing on the screen, so the tap is never in
+ * doubt; everything else is scenery, exactly as on the Spark dashboard.
+ */
+let onboardKey = null;
+
+function goOnboard(key) {
+  mode = 'onboard';
+  onboardKey = key;
+  hideConnect();
+  setChassis(null);
+  screenEl2.classList.remove('skin-claude');
+  stopAuto();
+  if (window.__tourActive) endTour();
+  homeEl.classList.add('gone');
+  tier2El.classList.add('gone');
+  agentsEl.classList.add('gone');
+  mdashEl.classList.add('gone');
+  onboardEl.classList.remove('gone');
+  onboardEl.scrollTop = 0;
+  onboardEl.querySelectorAll('.ob-row').forEach((r) => {
+    r.classList.toggle('on', r.dataset.tpl === key);
+  });
   backEl.style.display = 'grid';
   thread.innerHTML = '';
   paintNav();
@@ -5180,6 +5799,7 @@ function goDash() {
   tier2El.classList.add('gone');
   agentsEl.classList.add('gone');
   mdashEl.classList.remove('gone');
+  onboardEl.classList.add('gone');
   mdashEl.scrollTop = 0;
   backEl.style.display = 'grid';
   thread.innerHTML = '';
@@ -5197,6 +5817,7 @@ function goTier2() {
   tier2El.classList.remove('gone');
   agentsEl.classList.add('gone');
   mdashEl.classList.add('gone');
+  onboardEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
 }
@@ -5212,6 +5833,7 @@ function openDemo(key) {
   homeEl.classList.add('gone');
   agentsEl.classList.add('gone');
   mdashEl.classList.add('gone');
+  onboardEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
 
@@ -5226,7 +5848,16 @@ document.getElementById('card-spark').addEventListener('click', (e) => { e.stopP
 document.getElementById('md-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
 
 document.querySelectorAll('.acard').forEach((card) => {
-  card.addEventListener('click', (e) => { e.stopPropagation(); openDemo(card.dataset.agent); });
+  card.addEventListener('click', (e) => { e.stopPropagation(); goOnboard(card.dataset.agent); });
+});
+
+// The highlighted template is the hotspot; the other three and Build your own
+// are scenery, the same deal the Spark dashboard strikes.
+onboardEl.addEventListener('click', (e) => {
+  const row = e.target.closest('.ob-row.on');
+  if (!row) return;
+  e.stopPropagation();
+  openDemo(onboardKey);
 });
 
 document.querySelectorAll('.t2card').forEach((card) => {
@@ -5238,11 +5869,12 @@ backEl.addEventListener('click', (e) => {
   // Back retraces the way in: a Relay agent falls back to the shelf it was
   // picked from, the three builder demos to tier 2, everything else to home.
   if (mode === 'demo') {
-    if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goAgents(); return; }
+    if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goOnboard(DEMO_KEY); return; }
     if (DEMO_KEY === 'spark') { goDash(); return; }
     goTier2();
     return;
   }
+  if (mode === 'onboard') { goAgents(); return; }
   goHome();
 });
 

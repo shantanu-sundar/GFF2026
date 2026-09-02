@@ -199,6 +199,14 @@ equivalent primitive:
 eight-beat shape with different orbs, buyers and amounts, and are not in the file. Spark
 has no screen. The For Builders demos open nothing. Do not describe the file as complete.
 
+> **The Figma file is now behind `index.html` on Cart Recovery, and this is the largest gap
+> in it.** The section has since dropped the connect beat for all three Relay agents, put
+> Relay's onboarding screen in front of the run, and grown Cart Recovery from seven beats to
+> nine — her cart, then the exit prompt over that cart, and the payment she makes coming back
+> through the link. So `CR0a`/`CR0b` (the connect frames the flow below opens on) are frames
+> of a beat the section no longer plays, and three new frames are missing behind them. Re-cut
+> Cart Recovery from `DEMOS.relayCart` before showing the prototype next to the section.
+
 ### The flow
 
 `02 Relay — agents` → Cart Recovery card → `CR0a` **auto-advances after 0.35s** (that is
@@ -339,9 +347,9 @@ For Builders** opens **three more**. Each demo has its own steps, its own bottom
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
-| **Relay · Cart Recovery** *(from home → shelf)* | **spoken** prompt → the month in a table → Relay builds trigger/condition/action → test run → activate → the buyer's own screen leaves a ₹2,598 cart → **Relay calls Priya** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Relay · Payment Recovery** *(from the shelf)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Relay · Subscription Dunning** *(from the shelf)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the ready-made template loads → test run → activate → her ₹2,598 One-Stop Shoppy cart → the exit prompt over that cart → **Relay calls Priya** → she taps the link and pays → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Payment Recovery** *(shelf → onboarding)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Subscription Dunning** *(shelf → onboarding)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Cashfree Spark** *(home → dashboard)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
 | **Agent Toolkit** | 6 tool calls: customer → ₹500 order → UPI → status → ₹200 refund → list | Merchant ledger, net position | **Real** captured sandbox run |
 | **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + verification → the v3 checkout SDK → validation skill → ShirtShop → Proceed to Pay → the Cashfree drop-in pays | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
@@ -368,32 +376,67 @@ prompts follow in the same scroll.
 For **Agent Skills** the connect turn is the install itself — the real terminal command,
 `npx @cashfreepayments/agent-skills add skills`, typed at a `$` prompt.
 
-**Cashfree Spark has no connect beat at all**, and that is the point rather than an omission.
-Every other demo bridges two things that start apart — your app to the sandbox, Claude to the
-MCP server, a repo to the skills — and the wire filling is that bridge being built. Spark
-bridges nothing: it is an assistant already inside the merchant dashboard, "same dashboard,
-same login, same permissions, nothing to install". Animating a connection would have staged a
-step that does not exist and contradicted the one line the product leads with. Segment 1 of the
-flow doc is "log in, click Spark" — which is played as an actual screen rather than as a step
-(see below), so the run itself opens on the merchant's first real question.
+**Cashfree Spark has no connect beat at all, and neither do the three Relay agents** — and in
+both cases that is the point rather than an omission. Every other demo bridges two things that
+start apart — your app to the sandbox, Claude to the MCP server, a repo to the skills — and the
+wire filling is that bridge being built. Spark bridges nothing: it is an assistant already
+inside the merchant dashboard, "same dashboard, same login, same permissions, nothing to
+install". Relay bridges nothing either, for exactly the same reason — it is a tab in the
+dashboard the merchant already logged into. Animating a connection would have staged a step
+that does not exist and contradicted the one line both products lead with. Segment 1 of Spark's
+flow doc is "log in, click Spark", and Relay's equivalent is picking a ready-made agent off its
+onboarding screen; both are played as an actual screen rather than as a step (see below), so
+the runs themselves open on the merchant's first real prompt.
 
 `connectStep` is therefore optional: `loadDemo()` prepends it when a demo has one and starts on
 `steps[0]` when it does not, and the step counters on the cards add the extra beat the same way.
+Only the three For Builders demos still carry one.
 
-**Every agent connects to the sandbox, not to a tab.** The three Relay agents used to connect to
-"Cart Recovery" / "Payment Recovery" / "Subscription Dunning", which is a screen you open rather
-than a thing you connect to — and it quietly undersold the point. An agent is only interesting
-because it is wired to a real Cashfree account, so all three now land on **Cashfree Sandbox**,
-the same node the Agent Toolkit demo connects to. Which agent you are in is carried by the
-header chip and its face, so nothing is lost by taking the name off that node.
+> **The Relay agents used to open on a connect card** — `Merchant Dashboard → Cashfree Sandbox`,
+> via `Agents · Runs · Connections`. That was the Agent Toolkit's story wearing Relay's clothes,
+> and it cost the run its first beat: a wire filling to a thing that was never apart. The
+> `connect: {}` blocks are still in `DEMOS` for all three, unrendered. They are the recipe if a
+> Relay agent ever does need to show what it is wired to — do not delete them, and do not
+> re-prepend them either.
 
 | demo | host | connects to | via |
 |---|---|---|---|
-| Relay · any agent | Merchant Dashboard | **Cashfree Sandbox** | Agents · Runs · Connections |
+| Relay · any agent | — | — | *nothing to connect; it is a tab in the dashboard* |
 | Agent Toolkit | Your app | Cashfree Sandbox | `@cashfreepayments/agent-toolkit` |
 | Agent Skills | Claude Code + Cursor | Cashfree Skills | `npx @cashfreepayments/agent-skills add skills` |
 | MCP Server | Claude | Cashfree MCP | `mcp.cashfree.com/mcp` · OAuth |
 | Cashfree Spark | — | — | *nothing to connect; it is already in the dashboard* |
+
+## Picking an agent is two screens, not one
+
+The Relay card opens a **shelf** (`#agents`, level 2b), and picking an agent off it opens
+Relay's own **onboarding screen** (`#onboard`, level 2b-ii) before any chat starts:
+
+```
+home → Relay shelf → onboarding → the run
+       #agents        #onboard      mode = 'demo'
+```
+
+`#onboard` is a replica of what a merchant actually meets the first time: a sparkle, *"Let's
+get an agent on the clock"*, four ready-made templates — Dispute Defender, Failed Payment
+Recovery, Subscription Dunning, Abandoned Cart Recovery — a **Show more**, and a black
+**Build your own** under an *or*. The row matching the agent picked upstairs carries `.on`,
+which is what highlights it, pulses it and makes it the **only clickable thing on the screen**.
+Everything else is scenery, exactly the deal `#mdash` strikes with its one live Spark button.
+
+**It is the one level in the section not dressed in the black bento or in Cashfree green.**
+Relay's surface is a light card on a light ground with an indigo accent, and painting it in the
+house palette would have made it read as a third Cashfree dashboard rather than as the product
+the merchant is looking at.
+
+The headline is the reference's, with one deliberate difference: the reference reads
+*"Lets get an agent on the clock"*, missing its apostrophe. Every other string in this file is
+set with a real `’`, so this one is too. **That is a typo worth reporting upstream**, not a
+house-style decision.
+
+Back retraces the way in, one level per press: run → onboarding → shelf → home. Which means a
+Relay agent is three presses from home and Spark is two, and that asymmetry is correct — Spark
+has one screen in front of it, Relay has two.
 
 ## Relay is a shelf, not a demo
 
@@ -441,12 +484,40 @@ the shelf run it:
 
 | segment | what happens | who is on screen |
 |---|---|---|
-| **1 · set the agent up** | the merchant **speaks** the opening prompt, Relay answers with the month's numbers, offers to build the agent, **test-runs it**, then asks before switching it on | the merchant |
+| **1 · set the agent up** | the merchant **speaks** the opening prompt, Relay answers with the month's numbers, loads the ready-made template, **test-runs it**, then asks before switching it on | the merchant |
 | **2 · the drop-off** | the payment fails, or the cart is left at the payment step | **the buyer** |
 | **3 · the call** | Relay rings the buyer, works the objection, sends a link | both |
-| **4 · the payoff** *(Dunning only)* | the day the subscriber picked arrives and the retry clears | **the buyer** |
+| **4 · the payoff** *(Cart Recovery, Dunning)* | the buyer comes back through the link and pays, or the retry clears on the day she picked | **the buyer** |
 
-**Subscription Dunning is the one that ends on a fourth beat, because its doc does.** A failed
+**Cart Recovery is the one that is fully built.** Payment Recovery and Subscription Dunning
+still run the shorter shape below — one drop-off beat, then the call, then Runs. Cart Recovery
+now runs the whole arc, and the two extra beats it gained are the ones the docs actually
+describe:
+
+| | Cart Recovery | the other two |
+|---|---|---|
+| segment 2 | **two beats on one screen** — her cart, then the exit prompt over it | one beat |
+| segment 4 | she taps the link and **pays**, on the same screen she walked off | Dunning only |
+
+**Segment 2 is two beats and they are in that order for a reason.** You have to see the cart
+before it can be abandoned: a "Leaving Checkout?" card with nothing behind it is a dialog, not
+a drop-off. So the first beat draws One-Stop Shoppy's cart — ₹2,598, the kurta line and
+`+1 more item`, shipping free, the `PREPAID_GIFT` strip — and the second lands the exit prompt
+**as a sheet over that same cart**, which dims underneath rather than being replaced. The basket
+she is walking away from stays on screen behind the question she is being asked.
+
+**Segment 4 closes on the same device.** The call ends on a link and the code `5XCA`; the next
+beat is her tapping it, and the receipt lands as the same sheet on the same One-Stop Shoppy
+screen — ₹2,338, the ₹2,598 basket less the 10% the agent was allowed to give. A run that
+opens on a cart and closes on a tick has told the whole story on one screen.
+
+`OSS_CART` / `OSS_CART_PAID` are **one cart read by all three of those beats**, the same
+discipline `CART_ITEMS` follows in the Skills store and for the same reason: 1,299 × 2 = the
+2,598 the exit prompt shows, 10% of which is the 260 the call gives away and the 2,338 the
+receipt, the ledger and the Runs tab all report. Change one of those numbers and change the
+constant, not the beat.
+
+**Subscription Dunning also ends on a fourth beat, because its doc does.** A failed
 renewal is the only failure in the set where the customer is not standing in front of a
 checkout: they are asleep, or at work, and the only thing that reaches them is a *push*. So
 segment 2 there is a notification and a "Subscription paused" banner rather than an error page,
@@ -469,12 +540,21 @@ Three set pieces carry the parts a chat bubble cannot:
   fingers would type them.
 - **`.buyscr` — the buyer's screen.** Drawn as its own small labelled device inside the thread
   so it can never be misread as the merchant's phone. Red for money that bounced, amber for
-  money that walked, green for money that finally landed; the abandoned variant shows the exit
-  prompt with the reason the buyer actually picked, which is what the agent leads the call with.
-  Two optional parts serve the renewal story: `notif` draws a real push sitting on top of the
-  app, and `banner` slides the plan's new state up under the reason — *Subscription paused*,
-  then *Subscription active*. A renewal failure has no page to fail on, so if the notification
-  were only described in a sentence the beat would not land.
+  money that walked, green for money that finally landed. **Everything below the brand bar is
+  optional**, which is what lets one builder serve four quite different screens: a failed
+  renewal passes `notif` + `banner` and no cart, an abandoned cart passes `cart` + `exit` and no
+  head line. `cart` draws the basket the way the Skills store draws ShirtShop's — one line per
+  item with its picture, then the totals — redrawn at phone scale rather than reusing `.st-cart`,
+  whose 8px type is only legible because a 596px laptop lid puts it there. `exit` and `done` are
+  the same `.bs-sheet` at the two ends of the story: the "Leaving Checkout?" prompt, and the
+  receipt. `notif` draws a real push sitting on top of the app and `banner` slides the plan's
+  new state up under the reason — *Subscription paused*, then *Subscription active*; a renewal
+  failure has no page to fail on, so if the notification were only described in a sentence the
+  beat would not land.
+- **`.livecard` — "It's live".** The one reply in the setup segment that is not a sentence.
+  Switching the agent on is the moment the merchant has been asked to consent to three times
+  over, so it lands as a green card that says so rather than as a fourth bubble reading exactly
+  like the three before it.
 - **`.callscene` — Relay Calling.** Full screen, because that is what a call does to a phone.
   It rings, connects, runs a clock, and the halo and the meter between the two faces lean
   toward whoever is talking. The agent's own orb and colour come along, so a call always looks
@@ -484,7 +564,8 @@ Three set pieces carry the parts a chat bubble cannot:
 A fourth, `.brk`, answers the opening prompt: "the agent lists failed transactions with reasons
 for failure" is five reasons and five amounts, which a sentence cannot hold, so it is a table.
 
-Steps declare these with `scene: { kind: 'brk' | 'buy' | 'call' | 'gate' | 'approve' | 'wa', … }`
+Steps declare these with
+`scene: { kind: 'brk' | 'buy' | 'live' | 'call' | 'gate' | 'approve' | 'wa', … }`
 — the last three belong to Spark. `playScene()` runs them in `runStep()`; `rebuild()` repaints
 the static ones and repaints the call **only if you landed on that beat**, because a call is a
 moment rather than a state.
