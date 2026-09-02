@@ -972,7 +972,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   radial-gradient(52% 58% at -8% 55%, rgba(252,248,230,.95) 0%, rgba(235,235,198,.7) 40%, rgba(235,235,198,0) 68%),
   radial-gradient(circle at 44% 14%, #f7e315 0%, #ecda1e 24%, #d5cd2b 44%, #b1b733 64%, #94a02f 84%, #8b9430 100%); }
 
-/* Subscription Dunning - lilac with a gold spot, mint and sage left rim, violet base */
+/* EMI Collection - lilac with a gold spot, mint and sage left rim, violet base */
 .o4 { background: #c8b4ee; }
 .o4::before { background:
   radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(80,58,130,.10) 90%, rgba(80,58,130,.16) 100%),
@@ -1689,11 +1689,12 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 /*
  * The push, and the banner under it.
  *
- * A renewal is the one failure the customer is not standing in front of: they
- * are not at a checkout, so the only way they learn about it is a notification.
- * The Subscription Dunning doc opens on exactly that, so the notification is
- * drawn as a real push sitting on top of the app rather than described in a
- * sentence, and the "Subscription paused" state slides up under it.
+ * A bounced EMI is the one failure the customer is not standing in front of:
+ * they are not at a checkout, the debit simply did not clear at the bank, so
+ * the only way they learn about it is a notification. The collections flow
+ * opens on exactly that, so the notification is drawn as a real push sitting on
+ * top of the app rather than described in a sentence, and the loan's "In
+ * arrears" state slides up under it.
  */
 .buyscr .bs-notif {
   display: flex; align-items: flex-start; gap: 8px;
@@ -3864,13 +3865,13 @@ body.booth .hcard { flex: 1; min-height: 0; }
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
 
-              <div class="acard" data-agent="relayDun">
+              <div class="acard" data-agent="relayEmi">
                 <span class="hblob br b-coral"></span>
                 <div class="row">
                   <span class="orb o4"><span class="eyes"><i></i><i></i></span></span>
-                  <span class="nm">Subscription <span class="thin">Dunning</span></span>
+                  <span class="nm">EMI <span class="thin">Collection</span></span>
                 </div>
-                <p class="desc">Calls to retry the renewal, and offers to pause or switch plans instead of churning.</p>
+                <p class="desc">Calls the borrower when an EMI bounces, agrees a way to pay, and records the consent.</p>
                 <div class="foot">
                   <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
               </div>
@@ -3896,7 +3897,7 @@ body.booth .hcard { flex: 1; min-height: 0; }
                 <div class="ob-list">
                   <div class="ob-row" data-tpl="dispute"><i>+</i><span>Dispute Defender Agent</span></div>
                   <div class="ob-row" data-tpl="relayPay"><i>+</i><span>Payment Recovery Agent</span></div>
-                  <div class="ob-row" data-tpl="relayDun"><i>+</i><span>Subscription Dunning Agent</span></div>
+                  <div class="ob-row" data-tpl="relayEmi"><i>+</i><span>EMI Collection Agent</span></div>
                   <div class="ob-row" data-tpl="relayCart"><i>+</i><span>Cart Recovery Agent</span></div>
                 </div>
                 <div class="ob-more">Show more</div>
@@ -4573,12 +4574,34 @@ const DEMOS = {
     ]
   },
 
-  relayDun: {
-    agent: { name: 'Subscription Dunning', orb: 'o4' },
+  /*
+   * EMI Collection.
+   *
+   * The run is the lending collections flow a partner spec'd for us: an EMI
+   * bounces on the due date, the agent calls the borrower, verifies who it is
+   * talking to, states the bounced instalment, and then BRANCHES on what they
+   * say -- a link now, a part payment debited T+1, the full amount on an agreed
+   * date, or tomorrow's presentation held and re-presented later. Four exits
+   * off one call, and a consent record for whichever one is taken.
+   *
+   * That branch is the whole reason this agent is not Payment Recovery with
+   * different nouns. A failed checkout has one recovery: pay again. A bounced
+   * EMI has four, and which one applies is a thing only the borrower knows --
+   * which is the case for a call rather than a retry.
+   *
+   * The demo plays one branch end to end (the link, because it is the one that
+   * ends in money on screen) and then shows the other three having happened, on
+   * the last beat, in the lender's own numbers. Playing all four would be four
+   * calls and eight minutes; the table is the honest compression.
+   *
+   * The lender is fictional. The workflows are not.
+   */
+  relayEmi: {
+    agent: { name: 'EMI Collection', orb: 'o4' },
     connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
-    title: 'Subscription <span class="thin">Dunning</span>',
-    blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, names the reason, and gets it retried on a method that will actually clear.',
-    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
+    title: 'EMI <span class="thin">Collection</span>',
+    blurb: 'A bounced EMI is a conversation, not a retry. The agent calls, checks who it is talking to, and agrees a way to pay — a link now, a part payment, a later date, or tomorrow’s presentation held.',
+    provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the four call outcomes from a lending partner’s collections workflows' },
     chips: { left: [], dot: false },
     /* No `panel`, for the reason Cart Recovery has none: the ledger is for
        a run whose point is state accumulating, and this one has none. The
@@ -4586,41 +4609,40 @@ const DEMOS = {
     steps: [
       /* --- segment 1: setting the agent up -------------------------------- *
        *
-       * The merchant speaks, Relay answers with the month, and from there every
-       * switch is a separate yes: load the template, test it, then turn it on.
+       * The lender speaks, Relay answers with the month, and from there every
+       * switch is a separate yes: build it, test it, then turn it on.
        */
       {
-        label: 'Ask about renewals', tool: 'Voice',
+        label: 'Ask what bounced', tool: 'Voice',
         voice: true,
-        ask: 'How many renewals failed this month?',
-        call: { name: 'renewals', summary: '128 failed · ₹17.3L at risk', ms: 700 },
+        ask: 'How many EMIs bounced this month?',
+        call: { name: 'presentations', summary: '259 bounced · ₹51.8L at risk', ms: 700 },
         scene: {
-          kind: 'brk', title: 'Renewals this month', total: '1,840 due',
+          kind: 'brk', title: 'EMIs due this month', total: '4,120 due',
           rows: [
-            { k: 'Collected', n: '1,712', v: '₹2.3Cr' },
-            { k: 'Insufficient funds', n: '61', v: '₹8,60,000', hot: 1 },
-            { k: 'Bank decline', n: '25', v: '₹3,40,000' },
-            { k: 'Card expired', n: '24', v: '₹3,10,000' },
-            { k: 'Mandate revoked', n: '18', v: '₹2,20,000' }
+            { k: 'Collected', n: '3,861', v: '₹7.7Cr' },
+            { k: 'Insufficient funds', n: '128', v: '₹25,60,000', hot: 1 },
+            { k: 'Mandate revoked', n: '54', v: '₹10,80,000' },
+            { k: 'Bank decline', n: '41', v: '₹8,20,000' },
+            { k: 'Signature mismatch', n: '36', v: '₹7,20,000' }
           ]
         },
-        say: '128 renewals failed this month, ₹17.3L in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Would you like to set up an agent to help recover them?'
+        say: '259 EMIs bounced this month, ₹51.8L in all. Nearly half are insufficient funds, which is a timing problem rather than a borrower who cannot pay. Would you like an agent to call them?'
       },
       {
-        label: 'Relay builds it', tool: 'trigger + condition + action',
+        /* The four exits are named here and nowhere else in the setup: the
+           merchant is told what they are switching on, once, before they
+           switch it on. The last beat is where they are shown working. */
+        label: 'Relay builds it', tool: 'trigger + 4 outcomes + consent',
         ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Renewal Failed → call + retry link', ms: 1210 },
-        /* The doc's reply is two sentences and neither of them lists the
-           trigger. It does not need to: the Agent panel fills in underneath on
-           this same beat, which is a better place to read a rule than a
-           sentence is. */
-        say: 'It’s done. Would you like to do a test run?'
+        call: { name: 'build agent', summary: 'EMI Bounced → call · 4 outcomes wired', ms: 1210 },
+        say: 'It’s done. On a call it can send a payment link, take a part payment, schedule the full amount for a date the borrower agrees, or hold tomorrow’s presentation — and it records consent for whichever one they pick. Would you like to do a test run?'
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Yes, let’s do a test run',
-        call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
-        say: 'Test run successful. No customer was contacted. Should I activate the Subscription Dunning Agent?'
+        call: { name: 'test run', summary: 'dry run · identity check · consent script read', ms: 840 },
+        say: 'Test run successful. No borrower was contacted. Should I activate the EMI Collection Agent?'
       },
       {
         label: 'Switch it on', tool: 'Agents',
@@ -4628,81 +4650,96 @@ const DEMOS = {
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
         scene: {
           kind: 'live', title: 'It’s live',
-          body: 'It’ll now call customers whose renewal didn’t go through and get the payment back on track.'
+          body: 'It’ll now call borrowers whose EMI has bounced, agree a way to pay, and keep the consent on the run.'
         },
-        say: 'Your Subscription Agent is now live.'
+        say: 'Your EMI Collection Agent is now live.'
       },
 
       /* --- segment 2: Rahul's phone, not this chat ------------------------ *
        *
-       * A renewal is the one failure nobody is standing in front of, so what
-       * reaches Rahul is a push and an order history rather than a checkout
-       * error. Drawn as a bubble it read as one more thing Relay said, which is
-       * the opposite of true: this is what is on somebody else's phone while
-       * the merchant does nothing. So it takes the screen, the way the call
-       * does, and hands it back.
+       * A bounced EMI is the one failure nobody is standing in front of -- the
+       * borrower was not at a checkout, the debit simply did not clear at the
+       * bank -- so what reaches Rahul is a push and a loan account rather than
+       * a checkout error. Drawn as a bubble it read as one more thing Relay
+       * said, which is the opposite of true: this is what is on somebody
+       * else's phone while the lender does nothing. So it takes the screen,
+       * the way the call does, and hands it back.
        */
       {
-        label: 'Renewal failed for Rahul', tool: 'Myra',
-        call: { name: 'renewal.failed', summary: 'Rahul Menon · ₹20,000 · insufficient funds', ms: 150 },
+        label: 'Rahul’s EMI bounces', tool: 'Myra Finance',
+        call: { name: 'emi.bounced', summary: 'Rahul Menon · ₹20,000 · insufficient funds', ms: 150 },
         scene: {
           kind: 'cast', hold: 3600,
           tag: 'Rahul’s phone · live',
-          foot: 'Mandate MYR-4127 · attempt 1 of 3 · mandate still active',
+          foot: 'Loan MYR-4127 · attempt 1 of 3 · e-mandate active',
           screen: {
             tone: 'fail',
-            store: 'Myra', amount: '₹20,000', glyph: 'M',
+            store: 'Myra Finance', amount: '₹20,000', glyph: 'M',
             notif: {
-              app: 'Myra', when: 'now', ic: 'M',
-              title: 'Your EMI payment didn’t go through',
-              body: 'EMI 2 of 3 (₹20,000) for your laptop order bounced. Your order is on hold.'
+              app: 'Myra Finance', when: 'now', ic: 'M',
+              title: 'Your EMI didn’t go through',
+              body: 'EMI 2 of 3 (₹20,000) on loan MYR-4127 bounced today. A ₹590 bounce charge applies.'
             },
-            head: 'Order on hold — EMI bounced',
-            reason: 'We couldn’t charge ₹20,000 to the card ending 4412 — insufficient funds.',
+            head: 'EMI bounced — 1 Sep',
+            reason: 'We couldn’t debit ₹20,000 from your HDFC account ending 4412 — insufficient funds. Your e-mandate is still active.',
             order: {
-              art: 'l', name: 'Nova 14 Pro Laptop', meta: '#4127 · ₹60,000',
-              state: 'paused', badge: 'Delivery paused'
+              art: 'l', name: 'Nova 14 Pro Laptop', meta: 'Loan MYR-4127 · ₹60,000 · 3 EMIs',
+              state: 'paused', badge: 'In arrears'
             },
             emi: {
               title: 'EMI schedule',
               rows: [
-                { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹20,000' },
-                { st: 'fail', k: 'EMI 2 · Payment failed', sub: '1 Sep · Insufficient funds', v: '₹20,000' },
+                { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · auto-debit, HDFC ••4412', v: '₹20,000' },
+                { st: 'fail', k: 'EMI 2 · Bounced', sub: '1 Sep · Insufficient funds', v: '₹20,000' },
                 { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹20,000' }
               ]
             },
-            cta: 'Retry payment'
+            cta: 'Pay now'
           }
         },
-        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his laptop order, ₹20,000, insufficient funds, and Myra has paused the delivery until it clears. Calling him'
+        say: 'Rahul’s EMI just bounced. Instalment 2 of 3 on his ₹60,000 loan, ₹20,000, insufficient funds. Calling him.'
       },
 
-      /* --- segment 3: the call, and he pays on it ------------------------- *
+      /* --- segment 3: the call, the branch, and the money ------------------ *
        *
-       * The link goes out on the agent's last line, and hanging up before it is
-       * opened made the recovery something that happened afterwards, off in its
-       * own beat, with the call already a memory. It is not: he is still
-       * holding the phone and the agent is still on it, which is the entire
-       * difference between a voice agent and an SMS. So the checkout takes the
-       * screen over the live call, and the call only comes down once the money
-       * has landed.
+       * The call opens the way a collections call has to open for a regulated
+       * lender: name, account check, then the amount and the reason it bounced.
+       * Only then does it offer the four ways out -- and the offer is SPOKEN,
+       * so the branch is something the room hears rather than something a
+       * caption claims. Rahul takes the link.
+       *
+       * Two constraints from the partner spec ride on the agent's last line
+       * rather than on a badge: the link is for the FULL instalment (no partial
+       * capture through a link -- a part payment is its own branch, agreed on
+       * the call and debited) and it dies in 24 hours, so a stale link can
+       * never be paid against a different due amount. And the consent is
+       * recorded out loud, because the consent is what the payment is created
+       * against and what has to survive an audit.
+       *
+       * The link goes out on that last line, and hanging up before it is opened
+       * made the collection something that happened afterwards, off in its own
+       * beat, with the call already a memory. It is not: he is still holding
+       * the phone and the agent is still on it, which is the entire difference
+       * between a voice agent and an SMS. So the checkout takes the screen over
+       * the live call, and the call only comes down once the money has landed.
        *
        * Nothing here is narrated. The agent is not talking over his checkout
        * while he is standing in it; it reports on the next beat, when asked.
        */
       {
         label: 'Relay calls Rahul, and he pays', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called · retry now · paid on the call', ms: 700 },
+        call: { name: 'agent run', summary: 'verified · link sent · paid on the call', ms: 700 },
         scene: {
           kind: 'call', glow: '#b493ea', orb: 'o4',
-          agent: 'Subscription Dunning', buyer: 'Rahul', initials: 'R',
-          phone: '+91 97••• ••305', lang: 'English', dur: '00:34',
-          result: 'Payment link sent', amount: '₹20,000',
+          agent: 'EMI Collection', buyer: 'Rahul', initials: 'R',
+          phone: '+91 97••• ••305', lang: 'English', dur: '00:41',
+          result: 'Consent captured · link sent', amount: '₹20,000',
           lines: [
-            { t: 'Hi Rahul, your ₹20,000 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
-            { b: 1, t: 'Yes we can try now.' },
-            { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' },
-            { b: 1, t: 'Got it, paying now.' }
+            { t: 'Hi, am I speaking with Rahul Menon? This is Myra Finance about your EMI. Could you confirm the last four digits of your loan account?' },
+            { b: 1, t: 'Yes — 4127.' },
+            { t: 'Thank you. Instalment 2 of 3, ₹20,000, bounced this morning on insufficient funds. I can send you a payment link now, take a part payment, schedule the full amount for a date that suits you, or hold tomorrow’s presentation. What works?' },
+            { b: 1, t: 'Send me the link. I’ll pay now.' },
+            { t: 'Sending it. It’s for the full ₹20,000 and it expires in 24 hours. I’m recording your consent for this payment.' }
           ],
           pay: {
             kind: 'cast', cfx: 'full',
@@ -4714,26 +4751,25 @@ const DEMOS = {
             /* No link row: he has already opened it, and a "Complete your
                payment / Open" strip over the page he opened is chrome about
                the checkout laid on the checkout. */
-            foot: 'Mandate MYR-4127 · attempt 2 of 3',
-            /* Relay tells HIM, the moment the money lands. A recovered
-               renewal has two people in it, and he is the one who took a
-               call about a payment that failed. */
+            foot: 'Loan MYR-4127 · consent CNS-4127-2 · link valid 24h',
+            /* Relay tells HIM, the moment the money lands. A collected EMI has
+               two people in it, and he is the one who took the call. */
             push: {
               orb: 'o4', app: 'Relay', when: 'now',
-              title: 'Payment received',
-              body: 'Thank you, Rahul. Your ₹20,000 has gone through and EMI 2 of 3 is cleared.'
+              title: 'EMI 2 of 3 cleared',
+              body: 'Thank you, Rahul. Your ₹20,000 has gone through and the bounce charge was waived. Your next EMI is due 1 Oct.'
             },
             sheet: {
-              store: 'Myra', amount: '₹20,000',
-              sub: 'Renewal · EMI 2 of 3 · link from Relay'
+              store: 'Myra Finance', amount: '₹20,000',
+              sub: 'EMI 2 of 3 · link from Relay · expires in 24h'
             },
             phases: {
               review: {
                 tag: 'Review',
-                line: { art: 'l', name: 'Nova 14 Pro Laptop', meta: 'Order #4127 · instalment 2 of 3' },
+                line: { art: 'l', name: 'Nova 14 Pro Laptop', meta: 'Loan MYR-4127 · instalment 2 of 3' },
                 rows: [
                   { k: 'Instalment 2 of 3', v: '₹20,000' },
-                  { k: 'Late fee', v: 'WAIVED', free: 1 },
+                  { k: 'Bounce charge', v: 'WAIVED', free: 1 },
                   { k: 'Total', v: '₹20,000', tot: 1 }
                 ],
                 cta: 'Proceed to Pay ₹20,000'
@@ -4743,8 +4779,8 @@ const DEMOS = {
                 methods: [
                   { ic: 'card', name: 'Credit card', sub: 'HDFC •••• 8821', state: 'pick',
                     note: 'Suggested on the call — a low balance will not block this' },
-                  { ic: 'card', name: 'Debit card', sub: 'HDFC •••• 4412', state: 'off',
-                    note: 'Declined 1 Sep · insufficient funds' },
+                  { ic: 'bank', name: 'Auto-debit account', sub: 'HDFC •••• 4412', state: 'off',
+                    note: 'Bounced 1 Sep · insufficient funds' },
                   { ic: 'upi', name: 'UPI', sub: 'Any UPI app' },
                   { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
                 ],
@@ -4754,7 +4790,7 @@ const DEMOS = {
                 tag: 'Paid',
                 done: {
                   t: 'Payment successful', amt: '₹20,000',
-                  sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
+                  sub: 'CF-4127-2 · credit card •••• 8821<br>EMI 2 of 3 cleared · consent CNS-4127-2'
                 }
               }
             }
@@ -4762,12 +4798,41 @@ const DEMOS = {
         }
       },
 
-      /* --- and back in the chat, the merchant asks ------------------------- */
+      /* --- and back in the chat, the lender asks --------------------------- */
       {
         label: 'Did he pay?', tool: 'Runs',
         ask: 'Did Rahul pay?',
-        call: { name: 'Runs', summary: 'recovered · ₹20,000 · success', ms: 430 },
-        say: 'He did. ₹20,000 on the credit card, on the second attempt.'
+        call: { name: 'Runs', summary: 'collected · ₹20,000 · consent CNS-4127-2', ms: 430 },
+        say: 'He did. ₹20,000 on the credit card, while he was still on the call. The recording, the transcript and the consent are on the run.'
+      },
+
+      /* --- the other three branches, and the one that is not a branch ------ *
+       *
+       * The run has shown one call take one exit. This is where the other three
+       * exist: 128 calls, four outcomes, in the lender's own numbers -- the
+       * insufficient-funds column off the first beat, worked overnight.
+       *
+       * The fifth row is the one the partner spec is most insistent about.
+       * After the retry threshold the agent STOPS. It does not keep calling a
+       * borrower it cannot settle with; it writes them into a file and hands
+       * them to a human. An agent that knows when to stop is the only kind an
+       * NBFC can switch on, and the delay days are capped for the same reason.
+       */
+      {
+        label: 'The rest of the night', tool: 'Runs',
+        ask: 'What happened on the other calls?',
+        call: { name: 'Runs', summary: '128 called · 96 agreed a way to pay', ms: 560 },
+        scene: {
+          kind: 'brk', title: 'Last night · 128 calls', total: '₹25.6L called',
+          rows: [
+            { k: 'Paid on the call', n: '54', v: '₹10,80,000', hot: 1 },
+            { k: 'Part payment, debit T+1', n: '19', v: '₹2,40,000' },
+            { k: 'Full debit scheduled', n: '15', v: '₹3,00,000' },
+            { k: 'Presentation held to T+2', n: '8', v: '₹1,60,000' },
+            { k: 'Escalated to your team', n: '32', v: '₹6,40,000' }
+          ]
+        },
+        say: '96 of the 128 agreed a way to pay, and ₹10.8L of that is already in. Nothing was pushed past your ten-day delay limit. The 32 it couldn’t settle are in a file for your collections team — after three attempts it stops calling and hands over.'
       }
     ]
   },
@@ -6813,7 +6878,7 @@ async function runCast(sc) {
    *
    * This used to wait `open` ms before painting anything, so opening a
    * checkout showed an empty near-black rectangle for well over a second --
-   * 1.3s on Payment Recovery and Dunning, measured. On a takeover covering the
+   * 1.3s on Payment Recovery and EMI Collection, measured. On a takeover covering the
    * whole phone that does not read as a page loading, it reads as the demo
    * having hung, which is the one impression a payment beat cannot afford.
    *
@@ -6914,7 +6979,7 @@ const backEl = document.getElementById('back');
 const provEl = document.getElementById('prov');
 
 /** The demos that hang off the Relay shelf rather than off tier 2. */
-const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayDun'];
+const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayEmi'];
 
 /** 'home' | 'tier2' | 'agents' | 'onboard' | 'demo'.
  *  Taps only advance steps in 'demo'. */
