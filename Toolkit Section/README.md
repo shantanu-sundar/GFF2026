@@ -770,6 +770,23 @@ Steps declare these with
 the static ones and repaints the call **only if you landed on that beat**, because a call is a
 moment rather than a state.
 
+### The orbs have one size token, and every part of the face is a ratio of it
+
+The orb is drawn at **52px** on the shelf and then reused at **58** in a call, **26** in a push
+notification, **22** in the header chip and **17** on the on-the-call strip. Those call sites
+used to set `width` and `height` and nothing else, so the eyes kept their 52px metrics —
+5×10 with an 8px gap. That is a **17.5px block of face inside a 26px ball, and an 18px block
+inside a 17px one**: wider than the head. The outline did the same thing, ringing a 17px ball
+at the 3px offset it was drawn for at 52.
+
+So the size lives in `--o` and everything else is `calc()`'d off it — eyes, gap, radius,
+outline width and offset, the `::before` blur, the drop shadow. The ratios are exactly the 52px
+values divided by 52, so **the shelf orb is unchanged to the pixel**, and the face is now a
+consistent ~34% of the ball at every size instead of 67% and 106%.
+
+**A new call site sets `--o` and nothing else.** Setting `width`/`height` directly still sizes
+the ball and will silently give you the caricature back, so don't: that is the bug this fixes.
+
 ### The mark
 
 `CX_ICON.cf` was a hand-drawn green chevron standing in for the Cashfree logo. It is the real
