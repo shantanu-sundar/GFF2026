@@ -4707,10 +4707,20 @@ const DEMOS = {
           /* slower than the default: this is the payoff of the whole run, so
              the room gets time to read the amount, see the card the agent
              recommended already chosen, and watch the tick land */
-          ms: { open: 1300, review: 2500, method: 2900, done: 2600, paying: 2600, msg: 3400 },
+          ms: { open: 1300, review: 2500, method: 2900, done: 2600, paying: 2600, push: 3400 },
           tag: 'Rahul’s phone',
-          link: { title: 'Complete your payment', url: 'checkout.cashfree.com/l/myr4127' },
+          /* No link row: he has already opened it, and a "Complete your
+             payment / Open" strip over the page he opened is chrome about
+             the checkout laid on the checkout. */
           foot: 'Mandate MYR-4127 · attempt 2 of 3',
+          /* Relay tells HIM, the moment the money lands. A recovered
+             renewal has two people in it, and he is the one who took a
+             call about a payment that failed. */
+          push: {
+            orb: 'o4', app: 'Relay', when: 'now',
+            title: 'Payment received',
+            body: 'Thank you, Rahul. Your ₹999 has gone through and EMI 2 of 3 is cleared.'
+          },
           sheet: {
             store: 'Myra', amount: '₹999',
             sub: 'Renewal · EMI 2 of 3 · link from Relay'
@@ -4745,13 +4755,6 @@ const DEMOS = {
                 sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
               }
             }
-          },
-          msg: {
-            initials: 'R', who: 'Relay', status: 'Myra',
-            lines: [
-              { t: 'Payment received, ₹999. Thank you, Rahul!', at: '11:12 am' },
-              { t: 'EMI 2 of 3 on your Chikankari Kurta Set is cleared and your order is moving again. The last one is due 1 Oct.', at: '11:12 am' }
-            ]
           }
         }
       },
