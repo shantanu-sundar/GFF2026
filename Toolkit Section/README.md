@@ -495,7 +495,7 @@ The extra beats they gained are the ones the docs actually describe:
 
 | | Cart Recovery | Subscription Dunning | Payment Recovery |
 |---|---|---|---|
-| segment 2 | **one cast** — her cart, sitting at the payment step, and then nothing | one cast: the push, the paused order and the EMI schedule | one cast |
+| segment 2 | **one cast, two states** — her cart, then the leave prompt on it | one cast: the push, the paused order and the EMI schedule | one cast |
 | segment 4 | **no separate beat** — she pays *on* the call | *in flux* | *in flux* |
 
 > **Only the Cart Recovery column is verified.** Payment Recovery and Subscription Dunning are
@@ -526,17 +526,26 @@ What is left in the thread for those beats is the tool row — `cart.abandoned`,
 `checkout.opened` — and that is correct: the merchant's log records that it happened, not a
 replay of it.
 
-**Segment 2 is a cart and then nothing, and the nothing is the point.** There is no exit
-prompt and nothing for her to click: she got pulled into a meeting and forgot, which is what
-actually happens to most abandoned carts. An earlier cut had her tick *"I didn't find the
-payment mode I was looking for"* on a "Leaving Checkout?" dialog — which reads well, and
-quietly wrecks the demo, because it hands the agent its answer for free and turns the call into
-a lookup. **The reason has to be something only the call can get.** An email cannot ask, and a
-form she never filled in has nothing to read.
+**Segment 2 is a cart, then the leave prompt, and what that prompt does NOT do is the point.**
+It asks stay-or-go and nothing else. An earlier cut had her tick *"I didn't find the payment
+mode I was looking for"* off a list of reasons — which reads well, and quietly wrecks the demo,
+because it hands the agent its answer for free and turns the call into a lookup. She got pulled
+into a meeting and forgot, and **the only way anyone finds that out is by asking her**. An email
+cannot ask, and a form she never filled in has nothing to read; that is the case for a voice
+agent, and the old cut was arguing against it.
 
 So the cast holds One-Stop Shoppy's checkout — ₹2,598, the kurta line and `+1 more item`,
-shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar on the bottom edge — and hands the
-screen back. `runCast()` still takes a `then` screen for a second state; nothing uses it now.
+shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar on the bottom edge — then lands
+`Leaving checkout? / Complete checkout / Yes, leave` on it via `runCast()`'s `then` screen, and
+hands the screen back. `bsExitHTML()`'s `opts` is optional for exactly this.
+
+### One agent, one name
+
+The shelf card, the header chip and the docs all say **Cart Recovery** and **Payment
+Recovery**. The onboarding templates and a few of Relay's own lines used to say *Abandoned*
+Cart Recovery and *Failed* Payment Recovery, so the same agent had two names depending on which
+screen you were looking at, and the run introduced itself as one thing and was activated as
+another. There is now one name each, everywhere.
 
 ### The cast tag names the phone, and only that
 
@@ -559,17 +568,25 @@ Hanging up first made the recovery something that happened *afterwards*, in its 
 the call already a memory. It is not. She is still holding the phone and the agent is still on
 it, and that is the entire difference between a voice agent and an SMS.
 
-**And then Relay messages her.** After the tick, the cast swaps in a message thread on the same
-phone: *"Payment received, ₹2,338. Thank you, Priya!"* and the order confirmation. A tick on a
-checkout is the payment gateway saying the payment worked — it is not the agent saying
-anything, and the run has just spent a minute arguing that this thing talks to people. So it
-ends by talking to her.
+**And then Relay thanks her, as a push on the tick.** `sc.push` wearing the agent's own orb —
+the same face the merchant has been watching in the header for two minutes — landing while she
+is still looking at the receipt. Same mechanism and same shape Payment Recovery uses, because a
+recovered cart and a recovered payment end the same way: somebody who walked away got thanked
+for coming back.
 
-It belongs on **her** phone, not in the merchant's chat: a receipt described in a bubble is a
-claim about a message rather than the message. `sc.msg` on the cast does it, rendered by the
-same `waHTML()` the Spark demo uses — and the payment link in the header strip is hidden at
-that point (`.paycast.msgd`), because an *Open* button on an order she has already paid for is
-the one thing left on the screen that is no longer true.
+A tick on a checkout is the payment *gateway* saying the payment worked. It is not the agent
+saying anything, and the run has just spent two minutes arguing that this thing talks to
+people, so it ends by talking to her. On **her** phone, not in the merchant's chat: a receipt
+described in a bubble is a claim about a message rather than the message.
+
+> An earlier cut swapped the whole screen for a message thread (`sc.msg` → `waHTML()`, which is
+> still there and is what Subscription Dunning uses). It put a second surface between the
+> payment and the end of the run and read as a separate errand. A push is what actually arrives.
+
+**The link row is the link arriving, and only that.** It is on screen for one beat, and the
+first checkout phase adds `.opened`, which takes it away for the rest of the cast. *Complete
+your order / Open* sitting on top of the checkout is an instruction to do the thing she is
+already doing, and after she has paid it is simply false.
 
 ### Relay speaks five times in the whole run, and the fifth is the payoff
 
@@ -579,7 +596,7 @@ the one thing left on the screen that is no longer true.
 | 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
 | 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
 | 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. Calling her right now."* |
-| 7 | *nobody* | **the call**, the payment on it, and Relay's thank-you on her phone |
+| 7 | *nobody* | **the call**, the payment on it, and Relay's thank-you as a push on the tick |
 | 8 | the merchant | *"Did Priya pay?"* → **"She did."** |
 
 Beats 5 and 7 carry **no `say` and no `ask`**: two consecutive taps where neither party types

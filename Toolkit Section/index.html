@@ -2251,7 +2251,11 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast .pc-stage > .buyscr .bs-meta { flex: none }
 .paycast .pc-stage > .paysheet .ps-done { margin: auto 0 }
 /* the message she gets after paying, on the same phone */
-.paycast.msgd .pc-link { display: none }
+/* The link row is the link ARRIVING. Once she has opened it she is looking at
+   a checkout, and "Complete your order / Open" sitting over that checkout is an
+   instruction to do the thing she is already doing -- and after she has paid it
+   is simply false. So it goes on the first phase and does not come back. */
+.paycast.opened .pc-link, .paycast.msgd .pc-link { display: none }
 .paycast .pc-stage > .wa {
   flex: 1; min-height: 0; display: flex; flex-direction: column;
   border: 0; border-radius: 0; box-shadow: none;
@@ -3887,9 +3891,9 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
                   without you. Or start from one of these:</div>
                 <div class="ob-list">
                   <div class="ob-row" data-tpl="dispute"><i>+</i><span>Dispute Defender Agent</span></div>
-                  <div class="ob-row" data-tpl="relayPay"><i>+</i><span>Failed Payment Recovery Agent</span></div>
+                  <div class="ob-row" data-tpl="relayPay"><i>+</i><span>Payment Recovery Agent</span></div>
                   <div class="ob-row" data-tpl="relayDun"><i>+</i><span>Subscription Dunning Agent</span></div>
-                  <div class="ob-row" data-tpl="relayCart"><i>+</i><span>Abandoned Cart Recovery Agent</span></div>
+                  <div class="ob-row" data-tpl="relayCart"><i>+</i><span>Cart Recovery Agent</span></div>
                 </div>
                 <div class="ob-more">Show more</div>
                 <div class="ob-or"><span>or</span></div>
@@ -4214,7 +4218,7 @@ const DEMOS = {
         say: '1,284 paid, but 400 customers abandoned cart, leading to a loss of ₹9.8L. Shall I set up an agent to follow up payments?'
       },
       {
-        label: 'Pick the template', tool: 'Abandoned Cart Recovery',
+        label: 'Pick the template', tool: 'Cart Recovery',
         ask: 'Abandoned cart.',
         /* no tool row: she picked a ready-made template off a list. The ledger
            filling in with the trigger, the condition and the action is what
@@ -4225,23 +4229,27 @@ const DEMOS = {
         label: 'Test run', tool: 'Dry run',
         ask: 'Yes, let’s do a test run',
         call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
-        say: 'Test run successful. Should I activate the Abandoned Cart Recovery Agent?'
+        say: 'Test run successful. Should I activate the Cart Recovery Agent?'
       },
       {
         label: 'Switch it on', tool: 'Agents',
         ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        scene: { kind: 'live', title: 'It’s live', body: 'Your Abandoned Cart Recovery Agent is now live.' }
+        scene: { kind: 'live', title: 'It’s live', body: 'Your Cart Recovery Agent is now live.' }
       },
 
       /* --- segment 2: Priya's phone, not this chat ------------------------ *
        *
-       * Her cart, sitting at the payment step, and then nothing. There is no
-       * exit prompt and nothing to click: she got pulled into a meeting and
-       * forgot, which is what actually happens to most abandoned carts and is
-       * the reason the agent has to ASK rather than read a reason off a form.
-       * A "why are you leaving?" dialog would hand the answer over for free and
-       * make the call a lookup.
+       * Her cart, and then the prompt every checkout throws when you go to
+       * leave: stay, or go. She goes.
+       *
+       * What it does NOT do is ask her why. An earlier cut had her tick "I
+       * didn't find the payment mode I was looking for" off a list, which
+       * reads well and quietly wrecks the run: it hands the agent its answer
+       * for free and turns the call into a lookup. She got pulled into a
+       * meeting and forgot, and the only way anyone finds that out is by
+       * asking her -- which is the case for a voice agent, and was being
+       * argued against by the demo itself.
        *
        * Drawn as a card in the thread this read as one more thing Relay said,
        * which is the opposite of true: it is what is on somebody else's phone
@@ -4252,13 +4260,23 @@ const DEMOS = {
         label: 'Her cart, abandoned', tool: 'One-Stop Shoppy',
         call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 150 },
         scene: {
-          kind: 'cast', hold: 4200,
+          kind: 'cast', hold: 2800, hold2: 3600,
           tag: 'Priya’s phone',
           screen: {
             tone: 'drop', store: 'One-Stop Shoppy', amount: '₹2,598',
             cart: OSS_CART,
             cta: 'Pay ₹2,598',
             meta: 'Order OSS-48291 · at the payment step'
+          },
+          then: {
+            tone: 'drop', store: 'One-Stop Shoppy', amount: '₹2,598',
+            cart: OSS_CART,
+            exit: {
+              head: 'Leaving checkout?',
+              sub: 'Your cart will be saved.',
+              go: 'Complete checkout',
+              leave: 'Yes, leave'
+            }
           }
         },
         /* no `say`: the agent is not narrating her checkout while she is
@@ -4305,10 +4323,19 @@ const DEMOS = {
             { b: 1, t: 'Okay, I’ll pay now.' }
           ],
           pay: {
-            kind: 'cast', cfx: true,
+            kind: 'cast', cfx: 'full',
+            /* slower than the default: this one is the payoff of the whole
+               run, so the room gets time to read the amount, see the code
+               already applied and watch the tick land */
+            ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
             tag: 'Priya’s phone',
+            /* The link row is the link ARRIVING, which is the visible
+               consequence of the last thing the agent said on the call. It is
+               on screen for one beat and then the checkout opens over it --
+               `.opened` takes it away, because "Complete your order / Open"
+               sitting on top of the checkout is an instruction to do the thing
+               she is already doing. */
             link: { title: 'Complete your One-Stop Shoppy order', url: 'checkout.cashfree.com/l/oss48291' },
-            foot: 'Cart OSS-48291 · code 5XCA · 10% off',
             sheet: {
               store: 'One-Stop Shoppy', amount: '₹2,338',
               sub: 'Cart OSS-48291 · link from Relay'
@@ -4342,12 +4369,18 @@ const DEMOS = {
                 }
               }
             },
-            msg: {
-              initials: 'R', who: 'Relay', status: 'One-Stop Shoppy',
-              lines: [
-                { t: 'Payment received, ₹2,338. Thank you, Priya!', at: '2:41 pm' },
-                { t: 'Your One-Stop Shoppy order OSS-48291 is confirmed. We’ll message you the moment it ships.', at: '2:41 pm' }
-              ]
+            /* Relay tells HER, the moment the money lands, wearing the
+               agent's own orb -- the same face the merchant has been watching
+               in the header for two minutes. Same shape Payment Recovery's
+               push uses, because a recovered cart and a recovered payment end
+               the same way: somebody who walked away got thanked for coming
+               back. It used to swap the whole screen for a message thread,
+               which put a second surface between the payment and the end of
+               the run and read as a separate errand. */
+            push: {
+              orb: 'o1', app: 'Relay', when: 'now',
+              title: 'Payment received',
+              body: 'Thank you, Priya. Your ₹2,338 has gone through and your One-Stop Shoppy order is on its way.'
             }
           }
         },
@@ -4413,9 +4446,9 @@ const DEMOS = {
         say: 'Would you like to set up an agent to help recover them?',
       },
       {
-        label: 'Relay builds it', tool: 'Failed Payment Recovery',
+        label: 'Relay builds it', tool: 'Payment Recovery',
         ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Failed Payment Recovery \u00b7 wired', ms: 1180 },
+        call: { name: 'build agent', summary: 'Payment Recovery \u00b7 wired', ms: 1180 },
         say: 'It\u2019s done. Payment Recovery Agent is set up. Would you like to do a test run?',
       },
       {
@@ -6217,11 +6250,16 @@ function bsCartHTML(c) {
 function bsExitHTML(x) {
   return '<div class="bs-sheet bs-exit">' +
     '<div class="xh">' + x.head + '</div>' +
-    '<div class="xs">' + x.sub + '</div>' +
-    '<div class="bs-opts">' +
-      x.opts.map((o) =>
-        '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
-    '</div>' +
+    (x.sub ? '<div class="xs">' + x.sub + '</div>' : '') +
+    // optional: a prompt that only asks leave-or-stay has no reasons to list,
+    // and Cart Recovery deliberately does not collect one -- the reason is the
+    // thing the CALL is for
+    (x.opts
+      ? '<div class="bs-opts">' +
+          x.opts.map((o) =>
+            '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
+        '</div>'
+      : '') +
     '<div class="xgo">' + x.go + '</div>' +
     '<div class="xleave">' + x.leave + '</div>' +
   '</div>';
@@ -6740,6 +6778,7 @@ async function runCast(sc) {
       await sleep(ms('paying'));
       if (castEl !== el) return;
     }
+    el.classList.add('opened');   // she is in the checkout now; the link is spent
     castPhase(el, sc, step);
     await sleep(ms(step));
     // the push arrives ON the tick, not a beat afterwards: she is still
@@ -6783,6 +6822,7 @@ function paintCast(sc) {
     el.querySelector('.pc-stage').innerHTML = waHTML(sc.msg);
   }
   else {
+    el.classList.add('opened');
     castPhase(el, sc, 'done');
     // the beat ended with her phone buzzing, so landing on it shows that
     if (sc.push) castPush(el, sc.push);
