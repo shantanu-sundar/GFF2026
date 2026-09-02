@@ -327,14 +327,35 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .chip .gdot { width: 5px; height: 5px; border-radius: 50%; background: var(--evergreen); }
 .chip.mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
 
-/* thread */
+/* thread
+ *
+ * It scrolls, so a run can be read back. It used to be `overflow: hidden` with
+ * `justify-content: flex-end`, which pinned the newest message to the bottom
+ * and simply clipped everything above it -- there was no way to see what the
+ * agent had said three beats ago.
+ *
+ * flex-end is the trap here: on a scrollable box it clips overflow at the TOP,
+ * and no amount of scrollTop will reach it. So the bottom-pinning is done with
+ * an auto top margin on the first message instead. Short thread: the margin
+ * eats the slack and the bubbles sit on the composer, exactly as before. Long
+ * thread: the margin resolves to zero and the box scrolls normally.
+ */
 .thread {
   position: relative; z-index: 2;
   flex: 1; min-height: 0;
-  overflow: hidden;
+  overflow-y: auto; overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 6px 16px 4px;
-  display: flex; flex-direction: column; justify-content: flex-end; gap: 9px;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 9px;
+  scrollbar-width: thin; scrollbar-color: rgba(29, 34, 31, 0.2) transparent;
 }
+.thread > *:first-child { margin-top: auto; }
+/* thin enough to read as part of the phone rather than as browser chrome */
+.thread::-webkit-scrollbar { width: 5px; }
+.thread::-webkit-scrollbar-track { background: transparent; }
+.thread::-webkit-scrollbar-thumb { background: rgba(29, 34, 31, 0.2); border-radius: 3px; }
+.thread::-webkit-scrollbar-thumb:hover { background: rgba(29, 34, 31, 0.36); }
 .msg { display: flex; }
 .msg.me { justify-content: flex-end; }
 .bubble-me.mono {
@@ -1316,14 +1337,16 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   background: #fff;
   box-shadow: 0 8px 22px rgba(29, 34, 31, 0.09);
 }
-.buyscr .bs-tag {
+.buyscr .bs-tag,
+.paysheet .bs-tag {
   display: flex; align-items: center; gap: 6px;
   padding: 6px 11px;
   background: #f6f6f4; border-bottom: 1px solid rgba(29, 34, 31, 0.08);
   font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
   color: rgba(29, 34, 31, 0.44);
 }
-.buyscr .bs-tag .live {
+.buyscr .bs-tag .live,
+.paysheet .bs-tag .live {
   width: 5px; height: 5px; border-radius: 50%; background: var(--coral);
   animation: recpulse 1.4s ease-in-out infinite;
 }
@@ -1734,6 +1757,131 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 
 /* a letter mark needs a colour on the brick tile; an emoji ignores it */
 .buyscr .bs-notif .ic { color: #fff }
+
+/* --- the checkout the payment link opens ---------------------------------- *
+ *
+ * The call ends by sending a link, and a link that is never seen to open is an
+ * assertion. So the last three beats are the buyer's side of it: the amount
+ * already filled in, the method the agent recommended already chosen, and the
+ * tick. Greens are the ones sampled off the real Cashfree checkout and shared
+ * with `checkout-frames.html` -- header #035D32, secured band #0B6339, ground
+ * #F8F7F7, pay bar #1F1E1E -- so this reads as the same product, not a sketch.
+ */
+.paysheet {
+  width: 100%; overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(29, 34, 31, 0.13);
+  background: #F8F7F7;
+  box-shadow: 0 8px 22px rgba(29, 34, 31, 0.09);
+}
+.paysheet .ps-head { padding: 10px 12px 9px; background: #035D32; color: #fff }
+.paysheet .ps-head .r { display: flex; align-items: baseline; gap: 9px }
+.paysheet .ps-head .nm {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.paysheet .ps-head .amt {
+  margin-left: auto; font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.paysheet .ps-head .sub { margin-top: 2px; font-size: 9.5px; color: rgba(255, 255, 255, 0.72) }
+.paysheet .ps-sec {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; background: #0B6339; color: rgba(255, 255, 255, 0.86);
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.paysheet .ps-sec svg { width: 9px; height: 9px }
+.paysheet .ps-body { padding: 11px 12px 12px }
+
+.paysheet .ps-line {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 9px; border-radius: 11px;
+  background: #fff; border: 1px solid rgba(29, 34, 31, 0.09);
+}
+.paysheet .ps-line .pic {
+  flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: grid; place-items: center; background: #F4FCF8; border: 1px solid rgba(3, 93, 50, 0.14);
+}
+.paysheet .ps-line .pic svg { width: 21px; height: 21px }
+.paysheet .ps-line .tx { min-width: 0 }
+.paysheet .ps-line .tx b {
+  display: block; font-size: 11.5px; font-weight: 700; letter-spacing: -0.015em; color: var(--graphite);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.paysheet .ps-line .tx i {
+  display: block; margin-top: 2px; font-style: normal;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(29, 34, 31, 0.46);
+}
+
+.paysheet .ps-sum { margin-top: 9px }
+.paysheet .ps-sum .r {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 4px 1px; font-size: 11px; color: rgba(29, 34, 31, 0.62);
+}
+.paysheet .ps-sum .r b { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: rgba(29, 34, 31, 0.85) }
+.paysheet .ps-sum .r b.free { color: #0d5f40; letter-spacing: 0.06em }
+.paysheet .ps-sum .r.tot {
+  margin-top: 3px; padding-top: 7px; border-top: 1px solid rgba(29, 34, 31, 0.1);
+  color: var(--graphite); font-weight: 700;
+}
+.paysheet .ps-sum .r.tot b { font-size: 13px; color: var(--graphite) }
+
+/* the method list. The card that bounced stays on it, greyed, carrying the
+   reason -- removing it would hide the whole point of the agent's advice. */
+.paysheet .ps-m {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 9px; border-radius: 11px;
+  background: #fff; border: 1px solid rgba(29, 34, 31, 0.1);
+}
+.paysheet .ps-m + .ps-m { margin-top: 6px }
+.paysheet .ps-m .ic {
+  flex: none; width: 24px; height: 24px; border-radius: 7px;
+  display: grid; place-items: center; color: rgba(29, 34, 31, 0.55);
+  background: #F8F7F7; border: 1px solid rgba(29, 34, 31, 0.09);
+}
+.paysheet .ps-m .ic svg { width: 13px; height: 13px }
+.paysheet .ps-m .tx { flex: 1; min-width: 0 }
+.paysheet .ps-m .tx b { display: block; font-size: 11px; font-weight: 700; letter-spacing: -0.01em; color: var(--graphite) }
+.paysheet .ps-m .tx i { display: block; margin-top: 1px; font-style: normal; font-size: 9.5px; color: rgba(29, 34, 31, 0.48) }
+.paysheet .ps-m .tx .note { display: block; margin-top: 4px; font-size: 9px; line-height: 1.35 }
+.paysheet .ps-m .rd {
+  flex: none; margin-top: 3px; width: 13px; height: 13px; border-radius: 50%;
+  border: 1.5px solid rgba(29, 34, 31, 0.2);
+}
+.paysheet .ps-m.pick { border-color: rgba(3, 93, 50, 0.4); background: #F4FCF8 }
+.paysheet .ps-m.pick .ic { color: #035D32; background: #fff; border-color: rgba(3, 93, 50, 0.22) }
+.paysheet .ps-m.pick .rd { border-color: #035D32; box-shadow: inset 0 0 0 3px #035D32 }
+.paysheet .ps-m.pick .note { color: #0d5f40; font-weight: 600 }
+.paysheet .ps-m.off { opacity: 0.62 }
+.paysheet .ps-m.off .note { color: #a33232; font-weight: 600 }
+.paysheet .ps-m.off .rd { border-style: dashed }
+
+.paysheet .ps-pay {
+  margin-top: 11px; padding: 10px; border-radius: 11px;
+  background: #1F1E1E; color: #fff; text-align: center;
+  font-size: 12px; font-weight: 700; letter-spacing: -0.01em;
+}
+
+/* the tick. Bigger than the one on the buyer's order screen, because this is
+   the beat the whole run has been walking toward. */
+.paysheet .ps-done { padding: 6px 2px 4px; text-align: center }
+.paysheet .ps-done .big {
+  width: 40px; height: 40px; margin: 0 auto 10px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--evergreen);
+  animation: psPop 0.44s cubic-bezier(0.22, 1.4, 0.4, 1) both;
+}
+.paysheet .ps-done .big svg { width: 20px; height: 20px }
+@keyframes psPop { from { opacity: 0; transform: scale(0.5) } to { opacity: 1; transform: none } }
+.paysheet .ps-done .t { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: var(--graphite) }
+.paysheet .ps-done .amt {
+  margin-top: 3px; font-size: 22px; font-weight: 700; letter-spacing: -0.03em;
+  color: var(--graphite); font-variant-numeric: tabular-nums;
+}
+.paysheet .ps-done .sub {
+  margin-top: 7px; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(29, 34, 31, 0.42); line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) { .paysheet .ps-done .big { animation: none } }
 
 /* --- 2b. the month at a glance -------------------------------------------
  *
@@ -3761,6 +3909,11 @@ const DEMOS = {
        * switch is a separate yes: pick the template, test it, then turn it on.
        * Nothing goes live unasked, which is the product's claim rendered as an
        * interaction rather than asserted in a bubble.
+       *
+       * Relay's replies here are SHORT on purpose. "It's done" plus a ledger
+       * that visibly fills in with the trigger, the condition and the action
+       * beats a paragraph restating them: one is a product doing something, the
+       * other is a chatbot narrating itself.
        */
       {
         label: 'Ask what happened', tool: 'Voice',
@@ -3781,57 +3934,54 @@ const DEMOS = {
       },
       {
         label: 'Pick the template', tool: 'Abandoned Cart Recovery',
-        ask: 'Abandoned cart. Based on the metrics you’ve shared, that one is the more important one for me.',
+        ask: 'Abandoned cart.',
         call: { name: 'load template', summary: 'Abandoned Cart Recovery · wired', ms: 1240 },
-        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go: trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Want to take it for a quick spin and give it a test run?',
-        patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · 10% cap', action: 'Voice call + offer' }
+        say: 'It’s done. Would you like to do a test run?',
+        patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · idle 10 min', action: 'Call + 10% offer' }
       },
       {
         label: 'Test run', tool: 'Dry run',
-        ask: 'Okay — take it for a spin.',
+        ask: 'Yes, let’s do a test run',
         call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
-        say: 'Took it for a spin and it ran clean. It held the 30 minutes, placed the call and stopped the discount at 10%, and nothing reached a real buyer. Ready to turn it on and start recovering those abandoned carts?',
+        say: 'Test run successful. Should I activate the Abandoned Cart Recovery Agent?',
         patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
         ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        scene: {
-          kind: 'live', title: 'It’s live',
-          body: 'It’ll now reach out to customers who leave something in their cart and help them finish their purchase.'
-        },
-        say: 'Your newest teammate just clocked in, and it won’t be clocking out.',
+        scene: { kind: 'live', title: 'It’s live', body: 'Your Abandoned Cart Recovery Agent is now live.' },
         patch: { __headline: 'Active' }
       },
 
-      /* --- segment 2: the buyer's screen ---------------------------------- *
+      /* --- segments 2-4: Priya's screens, and Relay is silent through all of
+       *     them ------------------------------------------------------------
        *
-       * Two beats on ONE screen, and in this order on purpose: you have to see
-       * the cart before it can be abandoned. The exit prompt then lands as a
-       * sheet over the same cart rather than as a separate card, so the basket
-       * she is walking away from is still on screen behind the question.
+       * Every beat from here to the last is a screen the buyer is looking at:
+       * her cart, the exit prompt over it, the call, the link she opens, the
+       * method she was hunting for, the tick. Not one of them carries a `say`.
        *
-       * No merchant prompt on either -- the composer reads "Tap, it runs
-       * without you", which is the point of the whole segment.
+       * That is the whole claim of the product rendered as an interaction. The
+       * composer reads "Tap, it runs without you", the merchant types nothing
+       * for six beats, and Relay does not speak again until it has something to
+       * report -- which is the last beat, and it is that she paid.
        */
       {
         label: 'Her cart', tool: 'One-Stop Shoppy',
         call: { name: 'checkout.opened', summary: 'OSS-48291 · 2 items · ₹2,598', ms: 140 },
         scene: {
-          kind: 'buy', tone: 'drop', tag: 'Buyer’s screen · checkout',
+          kind: 'buy', tone: 'drop', tag: 'Priya’s screen · checkout',
           store: 'One-Stop Shoppy', amount: '₹2,598',
           cart: OSS_CART,
           meta: 'Order OSS-48291 · at the payment step'
         },
-        say: 'Priya is at the payment step with two kurta pajamas worth ₹2,598, and nothing charged yet.',
         patch: {}
       },
       {
         label: 'She leaves', tool: 'Cart Abandoned',
         call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 140 },
         scene: {
-          kind: 'buy', tone: 'drop', tag: 'Buyer’s screen · live',
+          kind: 'buy', tone: 'drop', tag: 'Priya’s screen · live',
           store: 'One-Stop Shoppy', amount: '₹2,598',
           cart: OSS_CART,
           exit: {
@@ -3846,14 +3996,20 @@ const DEMOS = {
             leave: 'Yes, Leave'
           }
         },
-        say: 'There is the trigger. She told the exit prompt why she left, so the agent already knows what to lead with. The 30 minutes start now.',
-        patch: { runs: 'waiting 30 min' }
+        patch: { runs: 'cart abandoned' }
       },
 
-      /* --- segment 3: the call and what it produced ------------------------ */
+      /* --- the call ------------------------------------------------------- *
+       *
+       * Inside ten minutes, not thirty. And Priya gives the SAME reason she
+       * ticked on the way out -- she could not find the payment mode she
+       * wanted. That is what the exit prompt is for, and it is what makes the
+       * method screen three beats later the answer to something rather than a
+       * checkout screenshot.
+       */
       {
         label: 'Relay calls Priya', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called · offer accepted · link sent', ms: 610 },
+        call: { name: 'agent run', summary: 'called in 6 min · reason heard · link sent', ms: 610 },
         scene: {
           kind: 'call', glow: '#10ab50', orb: 'o1',
           agent: 'Cart Recovery', buyer: 'Priya', initials: 'P',
@@ -3861,30 +4017,77 @@ const DEMOS = {
           result: 'Payment link sent · code 5XCA', amount: '₹2,338',
           lines: [
             { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or just still deciding?' },
-            { b: 1, t: 'Oh yeah, I wanted it but got distracted.' },
-            { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' }
+            { b: 1, t: 'I couldn’t find the payment mode I wanted, so I left it.' },
+            { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' },
+            { b: 1, t: 'Okay, I’ll pay now.' }
           ]
         },
-        say: 'It waited the 30 minutes, called her, heard the real reason and sent a link with the 10% you capped it at, not a rupee deeper.',
-        patch: { runs: '1 run' }
+        patch: { runs: 'called in 6 min' }
       },
+
+      /* --- she goes back and pays ----------------------------------------- *
+       *
+       * The call ends on "here is the link", and a link that is never seen to
+       * open is an assertion. So the last three beats are her side of it, on
+       * the same .paysheet the Dunning agent's retry runs through: the amount
+       * and the code already filled in, the method she went looking for already
+       * on the list, and the tick.
+       */
       {
-        label: 'She pays', tool: 'Payment link',
-        call: { name: 'payment.success', summary: 'OSS-48291 · ₹2,338 · SUCCESS', ms: 220 },
+        label: 'She opens the link', tool: 'Cashfree Checkout',
+        call: { name: 'payment_link.opened', summary: 'OSS-48291 · ₹2,338 · link opened', ms: 200 },
         scene: {
-          kind: 'buy', tone: 'ok', tag: 'Buyer’s screen · live',
-          store: 'One-Stop Shoppy', amount: '₹2,338',
-          cart: OSS_CART_PAID,
-          done: { t: 'Payment successful', amt: '₹2,338', sub: 'OSS-48291 · code 5XCA · ₹260 off' }
+          kind: 'pay', step: 'review',
+          tag: 'Priya’s screen · payment link',
+          store: 'One-Stop Shoppy', amount: '₹2,338', sub: 'Cart OSS-48291 · code 5XCA applied',
+          line: { art: 'k', name: 'Arjun Classic Kurta Pajama', meta: 'Order OSS-48291 · 2 items' },
+          rows: [
+            { k: 'Cart Total', v: '₹2,598' },
+            { k: 'Discount · 5XCA', v: '-₹260' },
+            { k: 'Shipping Charges', v: 'FREE', free: 1 },
+            { k: 'Total Amount', v: '₹2,338', tot: 1 }
+          ],
+          cta: 'Proceed to Pay ₹2,338'
         },
-        say: 'She tapped the link and paid. ₹2,338 back, at the cap and not a rupee deeper.',
-        patch: { runs: 'recovered ₹2,338' }
+        patch: { runs: 'link opened' }
       },
       {
-        label: 'Check the runs', tool: 'Runs',
-        ask: 'Did that one come back?',
+        label: 'The mode she wanted', tool: 'Cashfree Checkout',
+        call: { name: 'payment.methods', summary: 'UPI · the mode she went looking for', ms: 240 },
+        scene: {
+          kind: 'pay', step: 'method',
+          tag: 'Priya’s screen · choose a method',
+          store: 'One-Stop Shoppy', amount: '₹2,338', sub: 'Cart OSS-48291 · code 5XCA applied',
+          methods: [
+            { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
+              note: 'The mode she left the checkout looking for' },
+            { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
+            { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
+          ],
+          cta: 'Pay ₹2,338'
+        },
+        patch: { runs: 'paying' }
+      },
+      {
+        label: 'Payment successful', tool: 'Cashfree Checkout',
+        call: { name: 'payment.success', summary: 'OSS-48291 · ₹2,338 · SUCCESS', ms: 300 },
+        scene: {
+          kind: 'pay', step: 'done',
+          tag: 'Priya’s screen · paid',
+          store: 'One-Stop Shoppy', amount: '₹2,338', sub: 'Cart OSS-48291 · code 5XCA applied',
+          done: {
+            t: 'Payment successful', amt: '₹2,338',
+            sub: 'CF-48291 · UPI<br>code 5XCA applied · ₹260 off'
+          }
+        },
+        patch: { runs: 'paid' }
+      },
+
+      /* --- and only now does Relay speak again ---------------------------- */
+      {
+        label: 'Relay reports it', tool: 'Runs',
         call: { name: 'Runs', summary: 'recovered · ₹2,338 · success', ms: 430 },
-        say: '₹2,338 recovered. The Runs tab is the execution history: every agent, when it ran, how long it took and how it ended.',
+        say: 'Priya paid. ₹2,338 recovered on the link, inside ten minutes of her leaving. The call, the reason she gave and the code are all on the run in the Runs tab.',
         patch: { runs: '1 run · recovered' }
       }
     ]
@@ -4111,10 +4314,10 @@ const DEMOS = {
        * way through a plan, and a delivery has stopped moving because of it.
        */
       {
-        label: 'His EMI bounces', tool: 'Myra',
-        call: { name: 'renewal.failed', summary: 'MYR-4127 · ₹999 · insufficient funds', ms: 150 },
+        label: 'Renewal failed for Rahul', tool: 'Myra',
+        call: { name: 'renewal.failed', summary: 'Rahul Menon · ₹999 · insufficient funds', ms: 150 },
         scene: {
-          kind: 'buy', tone: 'fail', tag: 'Buyer’s screen · live',
+          kind: 'buy', tone: 'fail', tag: 'Rahul’s screen · live',
           store: 'Myra', amount: '₹999', glyph: 'M',
           notif: {
             app: 'Myra', when: 'now', ic: 'M',
@@ -4153,42 +4356,68 @@ const DEMOS = {
           result: 'Payment link sent · credit card', amount: '₹999',
           lines: [
             { t: 'Hi Rahul, your ₹999 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
-            { b: 1, t: 'Yes, we can try now.' },
+            { b: 1, t: 'Yes we can try now.' },
             { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' }
           ]
         },
         say: 'It named the reason instead of saying “payment failed”, gave him the choice, and when he said now, sent a link on the method that actually clears a balance problem, not the same debit card that just bounced.',
         patch: { runs: '1 run' }
       },
+      /* The call ends on "here is the link", so the run has to show the link
+         being opened, the advice being taken and the money landing. Three
+         beats on one sheet: the amount already filled in, the credit card the
+         agent recommended already chosen, and the tick. */
       {
-        label: 'He pays', tool: 'Myra',
-        call: { name: 'renewal.retry', summary: 'MYR-4127 · ₹999 · SUCCESS', ms: 280 },
+        label: 'He opens the link', tool: 'Cashfree Checkout',
+        call: { name: 'payment_link.opened', summary: 'MYR-4127 · ₹999 · link opened', ms: 200 },
         scene: {
-          kind: 'buy', tone: 'ok', tag: 'Buyer’s screen · after the call',
-          store: 'Myra', amount: '₹999', glyph: 'M',
-          notif: {
-            app: 'Myra', when: 'now', ic: 'M',
-            title: 'EMI 2 paid — your order is moving',
-            body: '₹999 received on your credit card. Delivery resumes today.'
-          },
-          head: 'Payment successful',
-          reason: 'Paid on the link from the call, on the credit card the agent suggested. The instalment plan is back on track.',
-          order: {
-            art: 'k', name: 'Chikankari Kurta Set', meta: '#4127 · 3 × ₹999',
-            state: 'moving', badge: 'Out for delivery'
-          },
-          emi: {
-            title: 'EMI schedule',
-            rows: [
-              { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹999' },
-              { st: 'paid', k: 'EMI 2 · Paid', sub: '1 Sep · Credit card · retried', v: '₹999' },
-              { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹999' }
-            ]
-          },
-          banner: 'Delivery resumed',
-          meta: 'Mandate MYR-4127 · attempt 2 of 3 · next instalment 1 Oct'
+          kind: 'pay', step: 'review',
+          tag: 'Rahul’s screen · payment link',
+          store: 'Myra', amount: '₹999', sub: 'Renewal · EMI 2 of 3',
+          line: { art: 'k', name: 'Chikankari Kurta Set', meta: 'Order #4127 · instalment 2 of 3' },
+          rows: [
+            { k: 'Instalment 2 of 3', v: '₹999' },
+            { k: 'Late fee', v: 'WAIVED', free: 1 },
+            { k: 'Total', v: '₹999', tot: 1 }
+          ],
+          cta: 'Proceed to Pay ₹999'
         },
-        say: 'Paid on the link, on the card the agent suggested. EMI 2 clears, the plan is whole again and the kurta ships today.',
+        say: 'He tapped the link from the call. It opens on the Cashfree checkout with the instalment already filled in and the late fee waived, so there is nothing for him to type and nothing to work out.',
+        patch: { runs: '1 run · link opened' }
+      },
+      {
+        label: 'Credit card suggested', tool: 'Cashfree Checkout',
+        call: { name: 'payment.methods', summary: 'credit card · recommended', ms: 240 },
+        scene: {
+          kind: 'pay', step: 'method',
+          tag: 'Rahul’s screen · choose a method',
+          store: 'Myra', amount: '₹999', sub: 'Renewal · EMI 2 of 3',
+          methods: [
+            { ic: 'card', name: 'Credit card', sub: 'HDFC •••• 8821', state: 'pick',
+              note: 'Suggested on the call — a low balance will not block this' },
+            { ic: 'card', name: 'Debit card', sub: 'HDFC •••• 4412', state: 'off',
+              note: 'Declined 1 Sep · insufficient funds' },
+            { ic: 'upi', name: 'UPI', sub: 'Any UPI app' },
+            { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
+          ],
+          cta: 'Pay ₹999'
+        },
+        say: 'The card that bounced is still on the list, greyed out and carrying its reason, and the credit card the agent recommended is the one already selected. He does not have to remember the advice: the checkout is holding it for him.',
+        patch: { runs: '1 run · paying' }
+      },
+      {
+        label: 'Payment successful', tool: 'Cashfree Checkout',
+        call: { name: 'renewal.retry', summary: 'MYR-4127 · ₹999 · SUCCESS', ms: 300 },
+        scene: {
+          kind: 'pay', step: 'done',
+          tag: 'Rahul’s screen · paid',
+          store: 'Myra', amount: '₹999', sub: 'Renewal · EMI 2 of 3',
+          done: {
+            t: 'Payment successful', amt: '₹999',
+            sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
+          }
+        },
+        say: 'Paid, on the method the agent suggested. EMI 2 clears, the plan is whole again and the kurta ships today.',
         patch: { runs: '1 run · recovered' }
       },
       {
@@ -4722,14 +4951,62 @@ const TICK =
   '<svg class="tk" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" ' +
   'stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+/* Whether the viewer is following the run or reading back through it.
+ *
+ * Kept as a flag rather than measured at each append, because the answer has to
+ * survive the moment between a bubble being added and the artwork inside it
+ * settling to its final height. Scrolling to the bottom yourself re-arms it,
+ * which is what every chat app does. */
+let threadFollow = true;
+
+function threadAtEnd() {
+  return thread.scrollHeight - thread.scrollTop - thread.clientHeight < 48;
+}
+
+/* A scroll event fires both when the viewer drags the thread and when the
+   thread grows underneath them, and only the first means "let me read". So
+   growth is filtered out by watching scrollHeight: without that filter a scene
+   that expands after it lands leaves a gap, the gap reads as a deliberate
+   scroll, and the run stops following for good. */
+let threadH = 0;
+thread.addEventListener('scroll', () => {
+  const grew = thread.scrollHeight !== threadH;
+  threadH = thread.scrollHeight;
+  if (!grew) threadFollow = threadAtEnd();
+}, { passive: true });
+
+/** Ride the bottom as the run plays. */
+function followThread() {
+  if (!threadFollow) return;
+  thread.scrollTop = thread.scrollHeight;
+  threadH = thread.scrollHeight;
+}
+
+/* A bubble is not its final height when it is appended -- the push slides in,
+   the approval gate expands as it is signed, the tick pops. So the ride to the
+   bottom is driven by the content actually resizing rather than by a timer
+   guessing when it has stopped. */
+const threadRO = new ResizeObserver(() => followThread());
+
 function add(html, cls) {
+  // a fresh thread always follows again
+  if (!thread.children.length) threadFollow = true;
   const el = document.createElement('div');
   el.className = 'rise ' + (cls || '');
   el.innerHTML = html;
   thread.appendChild(el);
-  // a terminal shows more lines than a chat shows bubbles
-  const cap = isTerm() ? 15 : 7;
-  while (thread.children.length > cap) thread.removeChild(thread.firstChild);
+  /* The thread scrolls now, so the run has to SURVIVE in the DOM to be scrolled
+     back to. The old cap was 7 bubbles, which was free when everything above
+     the fold was clipped and invisible anyway; keeping it would have meant a
+     scrollbar that reveals nothing. What is left is a memory guard, and no
+     demo here comes within an order of magnitude of it. */
+  const cap = isTerm() ? 400 : 200;
+  while (thread.children.length > cap) {
+    threadRO.unobserve(thread.firstChild);
+    thread.removeChild(thread.firstChild);
+  }
+  threadRO.observe(el);
+  followThread();
   return el;
 }
 
@@ -5227,7 +5504,12 @@ async function runStep(i) {
   // sentence they are answering.
   if (!s.sceneLast) await playScene(s.scene, true);
 
-  add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+  // A beat may carry no reply at all. On Cart Recovery every beat from the
+  // store onward is the buyer's own screen, and a bubble narrating each one
+  // would be the agent describing what you are already watching.
+  if (s.say) {
+    add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+  }
 
   if (s.sceneLast) await playScene(s.scene, true);
 
@@ -5266,7 +5548,9 @@ function rebuild(i) {
     if (!s.sceneLast) playScene(s.scene, false);
     // the call is a moment, not a state: it only stands if you landed on it
     if (s.scene && s.scene.kind === 'call' && n === i) paintCall(s.scene);
-    add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+    if (s.say) {
+      add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
+    }
     if (s.sceneLast) playScene(s.scene, false);
     applyPatch(s.patch);
   }
@@ -5675,6 +5959,52 @@ function buyscrHTML(b) {
   '</div>';
 }
 
+/* --- the checkout the link opens ------------------------------------------ *
+ *
+ * One card, three steps: review, method, done. Three renderers would have
+ * meant three headers to keep in sync, and the point of the beat is that it is
+ * the SAME sheet the buyer is moving through.
+ */
+const PS_LOCK =
+  '<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2" ' +
+  'stroke="currentColor" stroke-width="2"/><path d="M8.4 10.5V8a3.6 3.6 0 0 1 7.2 0v2.5" ' +
+  'stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const PS_IC = { card: CARD, upi: WALLET, bank: BANK };
+
+function paysheetHTML(p) {
+  let body = '';
+  if (p.step === 'done') {
+    body = '<div class="ps-done"><span class="big">' + CHECK + '</span>' +
+      '<div class="t">' + p.done.t + '</div>' +
+      '<div class="amt">' + p.done.amt + '</div>' +
+      '<div class="sub">' + p.done.sub + '</div></div>';
+  } else if (p.step === 'method') {
+    body = p.methods.map((m) =>
+      '<div class="ps-m ' + (m.state || '') + '">' +
+        '<span class="ic">' + (PS_IC[m.ic] || CARD) + '</span>' +
+        '<span class="tx"><b>' + m.name + '</b><i>' + m.sub + '</i>' +
+          (m.note ? '<span class="note">' + m.note + '</span>' : '') + '</span>' +
+        '<span class="rd"></span>' +
+      '</div>').join('');
+  } else {
+    body = '<div class="ps-line"><span class="pic">' + (ART[p.line.art] || ART.k) + '</span>' +
+      '<span class="tx"><b>' + p.line.name + '</b><i>' + p.line.meta + '</i></span></div>' +
+      '<div class="ps-sum">' + p.rows.map((r) =>
+        '<div class="r' + (r.tot ? ' tot' : '') + '"><span>' + r.k + '</span>' +
+        '<b' + (r.free ? ' class="free"' : '') + '>' + r.v + '</b></div>').join('') + '</div>';
+  }
+  return '<div class="paysheet">' +
+    '<div class="bs-tag"><span class="live"></span>' + p.tag + '</div>' +
+    '<div class="ps-head"><div class="r"><span class="nm">' + p.store + '</span>' +
+      '<span class="amt">' + p.amount + '</span></div>' +
+      '<div class="sub">' + p.sub + '</div></div>' +
+    '<div class="ps-sec">' + PS_LOCK + 'Secured by Cashfree</div>' +
+    '<div class="ps-body">' + body +
+      (p.cta ? '<div class="ps-pay">' + p.cta + '</div>' : '') +
+    '</div>' +
+  '</div>';
+}
+
 /* --- "It's live" ---------------------------------------------------------- *
  *
  * The one reply in the setup segment that is not a sentence. Switching the
@@ -5870,10 +6200,13 @@ async function playScene(sc, animate) {
   if (sc.kind === 'brk') { add(brkHTML(sc), 'msg'); if (animate) await sleep(420); return; }
   if (sc.kind === 'buy') { add(buyscrHTML(sc), 'msg'); if (animate) await sleep(560); return; }
   if (sc.kind === 'live') { add(liveHTML(sc), 'msg'); if (animate) await sleep(480); return; }
+  if (sc.kind === 'pay') { add(paysheetHTML(sc), 'msg'); if (animate) await sleep(560); return; }
   if (sc.kind === 'wa') { add(waHTML(sc), 'msg'); if (animate) await sleep(620); return; }
   if (sc.kind === 'gate') { add(gateHTML(sc), 'msg'); if (animate) await sleep(520); return; }
-  // not a new card: the gate already in the thread is the one that gets signed
-  if (sc.kind === 'approve') { approveGate(sc); if (animate) await sleep(420); return; }
+  // not a new card: the gate already in the thread is the one that gets signed.
+  // It grows as it flips, and nothing was appended, so the follow has to be
+  // asked for rather than inherited from add().
+  if (sc.kind === 'approve') { approveGate(sc); followThread(); if (animate) await sleep(420); return; }
   if (sc.kind === 'call') { if (animate) await runCall(sc); return; }
 }
 

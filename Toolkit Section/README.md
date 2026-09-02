@@ -195,9 +195,10 @@ equivalent primitive:
 
 ### Not built yet
 
-**Only Cart Recovery exists.** Payment Recovery and Subscription Dunning are the same
-eight-beat shape with different orbs, buyers and amounts, and are not in the file. Spark
-has no screen. The For Builders demos open nothing. Do not describe the file as complete.
+**Cart Recovery and Subscription Dunning are built; Payment Recovery is not.** Payment
+Recovery still runs the shorter shape — one drop-off beat, then the call, then Runs — with
+different orbs, buyers and amounts. Spark has no screen. The For Builders demos open nothing.
+Do not describe the file as complete.
 
 > **The Figma file is now behind `index.html` on Cart Recovery, and this is the largest gap
 > in it.** The section has since dropped the connect beat for all three Relay agents, put
@@ -349,7 +350,7 @@ For Builders** opens **three more**. Each demo has its own steps, its own bottom
 |---|---|---|---|
 | **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the ready-made template loads → test run → activate → her ₹2,598 One-Stop Shoppy cart → the exit prompt over that cart → **Relay calls Priya** → she taps the link and pays → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Payment Recovery** *(shelf → onboarding)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
-| **Relay · Subscription Dunning** *(shelf → onboarding)* | **spoken** prompt → renewals by outcome → Relay builds it → test run → activate → a ₹499 renewal fails → **Relay calls Anita** and takes Friday → the retry lands → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Subscription Dunning** *(shelf → onboarding)* | **spoken** prompt → renewals by reason → the ready-made template loads → test run → activate → Rahul's ₹999 EMI bounces on Myra and the delivery pauses → **Relay calls Rahul** → he opens the link → the Cashfree checkout, credit card preselected → paid → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Cashfree Spark** *(home → dashboard)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
 | **Agent Toolkit** | 6 tool calls: customer → ₹500 order → UPI → status → ₹200 refund → list | Merchant ledger, net position | **Real** captured sandbox run |
 | **Agent Skills** *(light terminal, on a laptop)* | the real installer banner → pick Claude Code → the skill tree → restart → one prompt → keys + SDK → order + verification → the v3 checkout SDK → validation skill → ShirtShop → Proceed to Pay → the Cashfree drop-in pays | Workspace: the files it wrote and is reading | Illustrative, but the CLI output is the package's own |
@@ -487,17 +488,15 @@ the shelf run it:
 | **1 · set the agent up** | the merchant **speaks** the opening prompt, Relay answers with the month's numbers, loads the ready-made template, **test-runs it**, then asks before switching it on | the merchant |
 | **2 · the drop-off** | the payment fails, or the cart is left at the payment step | **the buyer** |
 | **3 · the call** | Relay rings the buyer, works the objection, sends a link | both |
-| **4 · the payoff** *(Cart Recovery, Dunning)* | the buyer comes back through the link and pays, or the retry clears on the day she picked | **the buyer** |
+| **4 · the payoff** *(Cart Recovery, Dunning)* | the buyer comes back through the link and pays | **the buyer** |
 
-**Cart Recovery is the one that is fully built.** Payment Recovery and Subscription Dunning
-still run the shorter shape below — one drop-off beat, then the call, then Runs. Cart Recovery
-now runs the whole arc, and the two extra beats it gained are the ones the docs actually
-describe:
+**Cart Recovery and Subscription Dunning run the whole arc; Payment Recovery does not yet.**
+The extra beats they gained are the ones the docs actually describe:
 
-| | Cart Recovery | the other two |
-|---|---|---|
-| segment 2 | **two beats on one screen** — her cart, then the exit prompt over it | one beat |
-| segment 4 | she taps the link and **pays**, on the same screen she walked off | Dunning only |
+| | Cart Recovery | Subscription Dunning | Payment Recovery |
+|---|---|---|---|
+| segment 2 | **two beats on one screen** — her cart, then the exit prompt over it | one beat: the push, the paused order and the EMI schedule | one beat |
+| segment 4 | she taps the link and **pays**, on the same screen she walked off | **three beats on the checkout** — Proceed to Pay, the method, the tick | none |
 
 **Segment 2 is two beats and they are in that order for a reason.** You have to see the cart
 before it can be abandoned: a "Leaving Checkout?" card with nothing behind it is a dialog, not
@@ -517,14 +516,61 @@ discipline `CART_ITEMS` follows in the Skills store and for the same reason: 1,2
 receipt, the ledger and the Runs tab all report. Change one of those numbers and change the
 constant, not the beat.
 
-**Subscription Dunning also ends on a fourth beat, because its doc does.** A failed
-renewal is the only failure in the set where the customer is not standing in front of a
-checkout: they are asleep, or at work, and the only thing that reaches them is a *push*. So
-segment 2 there is a notification and a "Subscription paused" banner rather than an error page,
-the call takes a date instead of a payment (`"Salary hasn't come in yet. Try again in 2 days?"`
-→ `"Got it — we'll retry on Friday."`), and segment 4 is Friday: the retry clears, a second push
-says the plan is active, and she never had to do anything. That last beat is the whole point of
-the agent, so it gets its own step rather than being summarised in the Runs line.
+**Subscription Dunning ends on the checkout, and its segment 2 is an instalment rather than
+a plan.** A failed renewal is the only failure in the set where the customer is not standing in
+front of a checkout: they are asleep, or at work, and the only thing that reaches them is a
+*push*. So segment 2 is a notification and an order history rather than an error page — Myra,
+Rahul's Chikankari Kurta Set at `#4127`, and the EMI schedule showing instalment 2 of 3 bounced
+on insufficient funds with the delivery paused behind it.
+
+**The schedule is what gives the beat its stakes.** A paused SaaS plan is an abstraction; three
+rows showing one instalment already paid, one failed and one still coming say that the customer
+is committed, is not leaving, and has a delivery stuck behind ₹999. The `Retry payment` button
+is drawn as a real CTA on purpose: it is the thing the agent exists to make unnecessary.
+
+**Segment 3 does not stop at the call.** The call ends on `"Here's the payment link"`, and a
+link that is never seen to open is an assertion, so the run follows it: Rahul opens the
+Cashfree checkout with the instalment filled in and the late fee waived, the method list shows
+the debit card that bounced greyed out *carrying its reason* next to the credit card the agent
+recommended already selected, and then the tick. Three beats, one sheet — `paysheetHTML`'s
+`step: 'review' | 'method' | 'done'`, so there is one header to keep in sync rather than three.
+
+Keeping the failed card on the list is the point of the beat. Removing it would hide what the
+agent's advice was *for*; leaving it there, greyed, with `Declined 1 Sep · insufficient funds`
+under it, is what makes the preselected credit card read as a recommendation rather than a
+default.
+
+**The drop-in already in this file could not be reused.** `.store` / `.cf-pay` / `.cf-done`
+belong to the Skills demo: they are a laptop-lid surface driven by the terminal step runner
+(`s.term.kind === 'store'`), not something that can be dropped into a Relay chat bubble. So the
+checkout is drawn at bubble width in the palette sampled off the real thing and shared with
+`checkout-frames.html` — header `#035D32`, secured band `#0B6339`, ground `#F8F7F7`, pay bar
+`#1F1E1E`.
+
+### The thread scrolls, and the run survives in it
+
+**You can scroll back through a finished run.** This is newer than most of the file and worth
+knowing about, because three separate things had to change and fixing any one alone fixes
+nothing:
+
+1. `.thread` was `overflow: hidden`, so there was no scrolling at all.
+2. It pinned the newest bubble down with `justify-content: flex-end`, which on a scrollable
+   box clips the overflow at the **top** and puts it out of reach of any `scrollTop`. The
+   bottom-pinning is now an `auto` top margin on the first child instead: it eats the slack
+   while the thread is short, and resolves to zero the moment the thread is taller than the
+   phone.
+3. `add()` **deleted** every bubble past the 7th. That was free while everything above the
+   fold was invisible anyway, but it meant a scrollbar would have revealed nothing. The cap is
+   now a memory guard (200 bubbles, 400 in the terminal) that no demo comes near — a full
+   Dunning run ends at 31.
+
+**Following the bottom is driven by a `ResizeObserver`, not a timer.** A bubble is not its
+final height when it is appended: the push slides in, the approval gate expands as it is
+signed, the checkout's tick pops. Scrolling once at append time lands short, and — worse — the
+gap it leaves reads as "the viewer scrolled up", which latches the follow off for the rest of
+the run. Spark did exactly that from its approval beat onward, ending 1,181px short. The
+`scroll` handler now ignores any event where `scrollHeight` changed, because that is the thread
+growing rather than the viewer asking to read.
 
 ### Relay never speaks in em dashes
 
