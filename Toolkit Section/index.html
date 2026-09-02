@@ -604,148 +604,6 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 
 @media (prefers-reduced-motion: reduce) { .hcard { transition: none } }
 
-/* ---------------- level 2c: the merchant dashboard ----------------
- *
- * Segment 1 of the Spark flow doc is "merchant logs into the Cashfree Merchant
- * Dashboard, clicks Spark to open the chat". Spark's whole pitch is that it is
- * a layer ON a dashboard you already have -- same login, same permissions,
- * nothing installed -- and that claim is only legible if you have SEEN the
- * dashboard it is sitting on. So the Spark tile opens the dashboard, and the
- * chat opens from the button on it.
- *
- * This is a replica of the real Payments home: the navy bar, the purple
- * welcome hero, and the "Explore our products" cards. Copy is verbatim from
- * that screen. It is scenery -- only the Spark button does anything.
- */
-.mdash {
-  position: absolute; inset: 0; z-index: 12;
-  background: #f4f5f7;
-  overflow-y: auto;
-  transition: opacity 0.42s ease, filter 0.42s ease, transform 0.42s ease;
-}
-.mdash.gone { opacity: 0; filter: blur(12px); transform: scale(1.05); pointer-events: none; }
-.mdash::-webkit-scrollbar { width: 0; }
-
-/* the navy bar. Left-padded so the section's back button sits inside it
-   rather than on top of the logo. */
-.mdash .md-bar {
-  display: flex; align-items: center; gap: 7px;
-  padding: 38px 9px 9px 46px;
-  background: #180f4a;
-  position: sticky; top: 0; z-index: 3;
-}
-.mdash .md-bar .cfm { width: 19px; height: 19px; flex: none; display: grid; place-items: center; }
-.mdash .md-bar .cfm svg, .mdash .md-bar .cfm img { width: 19px; height: 19px; }
-.mdash .md-bar .grid9 {
-  display: grid; grid-template-columns: repeat(3, 2.5px); gap: 2.2px;
-  margin-left: 7px;
-}
-.mdash .md-bar .grid9 i { width: 2.5px; height: 2.5px; border-radius: 50%; background: rgba(255,255,255,0.75); }
-.mdash .md-bar .bpill {
-  margin-left: auto; padding: 4px 8px; border-radius: 5px;
-  background: #fff; color: #180f4a;
-  font-size: 8.5px; font-weight: 700; white-space: nowrap;
-}
-.mdash .md-bar .bpill + .bpill { margin-left: 5px; }
-
-.mdash .md-body { padding: 10px 11px 74px; }
-
-/* the welcome hero, with the light rays the real one has */
-.mdash .md-hero {
-  position: relative; overflow: hidden;
-  border-radius: 10px; padding: 15px 14px 16px;
-  background: linear-gradient(128deg, #35006e 0%, #4b1596 55%, #3b0b7d 100%);
-  color: #fff;
-}
-.mdash .md-hero::after {
-  content: ''; position: absolute; right: -30px; top: -46px;
-  width: 190px; height: 190px; transform: rotate(24deg);
-  background: repeating-linear-gradient(90deg,
-    rgba(255,255,255,0.045) 0 7px, rgba(255,255,255,0) 7px 26px);
-  -webkit-mask-image: linear-gradient(200deg, #000 8%, transparent 62%);
-  mask-image: linear-gradient(200deg, #000 8%, transparent 62%);
-}
-.mdash .md-hero h4 {
-  position: relative; z-index: 2;
-  margin: 0 0 7px; font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
-}
-.mdash .md-hero p {
-  position: relative; z-index: 2;
-  margin: 0 0 13px; font-size: 10px; line-height: 1.5; color: rgba(255,255,255,0.9);
-  max-width: 26ch;
-}
-.mdash .md-hero .act {
-  position: relative; z-index: 2;
-  display: block; width: 100%; padding: 8px 0; border-radius: 5px;
-  background: #fff; color: #5b21b6;
-  font-size: 10.5px; font-weight: 700; text-align: center;
-}
-
-.mdash .md-h5 {
-  margin: 15px 0 9px; font-size: 12px; font-weight: 700;
-  letter-spacing: -0.015em; color: #1f2430;
-}
-
-.mdash .md-card {
-  background: #fff; border: 1px solid #e6e8ec; border-radius: 9px;
-  padding: 12px 12px 11px; margin-bottom: 9px;
-}
-.mdash .md-card .ct { display: flex; align-items: center; gap: 8px; }
-.mdash .md-card .ci {
-  flex: none; width: 24px; height: 24px; border-radius: 6px;
-  display: grid; place-items: center;
-}
-.mdash .md-card .ci svg { width: 13px; height: 13px; }
-.mdash .md-card .ci.gw { background: #fdf0dc; color: #d98324; }
-.mdash .md-card .ci.pl { background: #dcf4f2; color: #0e9c94; }
-.mdash .md-card .ci.pf { background: #dff3e6; color: #16964f; }
-.mdash .md-card .cn { font-size: 12px; font-weight: 600; color: #1f2430; letter-spacing: -0.015em; }
-.mdash .md-card .cd {
-  margin: 8px 0 11px; font-size: 9.5px; line-height: 1.55; color: #7c8493;
-}
-/* NOT .cf -- that is the Cashfree drop-in overlay, which is opacity:0 until the
-   store demo opens it, and it swallowed this row whole. Bare single-class rules
-   in this file are shared ground. */
-.mdash .md-card .cfoot { display: flex; align-items: center; gap: 12px; }
-.mdash .md-card .btry {
-  padding: 5px 9px; border-radius: 5px;
-  border: 1px solid #a78bfa; color: #6d28d9;
-  font-size: 9px; font-weight: 600; white-space: nowrap;
-}
-.mdash .md-card .bdoc { font-size: 9px; font-weight: 600; color: #6d28d9; }
-
-/* --- the Spark button ---
- * A floating pill, the way an assistant that lives on top of a product always
- * arrives. It is the only live thing on this screen, so it pulses: on a shot
- * of a dashboard nobody has seen before, the eye needs telling where to go.
- */
-.mdash .md-spark {
-  position: sticky; bottom: 13px; float: right; margin-right: 3px;
-  z-index: 4; cursor: pointer;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 15px 9px 12px; border-radius: 999px;
-  background: linear-gradient(140deg, #14c47d 0%, #00ad6c 52%, #00915a 100%);
-  color: #fff; font-size: 11.5px; font-weight: 700; letter-spacing: -0.01em;
-  box-shadow: 0 8px 22px rgba(0, 145, 90, 0.42), 0 0 0 1px rgba(255,255,255,0.16) inset;
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.mdash .md-spark:hover { transform: translateY(-2px) scale(1.03); }
-.mdash .md-spark svg { width: 14px; height: 14px; }
-.mdash .md-spark::before {
-  content: ''; position: absolute; inset: -4px; border-radius: 999px;
-  border: 2px solid rgba(0, 173, 108, 0.5);
-  animation: sparkpulse 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  pointer-events: none;
-}
-@keyframes sparkpulse {
-  0%   { transform: scale(0.94); opacity: 0.85 }
-  70%  { transform: scale(1.16); opacity: 0 }
-  100% { transform: scale(1.16); opacity: 0 }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mdash .md-spark::before { animation: none; opacity: 0.6 }
-}
-
 /* ---------------- glassmorphic product icons ---------------- */
 
 /*
@@ -956,9 +814,8 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
  * palette would have made it read as a third Cashfree dashboard rather than as
  * the thing the merchant is actually looking at.
  *
- * Only .ob-row.on is live, the way only .md-spark is live on the dashboard: the
- * screen is scenery for the agent you already picked off the shelf, and the eye
- * needs telling which row that was.
+ * Only .ob-row.on is live: the screen is scenery for the agent you already
+ * picked off the shelf, and the eye needs telling which row that was.
  */
 .onboard {
   position: absolute; inset: 0; z-index: 11;
@@ -1278,6 +1135,113 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .screen.skin-claude .cl-model .thin { font-weight: 400; color: rgba(42, 39, 36, 0.48); }
 .screen.skin-claude .cl-mic { margin-left: auto; }
 .screen.skin-claude .send { width: 32px; height: 32px; background: #1f1e1d; }
+
+
+/* ---- the phone as ChatGPT's phone ----
+ *
+ * Spark opens on the chat, and the chat is dressed as the assistant a merchant
+ * already has on their phone. Same reasoning as the Claude skin on the MCP
+ * demo: the surface is not a Cashfree screen, so pretending it is costs the
+ * viewer the first few seconds working out what they are looking at.
+ *
+ * ChatGPT in light mode is a white page with almost nothing on it -- the panel
+ * toggle, the model title, the compose square; grey right-aligned prompts and
+ * replies that are just text under the mark; a composer that is a rounded card
+ * with a black send button. Everything here is that and no more. Stylised on
+ * purpose -- "the assistant runs here", not a pixel copy of anyone's app.
+ *
+ * --gpt-mark is chatgpt-icon.svg with its white plate dropped, inlined the way
+ * the Cashfree and Claude marks are so this section stays one file you can
+ * double-click.
+ */
+.screen.skin-chatgpt {
+  --gpt-mark: url("%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 509.639%22 fill=%22%230d0d0d%22%3E%3Cpath fill-rule=%22nonzero%22 d=%22M412.037 221.764a90.834 90.834 0 004.648-28.67 90.79 90.79 0 00-12.443-45.87c-16.37-28.496-46.738-46.089-79.605-46.089-6.466 0-12.943.683-19.264 2.04a90.765 90.765 0 00-67.881-30.515h-.576c-.059.002-.149.002-.216.002-39.807 0-75.108 25.686-87.346 63.554-25.626 5.239-47.748 21.31-60.682 44.03a91.873 91.873 0 00-12.407 46.077 91.833 91.833 0 0023.694 61.553 90.802 90.802 0 00-4.649 28.67 90.804 90.804 0 0012.442 45.87c16.369 28.504 46.74 46.087 79.61 46.087a91.81 91.81 0 0019.253-2.04 90.783 90.783 0 0067.887 30.516h.576l.234-.001c39.829 0 75.119-25.686 87.357-63.588 25.626-5.242 47.748-21.312 60.682-44.033a91.718 91.718 0 0012.383-46.035 91.83 91.83 0 00-23.693-61.553l-.004-.005zM275.102 413.161h-.094a68.146 68.146 0 01-43.611-15.8 56.936 56.936 0 002.155-1.221l72.54-41.901a11.799 11.799 0 005.962-10.251V241.651l30.661 17.704c.326.163.55.479.596.84v84.693c-.042 37.653-30.554 68.198-68.21 68.273h.001zm-146.689-62.649a68.128 68.128 0 01-9.152-34.085c0-3.904.341-7.817 1.005-11.663.539.323 1.48.897 2.155 1.285l72.54 41.901a11.832 11.832 0 0011.918-.002l88.563-51.137v35.408a1.1 1.1 0 01-.438.94l-73.33 42.339a68.43 68.43 0 01-34.11 9.12 68.359 68.359 0 01-59.15-34.11l-.001.004zm-19.083-158.36a68.044 68.044 0 0135.538-29.934c0 .625-.036 1.731-.036 2.5v83.801l-.001.07a11.79 11.79 0 005.954 10.242l88.564 51.13-30.661 17.704a1.096 1.096 0 01-1.034.093l-73.337-42.375a68.36 68.36 0 01-34.095-59.143 68.412 68.412 0 019.112-34.085l-.004-.003zm251.907 58.621l-88.563-51.137 30.661-17.697a1.097 1.097 0 011.034-.094l73.337 42.339c21.109 12.195 34.132 34.746 34.132 59.132 0 28.604-17.849 54.199-44.686 64.078v-86.308c.004-.032.004-.065.004-.096 0-4.219-2.261-8.119-5.919-10.217zm30.518-45.93c-.539-.331-1.48-.898-2.155-1.286l-72.54-41.901a11.842 11.842 0 00-5.958-1.611c-2.092 0-4.15.558-5.957 1.611l-88.564 51.137v-35.408l-.001-.061a1.1 1.1 0 01.44-.88l73.33-42.303a68.301 68.301 0 0134.108-9.129c37.704 0 68.281 30.577 68.281 68.281a68.69 68.69 0 01-.984 11.545v.005zm-191.843 63.109l-30.668-17.704a1.09 1.09 0 01-.596-.84v-84.692c.016-37.685 30.593-68.236 68.281-68.236a68.332 68.332 0 0143.689 15.804 63.09 63.09 0 00-2.155 1.222l-72.54 41.9a11.794 11.794 0 00-5.961 10.248v.068l-.05 102.23zm16.655-35.91l39.445-22.782 39.444 22.767v45.55l-39.444 22.767-39.445-22.767v-45.535z%22/%3E%3C/svg%3E");
+  --lg-evergreen: #0d0d0d;
+  background: #fff;
+  color: #0d0d0d;
+  /* ChatGPT sets Söhne; the closest thing every machine has is its own UI
+     grotesque, which is still a world away from the page's DM Sans. */
+  font-family: ui-sans-serif, -apple-system, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* header: panel, title, the run's own chips kept quiet, compose square */
+.screen.skin-chatgpt .ph-top { padding: 44px 13px 8px 46px; gap: 6px; }
+.screen.skin-chatgpt .cl-ic { display: block; color: #0d0d0d; width: 23px; height: 23px; }
+.screen.skin-chatgpt .gpt-new { margin-left: auto; }
+.gpt-title { display: none; }
+.screen.skin-chatgpt .gpt-title {
+  display: inline-flex; align-items: center; gap: 3px; flex: none;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.015em; color: #0d0d0d;
+}
+.screen.skin-chatgpt .gpt-title svg { width: 11px; height: 11px; color: rgba(13, 13, 13, 0.42); }
+.screen.skin-chatgpt .chip {
+  min-width: 0;
+  background: #f4f4f4; border: 0; box-shadow: none;
+  color: rgba(13, 13, 13, 0.6); padding: 4px 8px; font-size: 10px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.screen.skin-chatgpt .chip .gdot { background: #10a37f; }
+
+/* An empty thread is ChatGPT's new-chat screen: the mark, and the one line it
+   asks you. */
+.screen.skin-chatgpt .thread:empty::before {
+  content: "What can I help with?";
+  margin: auto; padding-top: 66px; text-align: center;
+  background: var(--gpt-mark) no-repeat top center / 46px 46px;
+  font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: #0d0d0d;
+}
+
+/* replies are plain text under the mark -- no bubble, no card */
+.screen.skin-chatgpt .bubble-ai {
+  max-width: 100%; padding: 3px 2px 5px 0; gap: 9px;
+  background: transparent; border: 0; box-shadow: none;
+  font-size: 14px; line-height: 1.58; color: #0d0d0d;
+}
+.screen.skin-chatgpt .tick {
+  width: 20px; height: 20px; margin-top: 1px; border-radius: 50%;
+  background: var(--gpt-mark) no-repeat center / 13px 13px;
+  border: 1px solid rgba(13, 13, 13, 0.12);
+}
+.screen.skin-chatgpt .tick svg { display: none; }
+
+/* the merchant's prompts: grey pills on the right */
+.screen.skin-chatgpt .bubble-me {
+  max-width: 80%; padding: 9px 15px; border-radius: 20px;
+  background: #f4f4f4; border: 0; box-shadow: none;
+  font-size: 14px; line-height: 1.5; color: #0d0d0d;
+}
+.screen.skin-chatgpt .toolrow {
+  background: #f9f9f9; border-color: rgba(13, 13, 13, 0.07); border-radius: 12px;
+}
+.screen.skin-chatgpt .toolrow .nm { color: #0d0d0d; }
+
+.screen.skin-chatgpt .ledger {
+  background: #f9f9f9; border: 1px solid rgba(13, 13, 13, 0.07); box-shadow: none;
+}
+.screen.skin-chatgpt .lrow .pip { background: rgba(13, 13, 13, 0.18); }
+.screen.skin-chatgpt .lrow.on .pip { background: #10a37f; }
+.screen.skin-chatgpt .caret { background: #0d0d0d; }
+
+/* composer: the line you are writing, then plus / mic / send under it. No
+   model pill -- ChatGPT keeps the model in the header, not down here. */
+.screen.skin-chatgpt .composer {
+  flex-wrap: wrap; align-items: center; gap: 7px;
+  margin: 0 12px 16px; padding: 12px 10px 10px 14px;
+  border-radius: 26px; background: #fff;
+  border: 1px solid rgba(13, 13, 13, 0.1);
+  box-shadow: 0 4px 16px rgba(13, 13, 13, 0.06);
+}
+.screen.skin-chatgpt .composer .txt { flex: 1 0 100%; padding: 2px 2px 9px; font-size: 14.5px; }
+.screen.skin-chatgpt .composer .txt.ph { color: rgba(13, 13, 13, 0.42); }
+.screen.skin-chatgpt .cl-btn {
+  display: grid; place-items: center; flex: none;
+  width: 27px; height: 27px; border-radius: 50%;
+  background: transparent; color: #5d5d5d;
+}
+.screen.skin-chatgpt .cl-btn svg { width: 19px; height: 19px; }
+.screen.skin-chatgpt .cl-mic { margin-left: auto; }
+.screen.skin-chatgpt .cl-mic svg { width: 16px; height: 16px; }
+.screen.skin-chatgpt .send { width: 31px; height: 31px; background: #0d0d0d; }
 
 
 /* ---------------- inline connect card ---------------- */
@@ -2768,17 +2732,23 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .dots i.on { background: var(--evergreen); width: 20px; border-radius: 999px; }
 
 
-/* ---------------- laptop chassis + terminal surface (Agent Skills) ----------------
+/* ---------------- the Skills chassis + terminal surface ----------------
  *
- * Agent Skills is the one product here that does not live on a phone: you run a
- * command in your repo and your coding assistant reads the skill files as it
- * writes code. So for that demo the device itself changes -- the phone widens
- * into a laptop and the liquid-glass screen goes dark. Same .screen element
- * throughout, so tap-to-advance, the dots, the tour and the connect screen all
- * keep working untouched; only the chassis and the renderer swap.
+ * Agent Skills used to widen the phone into a laptop, because you run the
+ * command in a repo rather than on a handset. The booth killed that: a booth
+ * display IS a 360x800 portrait screen, so the terminal was already designed
+ * to stack -- title bar, transcript, workspace, prompt -- and that stacked
+ * portrait design is the one that shipped. The page now shows the SAME thing:
+ * one design, one set of rules, whether it runs on a kiosk or in this card.
+ *
+ * So the device stays a phone; it only grows to hold the booth screen exactly.
+ * 382 x 822 outside, minus the 11px bezel, is 360 x 800 inside -- byte-for-byte
+ * the frame the booth renders, so every store and checkout rule below is shared
+ * rather than duplicated per surface. Same .screen element throughout, so
+ * tap-to-advance, the dots, the tour and the connect screen keep working.
  */
 
-/* The slot keeps the phone's height in both shapes, so opening Skills never
+/* The slot keeps the phone's height across demos, so opening Skills never
    reflows the card underneath it. */
 .phone-wrap { min-height: 722px; justify-content: center; }
 
@@ -2788,33 +2758,16 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
               border-radius 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .demo { transition: grid-template-columns 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
-.demo.wide { grid-template-columns: 1fr 668px; }
-.demo.wide .controls { flex-wrap: wrap; }
+/* the phone column widens by exactly what the taller phone needs */
+.demo.wide { grid-template-columns: 1fr 414px; }
 
-.phone.as-laptop {
-  width: 596px;
-  height: 376px;
-  border-radius: 17px;
-  padding: 11px 11px 13px;
+.phone.as-term {
+  width: 382px;
+  height: 822px;
 }
-.phone.as-laptop .screen { border-radius: 7px; }
-.phone.as-laptop .notch { display: none; }
-/* camera pinhole in the top bezel */
-.phone.as-laptop::before {
-  content: '';
-  position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
-  width: 4px; height: 4px; border-radius: 50%;
-  background: #45474c;
-}
-/* the base: a lip wider than the lid */
-.phone.as-laptop::after {
-  content: '';
-  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  width: 652px; height: 12px;
-  border-radius: 0 0 11px 11px;
-  background: linear-gradient(180deg, #2a2c30 0%, #131417 68%, #0a0a0c 100%);
-  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.55);
-}
+/* No notch: the terminal brings its own title bar, and the booth screen this
+   is a copy of has neither. A notch here would sit on the traffic lights. */
+.phone.as-term .notch { display: none; }
 
 /* --- the terminal screen ---
  *
@@ -2830,14 +2783,17 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
     linear-gradient(150deg, #fcfbf6 0%, #faf7f0 54%, #fdf6e9 100%);
   color: var(--graphite);
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  /* landscape: a file rail down the left, transcript to the right of it */
+  /* Portrait, because the screen is portrait everywhere now: title bar, then
+     the transcript, then the workspace it wrote, then the prompt. The file
+     rail beside the transcript was a landscape-lid idea and went with the lid. */
   display: grid;
-  grid-template-columns: 186px 1fr;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto;
   grid-template-areas:
-    "top    top"
-    "panel  thread"
-    "panel  composer";
+    "top"
+    "thread"
+    "panel"
+    "composer";
 }
 .screen.term .ph-top   { grid-area: top; }
 .screen.term .ledger   { grid-area: panel; }
@@ -2982,16 +2938,17 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .tcode .n { color: #0f6a86; }
 .tcode .c { color: rgba(29, 34, 31, 0.38); }
 
-/* file rail: what got written, what it is reading */
+/* the workspace strip: what got written, what it is reading */
 .screen.term .ledger {
   margin: 0;
-  padding: 12px 12px 14px;
+  padding: 9px 12px 10px;
   border-radius: 0;
   border: 0;
-  border-right: 1px solid rgba(29, 34, 31, 0.09);
+  border-top: 1px solid rgba(29, 34, 31, 0.09);
   background: rgba(255, 255, 255, 0.5);
   box-shadow: none;
   min-width: 0;
+  overflow: hidden;
 }
 .screen.term .ledger .lbl { color: rgba(29, 34, 31, 0.4); }
 .screen.term .ledger .net {
@@ -2999,7 +2956,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   font-size: 11px; font-weight: 500; letter-spacing: 0;
   color: var(--evergreen);
 }
-.screen.term .ledger .rows { grid-template-columns: 1fr; gap: 7px; margin-top: 11px; }
+.screen.term .ledger .rows { grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 7px; }
 .screen.term .lrow {
   grid-template-columns: 6px 1fr;
   font-size: 10px;
@@ -3890,13 +3847,13 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
                 <div class="hcard" id="card-relay">
                   <span class="art mesh gold"><i class="m1"></i><i class="m2"></i><i class="m3"></i></span>
                   <div class="hlock"><span class="hg"><svg class="relaymark" viewBox="-6 24 226 176" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl0)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M153.358 190.645C146.573 196.834 136.068 195.297 130.713 187.834L116.488 168.01C113.17 163.385 113.98 156.975 118.24 153.201C132.481 140.583 163.192 111.614 180.715 81.9993C185.148 74.5075 182.27 71.7545 174.503 75.6861C160.93 82.5569 139.936 93.2556 128.417 99.1298C123.665 101.553 117.856 100.141 114.746 95.8071L99.2117 74.1578C95.6885 69.2478 96.8706 62.3736 101.999 59.1774C146.429 31.4895 172.537 36.7884 179.852 46.9837L212.114 91.9451C222.824 106.873 189.947 157.268 153.358 190.645Z" fill="url(#rl1)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl2)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.813 34.3556C67.5983 28.1655 78.1038 29.7032 83.4583 37.1655L97.6836 56.9905C101.002 61.6145 100.191 68.0247 95.9315 71.7989C81.6929 84.414 50.9901 113.375 33.4659 142.984C29.0274 150.484 31.911 153.241 39.686 149.305C53.2589 142.434 74.241 131.742 85.755 125.87C90.5071 123.447 96.3156 124.859 99.4254 129.193L114.96 150.842C118.483 155.752 117.301 162.626 112.172 165.822C67.7417 193.51 41.6341 188.211 34.3202 178.016L2.05497 133.054C-8.65631 118.127 24.2267 67.7328 60.813 34.3556Z" fill="url(#rl3)"/><defs><linearGradient id="rl0" x1="153.482" y1="38.7539" x2="153.753" y2="169.832" gradientUnits="userSpaceOnUse"><stop stop-color="#00B438"/><stop offset="1" stop-color="#5AD6A0"/></linearGradient><linearGradient id="rl1" x1="113.529" y1="38.7538" x2="116" y2="205.512" gradientUnits="userSpaceOnUse"><stop stop-color="#00ADA1"/><stop offset="0.668269" stop-color="#00AD5B"/></linearGradient><linearGradient id="rl2" x1="60.692" y1="209.617" x2="31.5772" y2="106.353" gradientUnits="userSpaceOnUse"><stop stop-color="#FFBE0C"/><stop offset="1" stop-color="#FFDD7F"/></linearGradient><linearGradient id="rl3" x1="18.5841" y1="60.4854" x2="20.0841" y2="248.985" gradientUnits="userSpaceOnUse"><stop stop-color="#FBB016"/><stop offset="1" stop-color="#FF8FA7"/></linearGradient></defs></svg></span>
-                    <span class="name">Relay <span class="thin">Agents</span></span></div>
+                    <span class="name">Relay</span></div>
                 </div>
 
                 <div class="hcard" id="card-spark">
                   <span class="art blades"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></span>
                   <div class="hlock"><span class="hg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg></span>
-                    <span class="name">Spark <span class="thin">Assistant</span></span></div>
+                    <span class="name">Spark</span></div>
                 </div>
 
                 <div class="hcard" id="card-builders">
@@ -4015,57 +3972,6 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
               </div>
             </div>
 
-        
-            <!-- level 2c: the merchant dashboard Spark sits on -->
-            <div class="mdash gone" id="mdash">
-              <div class="md-bar">
-                <span class="cfm" id="md-mark"></span>
-                <span class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                <span class="bpill">Developers</span>
-                <span class="bpill">Switch to Test</span>
-              </div>
-
-              <div class="md-body">
-                <div class="md-hero">
-                  <h4>Welcome to Cashfree Payments</h4>
-                  <p>Explore our products that best suit your business and scale faster.
-                    Activate the products to process real-time payments.</p>
-                  <span class="act">Activate</span>
-                </div>
-
-                <div class="md-h5">Explore our products</div>
-
-                <div class="md-card">
-                  <div class="ct"><span class="ci gw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="m14.5 14.5 6-6 2.5 2.5-6 6-3 .5.5-3Z"/></svg></span>
-                    <span class="cn">Payment Gateway</span></div>
-                  <p class="cd">Accept domestic and international payments with 100+ payment
-                    options. Get paid the next day.</p>
-                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
-                </div>
-
-                <div class="md-card">
-                  <div class="ct"><span class="ci pl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M6 14.5h4"/></svg></span>
-                    <span class="cn">Payment Links</span></div>
-                  <p class="cd">Create and share payment links instantly with your customers via
-                    SMS, email, WhatsApp etc., and receive payments in no time.</p>
-                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
-                </div>
-
-                <div class="md-card">
-                  <div class="ct"><span class="ci pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></span>
-                    <span class="cn">Payment Forms</span></div>
-                  <p class="cd">Create Payment Forms, a no-code solution, to collect domestic and
-                    international payments instantly from multiple customers using a common link.</p>
-                  <div class="cfoot"><span class="btry">Try Test Environment</span><span class="bdoc">View Docs</span></div>
-                </div>
-
-                <!-- the one live thing on this screen -->
-                <div class="md-spark" id="md-spark">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9L12 17.6l-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4Z"/><path d="M18.4 15.4l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6.6-1.7Z"/></svg>
-                  Spark
-                </div>
-              </div>
-            </div>
 
     <div class="backbtn" id="back" style="display:none">
               <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#1d221f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -4168,6 +4074,13 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
    go down, and the ghost that opens a temporary chat. */
 const CL_MENU = '<svg class="cl-ic cl-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 7.5h17M3.5 12h12.5M3.5 16.5h8"/></svg>';
 const CL_GHOST = '<svg class="cl-ic cl-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 20.9V10.4a7.4 7.4 0 0 1 14.8 0v10.5c0 .8-.9 1.2-1.5.6l-1.4-1.3c-.4-.4-1-.4-1.4 0l-1.2 1.1c-.4.4-1 .4-1.4 0l-1.2-1.1c-.4-.4-1-.4-1.4 0l-1.4 1.3c-.6.6-1.5.2-1.5-.6Z"/></svg>';
+
+/* ChatGPT's header on a phone: the side-panel toggle, the model title with its
+   chevron, and the compose square that starts a new chat. Same three the app
+   carries, in the same three places. */
+const GPT_PANEL = '<svg class="cl-ic gpt-panel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.4" width="17.6" height="15.2" rx="3.2"/><path d="M9.6 4.4v15.2"/></svg>';
+const GPT_NEW = '<svg class="cl-ic gpt-new" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.2 4.9H6.5A2.5 2.5 0 0 0 4 7.4v10.1A2.5 2.5 0 0 0 6.5 20h10.1a2.5 2.5 0 0 0 2.5-2.5v-4.7"/><path d="m17.6 3.7 2.7 2.7-7.7 7.7-3.4.7.7-3.4 7.7-7.7Z"/></svg>';
+const GPT_TITLE = '<span class="gpt-title">ChatGPT<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 9.8 5.5 5.5 5.5-5.5"/></svg></span>';
 
 const CX_ICON = {
  "app": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9l-3 3 3 3M16 9l3 3-3 3M13.5 6l-3 12\"/></svg>",
@@ -4746,18 +4659,18 @@ const DEMOS = {
         label: 'Ask about renewals', tool: 'Voice',
         voice: true,
         ask: 'How many renewals failed this month?',
-        call: { name: 'renewals', summary: '128 failed · ₹1,27,872 at risk', ms: 700 },
+        call: { name: 'renewals', summary: '128 failed · ₹17.3L at risk', ms: 700 },
         scene: {
           kind: 'brk', title: 'Renewals this month', total: '1,840 due',
           rows: [
-            { k: 'Collected', n: '1,712', v: '₹17.1L' },
-            { k: 'Insufficient funds', n: '61', v: '₹60,939', hot: 1 },
-            { k: 'Bank decline', n: '25', v: '₹24,975' },
-            { k: 'Card expired', n: '24', v: '₹23,976' },
-            { k: 'Mandate revoked', n: '18', v: '₹17,982' }
+            { k: 'Collected', n: '1,712', v: '₹2.3Cr' },
+            { k: 'Insufficient funds', n: '61', v: '₹8,60,000', hot: 1 },
+            { k: 'Bank decline', n: '25', v: '₹3,40,000' },
+            { k: 'Card expired', n: '24', v: '₹3,10,000' },
+            { k: 'Mandate revoked', n: '18', v: '₹2,20,000' }
           ]
         },
-        say: '128 renewals failed this month, ₹1,27,872 in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Would you like to set up an agent to help recover them?'
+        say: '128 renewals failed this month, ₹17.3L in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Would you like to set up an agent to help recover them?'
       },
       {
         label: 'Relay builds it', tool: 'trigger + condition + action',
@@ -4797,37 +4710,37 @@ const DEMOS = {
        */
       {
         label: 'Renewal failed for Rahul', tool: 'Myra',
-        call: { name: 'renewal.failed', summary: 'Rahul Menon · ₹999 · insufficient funds', ms: 150 },
+        call: { name: 'renewal.failed', summary: 'Rahul Menon · ₹20,000 · insufficient funds', ms: 150 },
         scene: {
           kind: 'cast', hold: 3600,
           tag: 'Rahul’s phone · live',
           foot: 'Mandate MYR-4127 · attempt 1 of 3 · mandate still active',
           screen: {
             tone: 'fail',
-            store: 'Myra', amount: '₹999', glyph: 'M',
+            store: 'Myra', amount: '₹20,000', glyph: 'M',
             notif: {
               app: 'Myra', when: 'now', ic: 'M',
               title: 'Your EMI payment didn’t go through',
-              body: 'EMI 2 of 3 (₹999) for your kurta order bounced. Your order is on hold.'
+              body: 'EMI 2 of 3 (₹20,000) for your laptop order bounced. Your order is on hold.'
             },
             head: 'Order on hold — EMI bounced',
-            reason: 'We couldn’t charge ₹999 to the card ending 4412 — insufficient funds.',
+            reason: 'We couldn’t charge ₹20,000 to the card ending 4412 — insufficient funds.',
             order: {
-              art: 'k', name: 'Chikankari Kurta Set', meta: '#4127 · 3 × ₹999',
+              art: 'l', name: 'Nova 14 Pro Laptop', meta: '#4127 · ₹60,000',
               state: 'paused', badge: 'Delivery paused'
             },
             emi: {
               title: 'EMI schedule',
               rows: [
-                { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹999' },
-                { st: 'fail', k: 'EMI 2 · Payment failed', sub: '1 Sep · Insufficient funds', v: '₹999' },
-                { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹999' }
+                { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹20,000' },
+                { st: 'fail', k: 'EMI 2 · Payment failed', sub: '1 Sep · Insufficient funds', v: '₹20,000' },
+                { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹20,000' }
               ]
             },
             cta: 'Retry payment'
           }
         },
-        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. Calling him'
+        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his laptop order, ₹20,000, insufficient funds, and Myra has paused the delivery until it clears. Calling him'
       },
 
       /* --- segment 3: the call, and he pays on it ------------------------- *
@@ -4850,9 +4763,9 @@ const DEMOS = {
           kind: 'call', glow: '#b493ea', orb: 'o4',
           agent: 'Subscription Dunning', buyer: 'Rahul', initials: 'R',
           phone: '+91 97••• ••305', lang: 'English', dur: '00:34',
-          result: 'Payment link sent', amount: '₹999',
+          result: 'Payment link sent', amount: '₹20,000',
           lines: [
-            { t: 'Hi Rahul, your ₹999 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
+            { t: 'Hi Rahul, your ₹20,000 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
             { b: 1, t: 'Yes we can try now.' },
             { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' },
             { b: 1, t: 'Got it, paying now.' }
@@ -4874,22 +4787,22 @@ const DEMOS = {
             push: {
               orb: 'o4', app: 'Relay', when: 'now',
               title: 'Payment received',
-              body: 'Thank you, Rahul. Your ₹999 has gone through and EMI 2 of 3 is cleared.'
+              body: 'Thank you, Rahul. Your ₹20,000 has gone through and EMI 2 of 3 is cleared.'
             },
             sheet: {
-              store: 'Myra', amount: '₹999',
+              store: 'Myra', amount: '₹20,000',
               sub: 'Renewal · EMI 2 of 3 · link from Relay'
             },
             phases: {
               review: {
                 tag: 'Review',
-                line: { art: 'k', name: 'Chikankari Kurta Set', meta: 'Order #4127 · instalment 2 of 3' },
+                line: { art: 'l', name: 'Nova 14 Pro Laptop', meta: 'Order #4127 · instalment 2 of 3' },
                 rows: [
-                  { k: 'Instalment 2 of 3', v: '₹999' },
+                  { k: 'Instalment 2 of 3', v: '₹20,000' },
                   { k: 'Late fee', v: 'WAIVED', free: 1 },
-                  { k: 'Total', v: '₹999', tot: 1 }
+                  { k: 'Total', v: '₹20,000', tot: 1 }
                 ],
-                cta: 'Proceed to Pay ₹999'
+                cta: 'Proceed to Pay ₹20,000'
               },
               method: {
                 tag: 'Choose a method',
@@ -4901,12 +4814,12 @@ const DEMOS = {
                   { ic: 'upi', name: 'UPI', sub: 'Any UPI app' },
                   { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
                 ],
-                cta: 'Pay ₹999'
+                cta: 'Pay ₹20,000'
               },
               done: {
                 tag: 'Paid',
                 done: {
-                  t: 'Payment successful', amt: '₹999',
+                  t: 'Payment successful', amt: '₹20,000',
                   sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
                 }
               }
@@ -4919,8 +4832,8 @@ const DEMOS = {
       {
         label: 'Did he pay?', tool: 'Runs',
         ask: 'Did Rahul pay?',
-        call: { name: 'Runs', summary: 'recovered · ₹999 · success', ms: 430 },
-        say: 'He did. ₹999 on the credit card, on the second attempt.'
+        call: { name: 'Runs', summary: 'recovered · ₹20,000 · success', ms: 430 },
+        say: 'He did. ₹20,000 on the credit card, on the second attempt.'
       }
     ]
   },
@@ -5102,9 +5015,21 @@ const DEMOS = {
    * things that start apart -- your app to the sandbox, Claude to the MCP
    * server, a repo to the skills -- and the wire filling is that bridge
    * being built. Spark bridges nothing: same dashboard, same login, same
-   * permissions, nothing to install. Segment 1 of the flow doc is "log in,
-   * click Spark", and tapping the tile already IS that. So the run opens
-   * on the merchant's first real question.
+   * permissions, nothing to install. So the run opens on the merchant's
+   * first real question.
+   *
+   * And it opens ON THE CHAT. The tile used to hand off to a replica of the
+   * Payments home with a Spark button floating on it -- log in, then click
+   * Spark, two taps to reach the thing being demoed. That screen was arguing
+   * "Spark sits on a dashboard you already have", which is a slide's job, not
+   * a demo's: it cost the run its first two taps and put a wall of scenery in
+   * front of the only surface that does anything. The chat IS the product, so
+   * the chat is the first screen.
+   *
+   * The chat wears ChatGPT's clothes (skin: 'chatgpt'), the way the MCP demo
+   * wears Claude's -- an assistant a merchant already recognises, so nobody
+   * spends the first ten seconds working out what kind of screen they are
+   * looking at.
    *
    * The run is the demo flow doc end to end
    * (../Cashfree Spark - Narrative (1).docx):
@@ -5126,6 +5051,7 @@ const DEMOS = {
    * what the amber provenance badge is saying.
    * ---------------------------------------------------------------- */
   spark: {
+    skin: 'chatgpt',
     title: 'Cashfree <span class="thin">Spark</span>',
     blurb: 'The agentic layer on the dashboard you already use. Ask in any language \u2014 and anything that moves money stops and asks first.',
     provenance: { kind: 'illustrative', text: 'Illustrative \u2014 flow and prompts from the Spark narrative doc, capability names from the Spark brief' },
@@ -5363,17 +5289,23 @@ function loadDemo(key) {
   // between. The ghost takes the push to the right edge, so the last chip drops
   // the auto margin it uses everywhere else.
   const cl = DEMOS[key].skin === 'claude';
+  // Spark runs in ChatGPT, so the header is ChatGPT's: panel, title, compose.
+  // The run's own right-hand chip goes, the same way it goes on Claude -- the
+  // compose square owns that corner in the real app.
+  const gp = DEMOS[key].skin === 'chatgpt';
   document.getElementById('ph-top').innerHTML =
     (DEMOS[key].surface === 'terminal' ? '<span class="tlights"><i></i><i></i><i></i></span>' : '') +
     (cl ? CL_MENU : '') +
+    (gp ? GPT_PANEL + GPT_TITLE : '') +
     (a ? '<span class="chip"><span class="orb ' + a.orb + '">' + EYES + '</span>' + a.name + '</span>' : '') +
     c.left
       .map((t, i) =>
         '<span class="chip' + (i === 0 && c.dot && !a ? '' : ' mono') + '">' +
         (i === 0 && c.dot && !a ? '<span class="gdot"></span>' : '') + t + '</span>')
       .join('') +
-    (cl ? '' : '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>') +
-    (cl ? CL_GHOST : '');
+    (cl || gp ? '' : '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>') +
+    (cl ? CL_GHOST : '') +
+    (gp ? GPT_NEW : '');
 
   // Claude greets you by the time of day, and an empty thread is that home
   // screen; the CSS reads the greeting off this custom property.
@@ -5687,6 +5619,7 @@ const PAIRED = [
    product icons make. A garment reads as a garment at 40px; a colour swatch
    does not, and "what am I buying" is the one question a cart must answer. */
 const ART = {
+  l: '<svg viewBox="0 0 32 32" fill="none"><rect x="6" y="7" width="20" height="13" rx="1.6" fill="#e7eaf0" stroke="#98a2b3" stroke-width="1.2"/><rect x="8.4" y="9.2" width="15.2" height="8.6" rx="0.8" fill="#ccd4e0"/><path d="M3.4 21.6h25.2l-1.7 3.2H5.1l-1.7-3.2Z" fill="#dfe3ea" stroke="#98a2b3" stroke-width="1.2" stroke-linejoin="round"/><path d="M13.4 22.4h5.2" stroke="#98a2b3" stroke-width="1.1" stroke-linecap="round"/></svg>',
   a: '<svg viewBox="0 0 32 32" fill="none"><path d="M11 5 6 8l2 5 3-1v14h12V12l3 1 2-5-5-3-3 2h-4l-3-2Z" fill="#dfe3ee" stroke="#9aa3bb" stroke-width="1.2" stroke-linejoin="round"/><path d="M13 5c0 1.7 1.3 3 3 3s3-1.3 3-3" stroke="#9aa3bb" stroke-width="1.2"/></svg>',
   b: '<svg viewBox="0 0 32 32" fill="none"><path d="M11 5 6 8l2 5 3-1v14h12V12l3 1 2-5-5-3-3 2h-4l-3-2Z" fill="#4a3b31" stroke="#2f2a2e" stroke-width="1.2" stroke-linejoin="round"/><path d="M16 8v18M13 5l3 3 3-3" stroke="#cbbfae" stroke-width="1.1"/></svg>',
   c: '<svg viewBox="0 0 32 32" fill="none"><path d="M11 5 6 8l2 5 3-1v14h12V12l3 1 2-5-5-3-3 2h-4l-3-2Z" fill="#f3c3cd" stroke="#d98ea0" stroke-width="1.2" stroke-linejoin="round"/><circle cx="16" cy="17" r="3.4" stroke="#d98ea0" stroke-width="1.2"/></svg>',
@@ -6106,12 +6039,14 @@ function rebuild(i) {
 }
 
 async function next() {
+  clearOpenAdvance();
   if (busy || at >= STEPS.length - 1) return;
   at += 1;
   await runStep(at);
 }
 
 function prev() {
+  clearOpenAdvance();
   if (busy || at < 0) return;
   stopAuto();
   rebuild(at - 1);
@@ -6119,6 +6054,7 @@ function prev() {
 }
 
 async function jump(i) {
+  clearOpenAdvance();
   if (busy) return;
   stopAuto();
   if (i === at + 1) { await next(); return; }
@@ -6160,6 +6096,20 @@ window.addEventListener('keydown', (e) => {
 
 const screenNode = document.querySelector('.screen');
 
+/*
+ * Picking a demo starts it half a second later on its own, and for that half
+ * second the run is still at step -1 -- which is exactly when the hint wants to
+ * appear. So it appeared on every open and took itself away again before anyone
+ * could act on it: an invitation that answers itself reads as a glitch, not as
+ * an invitation. __openPending holds it back until that opening advance has run
+ * or been overtaken, which leaves the hint where a tap is genuinely the next
+ * thing -- a run rewound to the start, or one that has just replayed to the end.
+ */
+function clearOpenAdvance() {
+  if (window.__openTimer) { clearTimeout(window.__openTimer); window.__openTimer = null; }
+  window.__openPending = false;
+}
+
 /** The device is only tappable when a tap would actually do something. */
 function paintTappable() {
   const inTour = !!window.__tourActive;
@@ -6167,7 +6117,8 @@ function paintTappable() {
   screenNode.classList.toggle('tappable', !busy && !inTour && inDemo && !window.__connecting);
 
   const hint = document.getElementById('taphint');
-  const wantHint = at < 0 && !busy && !inTour && inDemo && !window.__connecting;
+  const wantHint = at < 0 && !busy && !inTour && inDemo &&
+    !window.__connecting && !window.__openPending;
   if (wantHint && !hint) {
     const el = document.createElement('div');
     el.id = 'taphint';
@@ -7018,18 +6969,14 @@ async function playScene(sc, animate) {
 const homeEl = document.getElementById('home');
 const tier2El = document.getElementById('tier2');
 const agentsEl = document.getElementById('agents');
-const mdashEl = document.getElementById('mdash');
 const onboardEl = document.getElementById('onboard');
-// the dashboard bar wears the same mark the connect cards do, rather than a
-// second hand-drawn copy of it
-document.getElementById('md-mark').innerHTML = CX_ICON.cf;
 const backEl = document.getElementById('back');
 const provEl = document.getElementById('prov');
 
 /** The demos that hang off the Relay shelf rather than off tier 2. */
 const RELAY_AGENTS = ['relayCart', 'relayPay', 'relayDun'];
 
-/** 'home' | 'tier2' | 'agents' | 'onboard' | 'dash' | 'demo'.
+/** 'home' | 'tier2' | 'agents' | 'onboard' | 'demo'.
  *  Taps only advance steps in 'demo'. */
 let mode = 'home';
 
@@ -7060,13 +7007,12 @@ function goHome() {
   mode = 'home';
   hideConnect();
   setChassis(null);
-  screenEl2.classList.remove('skin-claude');
+  screenEl2.classList.remove('skin-claude', 'skin-chatgpt');
   stopAuto();
   if (window.__tourActive) endTour();
   homeEl.classList.remove('gone');
   tier2El.classList.add('gone');
   agentsEl.classList.add('gone');
-  mdashEl.classList.add('gone');
   onboardEl.classList.add('gone');
   backEl.style.display = 'none';
   thread.innerHTML = '';
@@ -7081,13 +7027,12 @@ function goAgents() {
   mode = 'agents';
   hideConnect();
   setChassis(null);
-  screenEl2.classList.remove('skin-claude');
+  screenEl2.classList.remove('skin-claude', 'skin-chatgpt');
   stopAuto();
   if (window.__tourActive) endTour();
   homeEl.classList.add('gone');
   tier2El.classList.add('gone');
   agentsEl.classList.remove('gone');
-  mdashEl.classList.add('gone');
   onboardEl.classList.add('gone');
   backEl.style.display = 'grid';
   thread.innerHTML = '';
@@ -7103,7 +7048,7 @@ function goAgents() {
  * actually in front of them is Relay's onboarding -- a shelf of ready-made
  * agents and a "build your own". The row for the agent picked upstairs is
  * highlighted and is the only live thing on the screen, so the tap is never in
- * doubt; everything else is scenery, exactly as on the Spark dashboard.
+ * doubt; everything else is scenery.
  */
 let onboardKey = null;
 
@@ -7112,13 +7057,12 @@ function goOnboard(key) {
   onboardKey = key;
   hideConnect();
   setChassis(null);
-  screenEl2.classList.remove('skin-claude');
+  screenEl2.classList.remove('skin-claude', 'skin-chatgpt');
   stopAuto();
   if (window.__tourActive) endTour();
   homeEl.classList.add('gone');
   tier2El.classList.add('gone');
   agentsEl.classList.add('gone');
-  mdashEl.classList.add('gone');
   onboardEl.classList.remove('gone');
   onboardEl.scrollTop = 0;
   onboardEl.querySelectorAll('.ob-row').forEach((r) => {
@@ -7129,42 +7073,16 @@ function goOnboard(key) {
   paintNav();
 }
 
-/*
- * Level 2c. Spark is a layer on a dashboard the merchant already has, and that
- * claim only reads if you have seen the dashboard. So the Spark tile opens the
- * real Payments home -- navy bar, welcome hero, product cards -- and the chat
- * opens from the Spark button floating on it. That IS segment 1 of the flow
- * doc: log in, click Spark.
- */
-function goDash() {
-  mode = 'dash';
-  hideConnect();
-  setChassis(null);
-  screenEl2.classList.remove('skin-claude');
-  stopAuto();
-  if (window.__tourActive) endTour();
-  homeEl.classList.add('gone');
-  tier2El.classList.add('gone');
-  agentsEl.classList.add('gone');
-  mdashEl.classList.remove('gone');
-  onboardEl.classList.add('gone');
-  mdashEl.scrollTop = 0;
-  backEl.style.display = 'grid';
-  thread.innerHTML = '';
-  paintNav();
-}
-
 function goTier2() {
   mode = 'tier2';
   hideConnect();
   setChassis(null);
-  screenEl2.classList.remove('skin-claude');
+  screenEl2.classList.remove('skin-claude', 'skin-chatgpt');
   stopAuto();
   if (window.__tourActive) endTour();
   homeEl.classList.add('gone');
   tier2El.classList.remove('gone');
   agentsEl.classList.add('gone');
-  mdashEl.classList.add('gone');
   onboardEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
@@ -7172,35 +7090,41 @@ function goTier2() {
 
 function openDemo(key) {
   mode = 'demo';
+  clearOpenAdvance();
+  // the run starts itself, so the tap hint has nothing to invite yet
+  window.__openPending = true;
   setChassis(key);
   loadDemo(key);
   setProvenance(key);
   // the phone wears the host's clothes where the host is not a Cashfree surface
   screenEl2.classList.toggle('skin-claude', DEMOS[key].skin === 'claude');
+  screenEl2.classList.toggle('skin-chatgpt', DEMOS[key].skin === 'chatgpt');
   tier2El.classList.add('gone');
   homeEl.classList.add('gone');
   agentsEl.classList.add('gone');
-  mdashEl.classList.add('gone');
   onboardEl.classList.add('gone');
   backEl.style.display = 'grid';
   paintNav();
 
-  setTimeout(() => { if (mode === 'demo') next(); }, 460);
+  window.__openTimer = setTimeout(() => {
+    window.__openTimer = null;
+    window.__openPending = false;
+    if (mode === 'demo') next(); else paintNav();
+  }, 460);
 }
 
 document.getElementById('card-builders').addEventListener('click', (e) => { e.stopPropagation(); goTier2(); });
 document.getElementById('card-relay').addEventListener('click', (e) => { e.stopPropagation(); goAgents(); });
-// Spark's tile opens the dashboard it lives on; the button on that dashboard
-// opens the chat. Two taps, because that is the two the merchant actually makes.
-document.getElementById('card-spark').addEventListener('click', (e) => { e.stopPropagation(); goDash(); });
-document.getElementById('md-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
+// Spark's tile opens the chat itself. There is no dashboard in between: the
+// merchant is already logged in, and the product IS the conversation.
+document.getElementById('card-spark').addEventListener('click', (e) => { e.stopPropagation(); openDemo('spark'); });
 
 document.querySelectorAll('.acard').forEach((card) => {
   card.addEventListener('click', (e) => { e.stopPropagation(); goOnboard(card.dataset.agent); });
 });
 
 // The highlighted template is the hotspot; the other three and Build your own
-// are scenery, the same deal the Spark dashboard strikes.
+// are scenery.
 onboardEl.addEventListener('click', (e) => {
   const row = e.target.closest('.ob-row.on');
   if (!row) return;
@@ -7218,7 +7142,7 @@ backEl.addEventListener('click', (e) => {
   // picked from, the three builder demos to tier 2, everything else to home.
   if (mode === 'demo') {
     if (RELAY_AGENTS.indexOf(DEMO_KEY) >= 0) { goOnboard(DEMO_KEY); return; }
-    if (DEMO_KEY === 'spark') { goDash(); return; }
+    if (DEMO_KEY === 'spark') { goHome(); return; }
     goTier2();
     return;
   }
