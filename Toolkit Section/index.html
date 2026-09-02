@@ -2213,33 +2213,37 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast.plain .pc-stage > .buyscr .bs-cta { margin-top: auto }
 .paycast.plain .pc-stage > .buyscr .bs-meta { flex: none }
 
-/* the drop-in loader, on the dark stage instead of over the store */
+/* Cashfree's loader, taking the whole phone.
+ *
+ * In the real thing the merchant's site hands off and the browser sits on
+ * Cashfree's own page until it hands back, so this is not a card on a stage --
+ * it covers the screen, the link row and the tag included, and lifts when the
+ * receipt arrives. */
 .paycast .pc-cf {
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-  padding: 22px 0 6px;
-  animation: sheetUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  position: absolute; inset: 0; z-index: 5;
+  background: #fdfdfd;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px;
+  animation: cfFade 0.28s ease both;
 }
-/* Both are absolutely positioned overlays inside the store; on this stage they
-   are just two stacked blocks. .cf-load keeps its own near-white background,
-   because that white card IS Cashfree's loader as the buyer sees it. */
+@keyframes cfFade { from { opacity: 0 } to { opacity: 1 } }
 .paycast .pc-cf .cf-load,
 .paycast .pc-cf .cf-pay {
   position: static; inset: auto; opacity: 1; transform: none; pointer-events: auto;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
 .paycast .pc-cf .cf-load {
-  padding: 20px 18px; border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  background: none; box-shadow: none; border-radius: 0; padding: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
+.paycast .pc-cf .lgif { width: 232px; height: auto; display: block }
+.paycast .pc-cf .lnote { font-size: 10px; color: #9ca3af }
+/* light chrome, because the ground under it is Cashfree's white page now */
 .paycast .pc-cf .cf-pay {
-  flex-direction: row; gap: 9px;
-  padding: 9px 14px; border-radius: 999px;
-  background: rgba(244, 245, 244, 0.07); border: 1px solid rgba(244, 245, 244, 0.13);
-  color: #f4f5f4; font-size: 11px; font-weight: 600;
+  display: flex; flex-direction: row; align-items: center; gap: 9px;
+  padding: 9px 15px; border-radius: 999px;
+  background: #f3f4f6; border: 1px solid rgba(17, 24, 39, 0.08);
+  color: #111827; font-size: 11.5px; font-weight: 600;
 }
-.paycast .pc-cf .lgif { width: 180px; border-radius: 10px }
-/* on a white card, not on the dark stage: Cashfree's own grey stays readable */
-.paycast .pc-cf .lnote { font-size: 9px; color: #9ca3af }
 
 @media (prefers-reduced-motion: reduce) {
   .paycast, .paycast .pc-stage .paysheet,
@@ -4654,20 +4658,26 @@ const DEMOS = {
             { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' }
           ]
         },
-        say: 'It named the reason instead of saying “payment failed”, gave him the choice, and when he said now, sent a link on the method that actually clears a balance problem, not the same debit card that just bounced.',
+        /* no reply: the call is a set piece you watch, and a bubble
+           summarising it afterwards is the agent describing what you just
+           saw happen. It reports once, at the end, when asked. */
         patch: { runs: '1 run · link sent' }
       },
 
-      /* --- segment 4: he opens the link and pays --------------------------- *
+      /* --- segment 4: the merchant asks, and the payment answers ---------- *
        *
-       * The call ends on "here's the payment link", and a link that is never
-       * seen to open is an assertion. He opens it, the card the agent
-       * recommended is already chosen, and the drop-in takes the time a real
-       * one takes. None of it is narrated: the agent is not talking over his
-       * checkout while he is standing in it. It reports on the next beat.
+       * The payment hangs off the prompt rather than off the end of the call,
+       * because a beat runs ask -> call -> scene -> say: the merchant asks
+       * "Did Rahul pay?", his phone takes the screen and pays on it, and the
+       * agent answers once it has. Played off the call instead, the money
+       * landed while nobody had asked for it.
+       *
+       * None of it is narrated. The agent is not talking over his checkout
+       * while he is standing in it.
        */
       {
-        label: 'Rahul pays by credit card', tool: 'Cashfree Checkout',
+        label: 'Did Rahul pay?', tool: 'Cashfree Checkout',
+        ask: 'Did Rahul pay?',
         call: { name: 'checkout.opened', summary: 'link opened · credit card · ₹999', ms: 210 },
         scene: {
           kind: 'cast', cfx: true,
@@ -4710,15 +4720,7 @@ const DEMOS = {
             }
           }
         },
-        patch: { runs: '1 run · paying' }
-      },
-
-      /* --- and back in the chat, the merchant asks ------------------------- */
-      {
-        label: 'Did Rahul pay?', tool: 'Runs',
-        ask: 'Did Rahul pay?',
-        call: { name: 'payment.success', summary: 'MYR-4127 · ₹999 · SUCCESS', ms: 300 },
-        say: 'He did. ₹999 on the credit card, on the second attempt. EMI 2 has cleared, the plan is whole again and the kurta ships today. The whole run sits in the Runs tab: the failure, the call, the link it issued and the payment that cleared.',
+        say: 'He did. ₹999 on the credit card, on the second attempt.',
         patch: { runs: '1 run · recovered', __headline: 'Active' }
       }
     ]
