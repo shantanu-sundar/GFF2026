@@ -538,6 +538,14 @@ So the cast holds One-Stop Shoppy's checkout — ₹2,598, the kurta line and `+
 shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar on the bottom edge — and hands the
 screen back. `runCast()` still takes a `then` screen for a second state; nothing uses it now.
 
+### The cast tag names the phone, and only that
+
+`Priya's phone`. It used to read `Priya's phone · still on the call`, which is
+true and is one thing too many: the label's whole job is to say **whose** screen
+this is, because the merchant's phone is the other thing on screen and the two
+must never be confused. That she is on the call is carried by the call itself,
+which is still mounted underneath and which the screen goes back to.
+
 ### She pays while she is still on the phone
 
 The link goes out on the agent's **last line of the call**, and the checkout opens over the
@@ -551,6 +559,18 @@ Hanging up first made the recovery something that happened *afterwards*, in its 
 the call already a memory. It is not. She is still holding the phone and the agent is still on
 it, and that is the entire difference between a voice agent and an SMS.
 
+**And then Relay messages her.** After the tick, the cast swaps in a message thread on the same
+phone: *"Payment received, ₹2,338. Thank you, Priya!"* and the order confirmation. A tick on a
+checkout is the payment gateway saying the payment worked — it is not the agent saying
+anything, and the run has just spent a minute arguing that this thing talks to people. So it
+ends by talking to her.
+
+It belongs on **her** phone, not in the merchant's chat: a receipt described in a bubble is a
+claim about a message rather than the message. `sc.msg` on the cast does it, rendered by the
+same `waHTML()` the Spark demo uses — and the payment link in the header strip is hidden at
+that point (`.paycast.msgd`), because an *Open* button on an order she has already paid for is
+the one thing left on the screen that is no longer true.
+
 ### Relay speaks five times in the whole run, and the fifth is the payoff
 
 | beat | who | what |
@@ -559,7 +579,7 @@ it, and that is the entire difference between a voice agent and an SMS.
 | 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
 | 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
 | 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. Calling her right now."* |
-| 7 | *nobody* | **the call, and the payment on it** |
+| 7 | *nobody* | **the call**, the payment on it, and Relay's thank-you on her phone |
 | 8 | the merchant | *"Did Priya pay?"* → **"She did."** |
 
 Beats 5 and 7 carry **no `say` and no `ask`**: two consecutive taps where neither party types

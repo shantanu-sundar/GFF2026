@@ -4657,7 +4657,8 @@ const DEMOS = {
           kind: 'call', glow: '#b493ea', orb: 'o4',
           agent: 'Subscription Dunning', buyer: 'Rahul', initials: 'R',
           phone: '+91 97••• ••305', lang: 'English', dur: '00:34',
-          result: 'Payment link sent · credit card', amount: '₹999',
+          stay: true,
+          result: 'Payment link sent', amount: '₹999',
           lines: [
             { t: 'Hi Rahul, your ₹999 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
             { b: 1, t: 'Yes we can try now.' },
@@ -4669,24 +4670,27 @@ const DEMOS = {
            saw happen. It reports once, at the end, when asked. */
       },
 
-      /* --- segment 4: the merchant asks, and the payment answers ---------- *
+      /* --- segment 4: his phone, not this chat ---------------------------- *
        *
-       * The payment hangs off the prompt rather than off the end of the call,
-       * because a beat runs ask -> call -> scene -> say: the merchant asks
-       * "Did Rahul pay?", his phone takes the screen and pays on it, and the
-       * agent answers once it has. Played off the call instead, the money
-       * landed while nobody had asked for it.
+       * He opens the link and pays, and none of it happens in the thread. The
+       * agent handed off; drawn as one more card in the merchant's chat it
+       * would read as something Relay did on his behalf, which is the opposite
+       * of what a payment link is. So it takes the screen over the live call,
+       * and hands it back when he is done.
        *
-       * None of it is narrated. The agent is not talking over his checkout
+       * Nothing here is narrated. The agent is not talking over his checkout
        * while he is standing in it.
        */
       {
-        label: 'Did Rahul pay?', tool: 'Cashfree Checkout',
-        ask: 'Did Rahul pay?',
-        call: { name: 'checkout.opened', summary: 'link opened · credit card · ₹999', ms: 210 },
+        label: 'Rahul pays', tool: 'Cashfree Checkout',
+        call: { name: 'checkout.opened', summary: 'link opened · ₹999', ms: 210 },
         scene: {
-          kind: 'cast', cfx: true,
-          tag: 'Rahul’s phone · live',
+          kind: 'cast', cfx: 'full',
+          /* slower than the default: this is the payoff of the whole run, so
+             the room gets time to read the amount, see the card the agent
+             recommended already chosen, and watch the tick land */
+          ms: { open: 1300, review: 2500, method: 2900, done: 2600, paying: 2600, msg: 3400 },
+          tag: 'Rahul’s phone',
           link: { title: 'Complete your payment', url: 'checkout.cashfree.com/l/myr4127' },
           foot: 'Mandate MYR-4127 · attempt 2 of 3',
           sheet: {
@@ -4723,8 +4727,22 @@ const DEMOS = {
                 sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
               }
             }
+          },
+          msg: {
+            initials: 'R', who: 'Relay', status: 'Myra',
+            lines: [
+              { t: 'Payment received, ₹999. Thank you, Rahul!', at: '11:12 am' },
+              { t: 'EMI 2 of 3 on your Chikankari Kurta Set is cleared and your order is moving again. The last one is due 1 Oct.', at: '11:12 am' }
+            ]
           }
-        },
+        }
+      },
+
+      /* --- and back in the chat, the merchant asks ------------------------- */
+      {
+        label: 'Did he pay?', tool: 'Runs',
+        ask: 'Did Rahul pay?',
+        call: { name: 'Runs', summary: 'recovered · ₹999 · success', ms: 430 },
         say: 'He did. ₹999 on the credit card, on the second attempt.'
       }
     ]
@@ -6537,12 +6555,13 @@ async function runCall(sc) {
    * opened made the recovery something that happened afterwards, off in its own
    * beat, with the call already a memory. It is not: she is still holding the
    * phone, the agent is still on it, and that is the whole difference between a
-   * voice agent and an SMS. So the checkout takes the screen over the live call
-   * -- the tag on it says so -- and the call only hangs up once the money has
-   * actually landed. */
+   * voice agent and an SMS. So the checkout takes the screen over the live
+   * call, and the call only hangs up once the money has actually landed. */
   if (sc.pay) {
-    // the clock keeps running: the checkout says "still on the call", and a
-    // timer frozen behind it would call that a lie
+    // The clock keeps running. The call scene is still mounted under the
+    // checkout and the screen comes back to it, so a timer that had stopped
+    // would be saying she hung up to pay -- which is the one reading this
+    // whole arrangement exists to rule out.
     await runCast(sc.pay);
     if (callEl !== el) { clearInterval(tick); return; }
   }
