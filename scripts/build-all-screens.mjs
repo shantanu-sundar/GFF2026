@@ -1,7 +1,7 @@
 /**
- * Build `Toolkit Section/all-screens.html` — every beat of every demo, laid out
- * side by side as static artboards, so ONE html.to.design import brings the
- * whole section into Figma.
+ * Build the Figma import sheets for the booth: every screen of the section laid
+ * out side by side as static artboards, so ONE html.to.design import brings the
+ * whole thing into Figma.
  *
  * Why this exists: the section builds each beat at runtime and throws the
  * previous one away. Import `index.html` directly and you get three screens —
@@ -9,16 +9,14 @@
  * not exist in the DOM until you tap through it, and the scenes are created and
  * destroyed per step. There is nothing there to capture.
  *
- * So this does not re-implement the screens. It DRIVES the real page —
- * `openDemo()` then `jump(i)` for every beat — and snapshots `.screen` at each
- * one, then re-emits those snapshots against the section's own stylesheet. The
+ * So this does not re-implement the screens. It DRIVES the real page — opens
+ * each demo and plays it beat by beat — and snapshots `.screen` as it goes,
+ * then re-emits those snapshots against the section's own stylesheet. The
  * artboards are therefore the HTML's own output, not a second rendering of it,
  * and they cannot drift from it.
  *
- *   node scripts/build-all-screens.mjs
- *
- * `jump()` paints a beat's END STATE synchronously rather than animating into
- * it, which is what makes the capture deterministic.
+ *   node scripts/build-all-screens.mjs            # the filmstrip
+ *   node scripts/build-all-screens.mjs --beats    # the storyboard
  */
 
 import { chromium } from 'playwright';
@@ -26,9 +24,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/* Two sheets, one capture rig.
+ *
+ *   (default)  all-screens.html        every distinct state — the filmstrip
+ *   --beats    all-screens-beats.html  one board per beat  — the storyboard
+ *
+ * The filmstrip is what you import when you want the section's every frame in
+ * Figma. The storyboard is what you hand a Figma AI agent, or wire as a
+ * prototype: ~54 boards it can hold in its head, against ~196 it cannot. Both
+ * come off the same page, so neither can drift from the other or from index.html.
+ */
+const BEATS = process.argv.includes('--beats');
+
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SRC = path.join(ROOT, 'Toolkit Section', 'index.html');
-const OUT = path.join(ROOT, 'Toolkit Section', 'all-screens.html');
+const OUT = path.join(ROOT, 'Toolkit Section',
+  BEATS ? 'all-screens-beats.html' : 'all-screens.html');
 const URL = 'file:///' + SRC.replace(/\\/g, '/').replace(/ /g, '%20') + '?booth';
 
 /* The demos, in the order the section presents them. `nav` entries are the
@@ -99,6 +110,71 @@ async function snap(name) {
   }, name);
 }
 
+/* A beat is not a screen. `store` alone plays seven — collection, the press,
+   the Cashfree loader, the drop-in, the scroll, paying, paid — and `call` and
+   `cast` play several more. Snapshotting once per dot threw all of that away.
+   So instead of jumping, PLAY the demo and record every distinct state.
+
+   Sampling runs in-page on an interval rather than over the wire, and dedupes
+   on a signature with the composer text and any mm:ss timer stripped — those
+   change on every frame while typing or while a call clock runs, and would
+   otherwise record fifty near-identical screens per prompt. */
+async function installRecorder() {
+  await page.evaluate(() => {
+    window.__startRec = () => {
+      window.__rec = [];
+      const seen = new Set();
+      window.__int = setInterval(() => {
+        const s = document.querySelector('.screen');
+        if (!s) return;
+        const c = s.cloneNode(true);
+        c.querySelectorAll('.gone').forEach(e => e.remove());
+        const probe = c.cloneNode(true);
+        const comp = probe.querySelector('.composer');
+        if (comp) comp.textContent = '';
+        const sig = probe.innerHTML.replace(/\d\d:\d\d/g, '').replace(/\s+/g, ' ');
+        let x = 0;
+        for (let i = 0; i < sig.length; i++) x = (x * 31 + sig.charCodeAt(i)) | 0;
+        const key = x + '_' + sig.length;
+        if (seen.has(key)) return;
+        // Build the record BEFORE marking the signature seen. `.phone` is null
+        // while the chassis is being swapped, and reading .className off it threw
+        // *after* seen.add() — which marked the state recorded when it was not,
+        // so every later occurrence was skipped too. MCP recorded 1 screen
+        // instead of 29 that way. Nothing is marked seen until it is captured.
+        const phone = document.querySelector('.phone');
+        if (!phone) return;
+        const r = s.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        const rec = {
+          phoneClass: phone.className,
+          screenClass: c.className,
+          html: c.innerHTML,
+          w: Math.round(r.width), h: Math.round(r.height),
+        };
+        seen.add(key);
+        window.__rec.push(rec);
+      }, 110);
+    };
+    window.__stopRec = () => { clearInterval(window.__int); return window.__rec; };
+  });
+}
+
+/** Advance one beat and wait for the run to put itself down.
+ *
+ *  This waits on `busy` — the page's own flag — and NOT on the recorder going
+ *  quiet, which is what it did first and got wrong. While a prompt types, the
+ *  only thing changing is the composer, and the recorder strips the composer
+ *  out of its signature; so the recorder sits at the same count for a second or
+ *  more mid-beat, the old wait read that as "finished", and fired next() again.
+ *  next() while busy is ignored, so every remaining beat was swallowed and the
+ *  demo never advanced — MCP recorded 1 screen out of 29. Quiescence of a
+ *  deduped stream is not the same signal as the work being over. */
+async function playBeat() {
+  await page.evaluate(() => { if (typeof window.next === 'function') window.next(); });
+  await settleBeat();
+}
+
 const shots = [];
 const settle = (ms) => page.waitForTimeout(ms);
 
@@ -108,22 +184,67 @@ for (const nav of NAV) {
   shots.push({ group: 'Navigation', ...(await snap(nav.label)) });
 }
 
+/* Storyboard capture: get the run to beat `i`, settled, and no further.
+ *
+ * Driving this with a bare next() per beat is off by one. Opening a demo
+ * schedules its OWN first advance about half a second later (__openTimer in
+ * index.html), so by the time the page is ready the run is already on beat 1 —
+ * and next() either no-ops against `busy` or double-steps past it, depending on
+ * how long that beat's typing takes. Either way the caption lies about which
+ * beat the board is.
+ *
+ * So this reads the run's own position instead of counting taps: advance only
+ * while `at` is behind, never while `busy`, and return when `at` IS `i` and the
+ * beat has put itself down. The short settle after that is for the CSS running
+ * past the await — a checkout sliding in, a connect wire filling. */
+async function reachBeat(i) {
+  for (let t = 0; t < 140; t++) {
+    const st = await page.evaluate(() => ({
+      at: typeof at === 'number' ? at : -1,
+      busy: typeof busy === 'boolean' ? busy : false,
+    }));
+    if (st.at >= i && !st.busy) { await settle(700); return st.at === i; }
+    if (st.at < i && !st.busy) await page.evaluate(() => window.next());
+    await settle(250);
+  }
+  return false;
+}
+
+if (!BEATS) await installRecorder();
+
 for (const d of DEMOS) {
   const n = COUNTS[d.key];
   if (!n) { console.warn('  ! ' + d.key + ' produced no beats — skipped'); continue; }
   await page.evaluate((key) => window.openDemo(key), d.key);
-  await settle(420);
-  for (let i = 0; i < n; i++) {
-    await page.evaluate((i) => window.jump(i), i);
-    await settle(520);
-    shots.push({ group: d.label, ...(await snap(d.label + ' · ' + (i + 1) + '/' + n)) });
+  await settle(700);
+
+  if (BEATS) {
+    let drift = 0;
+    for (let i = 0; i < n; i++) {
+      if (!(await reachBeat(i))) drift++;
+      shots.push({ group: d.label, ...(await snap(d.label + ' · ' + (i + 1) + '/' + n)) });
+    }
+    console.log('  ' + d.label.padEnd(32) + n + ' beats'
+      + (drift ? '  ! ' + drift + ' off-position' : ''));
+    continue;
   }
-  console.log('  ' + d.label.padEnd(32) + n + ' beats');
+
+  await page.evaluate(() => window.__startRec());
+  await settle(300);
+  for (let i = 0; i < n; i++) await playBeat();
+  const rec = await page.evaluate(() => window.__stopRec());
+  rec.forEach((s, i) => shots.push({
+    group: d.label, name: d.label + ' · ' + (i + 1) + '/' + rec.length, ...s,
+  }));
+  console.log('  ' + d.label.padEnd(32) + n + ' beats -> ' + rec.length + ' screens');
 }
 
 await browser.close();
 
 /* ---- emit the sheet ---------------------------------------------------- */
+const SHEET_TITLE = BEATS
+  ? 'Cashfree booth — storyboard, one board per beat'
+  : 'Cashfree booth — every screen';
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const groups = [...new Set(shots.map(s => s.group))];
 const body = groups.map(g => {
@@ -152,9 +273,9 @@ const out = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cashfree booth — every screen</title>
+<title>${SHEET_TITLE}</title>
 ${links}
-<!-- GENERATED by scripts/build-all-screens.mjs. Do not hand-edit: edit
+<!-- GENERATED by scripts/build-all-screens.mjs${BEATS ? ' --beats' : ''}. Do not hand-edit: edit
      index.html and re-run. The stylesheet below is index.html's own, copied
      verbatim, so these artboards render identically to the section. -->
 <style>
@@ -190,7 +311,7 @@ figure.xb-art figcaption span { font-family:ui-monospace,Menlo,monospace; font-s
 <body>
 
 <div class="flow">
-  <h2>Cashfree booth — every screen</h2>
+  <h2>${SHEET_TITLE}</h2>
 </div>
 
 ${body}
