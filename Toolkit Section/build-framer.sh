@@ -21,6 +21,12 @@ cat "$LAYER"                   >> "$OUT"
 tail -n "+$BODY" "$SRC"        >> "$OUT"
 
 echo "$OUT: $(wc -c < "$OUT") bytes, $(wc -l < "$OUT") lines (spliced at $SRC:$BODY)"
+
+# Staging folder for Netlify Drop: the same build, named index.html so the site
+# root serves it directly (https://<site>.netlify.app/ rather than /index-framer.html).
+mkdir -p netlify-drop
+cp "$OUT" netlify-drop/index.html
+echo "netlify-drop/index.html: ready to drag onto https://app.netlify.com/drop"
 exit 0
 
 #LAYER
