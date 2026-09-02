@@ -1050,21 +1050,43 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   font-size: 9.5px; line-height: 1.4; color: rgba(24, 27, 44, 0.42);
 }
 
-/* --- the orbs --- */
+/* --- the orbs --- *
+ *
+ * ONE size token, and every part of the face is a ratio of it.
+ *
+ * The orb is drawn at 52px on the shelf and then reused at 58, 26, 22 and 17
+ * -- in a call, in a push notification, in the header chip, on the on-the-call
+ * strip. Those call sites used to set width and height and nothing else, so
+ * the eyes stayed at their 52px metrics: 5x10 with an 8px gap, which is an
+ * 17.5px block of face inside a 26px ball and an 18px block inside a 17px one.
+ * Wider than the head. The outline offset did the same thing, ringing a 17px
+ * ball at the 3px it was drawn for at 52.
+ *
+ * So the size lives in `--o` and everything else is calc()'d off it. A new
+ * call site sets `--o` and gets the same agent, at a different size, rather
+ * than a caricature of it. Ratios are exactly the 52px values divided by 52,
+ * so the shelf orb is untouched to the pixel.
+ */
 .orb {
+  --o: 52px;
   position: relative; flex: none;
-  width: 52px; height: 52px; border-radius: 50%;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
-  outline: 1.5px solid rgba(255,255,255,0.2); outline-offset: 3px;
+  width: var(--o); height: var(--o); border-radius: 50%;
+  box-shadow: 0 calc(var(--o) * 0.1538) calc(var(--o) * 0.3462) rgba(0,0,0,0.5);
+  outline: calc(var(--o) * 0.0288) solid rgba(255,255,255,0.2);
+  outline-offset: calc(var(--o) * 0.0577);
 }
 /* the gradient artwork lives on ::before, slightly oversized and softened */
-.orb::before { content: ''; position: absolute; inset: -4%; border-radius: 50%; filter: blur(1.4px); }
+.orb::before {
+  content: ''; position: absolute; inset: -4%; border-radius: 50%;
+  filter: blur(calc(var(--o) * 0.0269));
+}
 .orb .eyes {
   position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%);
-  display: flex; gap: 8px; z-index: 1;
+  display: flex; gap: calc(var(--o) * 0.1538); z-index: 1;
 }
 .orb .eyes i {
-  width: 5px; height: 10px; border-radius: 4px; display: block;
+  width: calc(var(--o) * 0.0962); height: calc(var(--o) * 0.1923);
+  border-radius: calc(var(--o) * 0.0769); display: block;
   background: #15191a; transform-origin: 50% 50%;
 }
 .orb .eyes.blinking i { animation: eyeblink 0.28s ease-in-out both; }
@@ -1105,10 +1127,10 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   radial-gradient(56% 38% at 55% -8%, rgba(196,206,242,.85) 0%, rgba(196,206,242,0) 58%),
   radial-gradient(circle at 52% 34%, #ddd4f4 0%, #cdbcee 48%, #b493ea 100%); }
 
-/* The picked agent keeps its face on in the chat header. */
-.ph-top .orb { width: 22px; height: 22px; outline: none; box-shadow: 0 2px 6px rgba(0,0,0,0.22); }
-.ph-top .orb .eyes { gap: 4px; }
-.ph-top .orb .eyes i { width: 2.5px; height: 5px; border-radius: 2px; }
+/* The picked agent keeps its face on in the chat header. The eyes follow --o
+   on their own now; what stays is the deliberate part -- no ring, and a
+   shorter shadow, because it sits on a light chip rather than on black. */
+.ph-top .orb { --o: 22px; outline: none; box-shadow: 0 2px 6px rgba(0,0,0,0.22); }
 
 /* ---------------- host skins ---------------- */
 
@@ -2143,7 +2165,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   to   { opacity: 1; transform: none }
 }
 @media (prefers-reduced-motion: reduce) { .paycast .pc-push { animation: none } }
-.paycast .pc-push .orb { width: 26px; height: 26px; flex: none }
+.paycast .pc-push .orb { --o: 26px; flex: none }
 .paycast .pc-push .tx { min-width: 0; flex: 1 }
 .paycast .pc-push .nt {
   display: flex; align-items: baseline; gap: 6px;
@@ -2192,7 +2214,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   background: rgba(16, 171, 80, 0.11);
   border: 1px solid rgba(16, 171, 80, 0.24);
 }
-.paycast .pc-call .orb { width: 17px; height: 17px; flex: none }
+.paycast .pc-call .orb { --o: 17px; flex: none }
 .paycast .pc-call .t {
   flex: 1; min-width: 0; font-size: 10.5px; font-weight: 600; color: #b7f0cd;
 }
@@ -2408,7 +2430,7 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px;
   color: rgba(244, 245, 244, 0.4);
 }
-.callscene .cnode .orb { width: 58px; height: 58px; outline: none }
+.callscene .cnode .orb { --o: 58px; outline: none }
 .callscene .cava {
   position: relative; width: 58px; height: 58px; border-radius: 50%;
   display: grid; place-items: center;
@@ -5108,9 +5130,9 @@ const DEMOS = {
   },
 
   mcp: {
-    connectStep: {"kind":"connect","label":"Connect the server","tool":"mcp.cashfree.com/mcp","ask":"Connect to the Cashfree MCP server","say":"Connected to your merchant account over OAuth."},
+    connectStep: {"kind":"connect","label":"Connect the server","tool":"https://mcp.cashfree.com/mcp","ask":"Connect to the Cashfree MCP server","say":"Connected to your merchant account over OAuth."},
     skin: 'claude',
-    connect: {"host":"Claude","hostIcon":"claude","target":"Cashfree MCP","via":"mcp.cashfree.com/mcp · OAuth","ok":"your merchant account"},
+    connect: {"host":"Claude","hostIcon":"claude","target":"Cashfree MCP","via":"https://mcp.cashfree.com/mcp · OAuth","ok":"your merchant account"},
     title: 'MCP <span class="thin">Server</span>',
     blurb: 'Query and operate your account in plain English, from Claude or Cursor.',
     provenance: { kind: 'illustrative', text: 'Illustrative - tool names from the docs' },
@@ -6768,8 +6790,23 @@ async function runCast(sc) {
   // overrides one phase at a time and leaves the rest alone.
   const ms = (k) => (sc.ms && sc.ms[k]) || CAST_MS[k];
 
-  await sleep(ms('open'));
-  for (const step of ['review', 'method', 'done']) {
+  /* Paint the first sheet in the same frame the stage mounts.
+   *
+   * This used to wait `open` ms before painting anything, so opening a
+   * checkout showed an empty near-black rectangle for well over a second --
+   * 1.3s on Payment Recovery and Dunning, measured. On a takeover covering the
+   * whole phone that does not read as a page loading, it reads as the demo
+   * having hung, which is the one impression a payment beat cannot afford.
+   *
+   * The link row keeps its moment; it just has it OVER the checkout it opened
+   * rather than instead of it, and `opened` retires it on the same clock as
+   * before. Non-blocking, so no phase waits on it. */
+  const steps = ['review', 'method', 'done'];
+  castPhase(el, sc, steps[0]);
+  setTimeout(() => { if (castEl === el) el.classList.add('opened'); }, ms('open'));
+
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
     if (castEl !== el) return;
     // between picking a method and seeing the tick is where a real checkout
     // actually spends its time, so that is where the loader goes
@@ -6778,8 +6815,7 @@ async function runCast(sc) {
       await sleep(ms('paying'));
       if (castEl !== el) return;
     }
-    el.classList.add('opened');   // she is in the checkout now; the link is spent
-    castPhase(el, sc, step);
+    if (i > 0) castPhase(el, sc, step);   // the first is already up
     await sleep(ms(step));
     // the push arrives ON the tick, not a beat afterwards: she is still
     // looking at the receipt when her phone tells her it worked
