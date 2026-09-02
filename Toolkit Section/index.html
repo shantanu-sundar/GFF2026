@@ -2122,6 +2122,44 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast .pc-stage .paysheet { color: var(--graphite) }
 .paycast.plain { justify-content: flex-start }
 
+/* The push, as one actually arrives: a banner off the TOP of the phone, over
+   whatever is on screen, wearing the face of the agent that sent it. Drawn in
+   the page flow it would have been a card about a notification; the whole
+   point of this beat is that it interrupts her the moment the money lands. */
+.paycast .pc-push {
+  /* below the back chevron and the whose-phone tag, both of which float
+     above the stage: at the very top the banner landed underneath the
+     chevron and swallowed the tag. */
+  position: absolute; top: 76px; left: 12px; right: 12px; z-index: 9;
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 9px 11px; border-radius: 15px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(29, 34, 31, 0.08);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+  animation: pushIn 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes pushIn {
+  from { opacity: 0; transform: translateY(-22px) scale(0.97) }
+  to   { opacity: 1; transform: none }
+}
+@media (prefers-reduced-motion: reduce) { .paycast .pc-push { animation: none } }
+.paycast .pc-push .orb { width: 26px; height: 26px; flex: none }
+.paycast .pc-push .tx { min-width: 0; flex: 1 }
+.paycast .pc-push .nt {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.42);
+}
+.paycast .pc-push .nt .when { margin-left: auto; letter-spacing: 0.02em; text-transform: none }
+.paycast .pc-push .nh {
+  display: block; margin-top: 3px;
+  font-size: 12px; font-weight: 700; letter-spacing: -0.015em; color: var(--graphite);
+}
+.paycast .pc-push .nb {
+  display: block; margin-top: 2px;
+  font-size: 10.5px; line-height: 1.4; color: rgba(29, 34, 31, 0.6);
+}
+
 /* Cashfree's loader with the whole phone, rather than a card on a dark stage.
    This is what the buyer actually sees: whatever page she was on is gone and
    the drop-in owns the screen until it comes back with an answer. Same asset
@@ -4423,7 +4461,7 @@ const DEMOS = {
             { k: 'Attempt', v: '1 of 3' },
             { k: 'Reason from the bank', v: 'Transaction declined by issuing bank. No amount was charged.', wide: 1 }
           ],
-          cta: 'Call Neha'
+          cta: 'Calling Neha'
         },
       },
 
@@ -4436,7 +4474,7 @@ const DEMOS = {
           agent: 'Payment Recovery', buyer: 'Neha', initials: 'N',
           phone: '+91 99\u2022\u2022\u2022 \u2022\u2022847', lang: 'English', dur: '00:38',
           stay: true,
-          result: 'Retry link sent \u00b7 UPI', amount: '\u20b92,598',
+          result: 'Retry link sent',
           lines: [
             { t: 'Hi Neha, I noticed your payment didn\u2019t go through earlier. Your bank was facing a temporary issue. Would you like to try again?' },
             { b: 1, t: 'Yes.' },
@@ -4469,6 +4507,14 @@ const DEMOS = {
              page, so a Cashfree page is all this shows. */
           tag: 'Neha\u2019s phone \u00b7 live',
           foot: 'Order OSS-48291 \u00b7 attempt 2 of 3',
+          /* Relay tells HER, the moment the money lands. A recovered payment
+             has two people in it, and she is the one who took a call about a
+             payment that failed. */
+          push: {
+            orb: 'o2', app: 'Relay', when: 'now',
+            title: 'Payment received',
+            body: 'Thank you, Neha. Your \u20b92,598 has gone through and your order is on its way.'
+          },
           sheet: {
             store: 'One-Stop Shoppy', amount: '\u20b92,598',
             sub: 'Order OSS-48291 \u00b7 retry link from Relay'
@@ -4498,41 +4544,13 @@ const DEMOS = {
               tag: 'Paid',
               done: {
                 t: 'Payment successful', amt: '\u20b92,598',
-                sub: 'CF-48291 \u00b7 UPI<br>attempt 2 of 3 \u00b7 no discount given'
+                sub: 'CF-48291 \u00b7 UPI \u00b7 attempt 2 of 3'
               }
             }
           }
         },
         /* deliberately no `say`: the agent is not narrating her checkout while
            she is standing in it. It reports on the next beat, once she paid. */
-      },
-
-      /* --- Relay closes the loop with HER, not just with the merchant ------ *
-       *
-       * A recovered payment has two people in it. The merchant finds out in
-       * the chat, and that beat is below; this one is the half that is easy to
-       * forget, and it is the half the buyer actually feels. She took a call
-       * about a payment that failed, so she gets told it worked.
-       */
-      {
-        label: 'Relay thanks her', tool: 'Relay',
-        call: { name: 'notification.sent', summary: 'Neha \u00b7 payment received', ms: 180 },
-        scene: {
-          kind: 'cast', hold: 4200,
-          tag: 'Neha\u2019s phone \u00b7 live',
-          screen: {
-            tone: 'ok', tag: 'Relay \u00b7 just now',
-            store: 'One-Stop Shoppy', amount: '\u20b92,598',
-            notif: {
-              app: 'Relay', when: 'now', ic: 'R',
-              title: 'Payment received',
-              body: 'Thank you, Neha. Your \u20b92,598 has gone through and your order is on its way.'
-            },
-            head: 'Order confirmed',
-            reason: 'Paid by UPI on the second attempt. Nothing else needed from you.',
-            meta: 'Order OSS-48291 \u00b7 CF-48291'
-          }
-        }
       },
 
       /* --- and only then does the merchant hear about it ------------------- */
@@ -6511,7 +6529,9 @@ function callResult(sc) {
   const r = document.createElement('div');
   r.className = 'cres';
   r.innerHTML = '<span class="tick">' + CHECK + '</span><span>' + sc.result + '</span>' +
-    '<span class="amt">' + sc.amount + '</span>';
+    // optional: a call that produced a link and nothing else should say that
+    // and stop, rather than repeating a figure already on every other screen
+    (sc.amount ? '<span class="amt">' + sc.amount + '</span>' : '');
   return r;
 }
 
@@ -6659,11 +6679,26 @@ function castPaying(el, sc) {
  *  Same chassis, no link row. Usually one state -- but Cart Recovery needs two
  *  on the same screen, because a cart has to be SEEN before it can be
  *  abandoned, so `then` swaps the second in without a second beat. */
+/** The banner itself. It wears the agent's own orb, so a push about a payment
+ *  the Payment Recovery agent recovered is visibly from that agent and not
+ *  from "an app". */
+function castPush(el, push) {
+  const d = document.createElement('div');
+  d.className = 'pc-push';
+  d.innerHTML =
+    '<span class="orb ' + push.orb + '">' + EYES + '</span>' +
+    '<span class="tx"><span class="nt">' + push.app +
+      '<span class="when">' + push.when + '</span></span>' +
+      '<span class="nh">' + push.title + '</span>' +
+      '<span class="nb">' + push.body + '</span></span>';
+  el.appendChild(d);
+}
+
 function castScreen(el, screen) {
   el.querySelector('.pc-stage').innerHTML = buyscrHTML(screen);
 }
 
-const CAST_MS = { open: 900, review: 1600, method: 1600, done: 1900, paying: 2100, msg: 3400 };
+const CAST_MS = { open: 900, review: 1600, method: 1600, done: 1900, paying: 2100, msg: 3400, push: 3400 };
 
 /** She taps the link, reviews what she is paying for, picks UPI because that
  *  is the method the agent told her would clear, and pays. Then it hands the
@@ -6704,6 +6739,13 @@ async function runCast(sc) {
     }
     castPhase(el, sc, step);
     await sleep(ms(step));
+    // the push arrives ON the tick, not a beat afterwards: she is still
+    // looking at the receipt when her phone tells her it worked
+    if (step === 'done' && sc.push) {
+      if (castEl !== el) return;
+      castPush(el, sc.push);
+      await sleep(ms('push'));
+    }
   }
   if (castEl !== el) return;
 
@@ -6737,7 +6779,11 @@ function paintCast(sc) {
     el.classList.add('msgd');
     el.querySelector('.pc-stage').innerHTML = waHTML(sc.msg);
   }
-  else castPhase(el, sc, 'done');
+  else {
+    castPhase(el, sc, 'done');
+    // the beat ended with her phone buzzing, so landing on it shows that
+    if (sc.push) castPush(el, sc.push);
+  }
 }
 
 /** Every set piece a Relay step can raise, in the order it raises them. */
