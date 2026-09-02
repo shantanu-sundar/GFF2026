@@ -568,6 +568,18 @@ Hanging up first made the recovery something that happened *afterwards*, in its 
 the call already a memory. It is not. She is still holding the phone and the agent is still on
 it, and that is the entire difference between a voice agent and an SMS.
 
+**And the payment is the end of the beat.** The screen does not come back to the call for a
+*"Paid on the call"* line and a hang-up. The money has landed, her phone has said so, and there
+is nothing left for the call to add — coming back made the beat end twice, and the second
+ending was the weaker one. The call scene is taken down 500ms into the cast, while the checkout
+still covers the whole screen, so the cast fades to the **thread** on its way out rather than
+flashing the call for a third of a second first. Cart Recovery's call therefore carries no
+`result`; the other two still do, because theirs come back.
+
+A dot-jump onto that beat stands up the cast's final state, not the call: `rebuild()` prefers
+`paintCast(scene.pay)` when a call carries a payment, because that is the state the beat
+actually ended in.
+
 **And then Relay thanks her, as a push on the tick.** `sc.push` wearing the agent's own orb —
 the same face the merchant has been watching in the header for two minutes — landing while she
 is still looking at the receipt. Same mechanism and same shape Payment Recovery uses, because a
@@ -583,10 +595,18 @@ described in a bubble is a claim about a message rather than the message.
 > still there and is what Subscription Dunning uses). It put a second surface between the
 > payment and the end of the run and read as a separate errand. A push is what actually arrives.
 
-**The link row is the link arriving, and only that.** It is on screen for one beat, and the
-first checkout phase adds `.opened`, which takes it away for the rest of the cast. *Complete
-your order / Open* sitting on top of the checkout is an instruction to do the thing she is
-already doing, and after she has paid it is simply false.
+**There is no link row, on any of the three.** It was there to show the link *arriving* — the
+visible consequence of the agent's last line — on the understanding that it had the screen to
+itself for a beat before the checkout opened over it. That stopped being true when the first
+sheet started painting on mount, which was itself a fix: waiting `open` ms first showed an empty
+black rectangle for 1.3s, and on a full-screen takeover that reads as the demo having hung. So
+the strip ended up sitting *on* the checkout it opened, for a whole second, telling her to do
+the thing she was already doing.
+
+Nothing is lost with it gone: the call says *"here's the payment link"* out loud, and the
+checkout's own subtitle reads `link from Relay`. `.pc-link` and `.paycast.opened` stay in the
+stylesheet, marked unused, as the recipe if a beat ever wants to show a link arriving — and the
+note says what that beat would need: a moment where nothing else is painted.
 
 ### Relay speaks five times in the whole run, and the fifth is the payoff
 
@@ -596,7 +616,7 @@ already doing, and after she has paid it is simply false.
 | 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
 | 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
 | 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. Calling her right now."* |
-| 7 | *nobody* | **the call**, the payment on it, and Relay's thank-you as a push on the tick |
+| 7 | *nobody* | **the call**, the payment on it, Relay's thank-you as a push on the tick — and it ends there |
 | 8 | the merchant | *"Did Priya pay?"* → **"She did."** |
 
 Beats 5 and 7 carry **no `say` and no `ask`**: two consecutive taps where neither party types

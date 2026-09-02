@@ -1141,7 +1141,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
  * this is "the integration runs here", not a pixel copy of anyone's app.
  */
 .screen.skin-claude {
-  --lg-evergreen: #c15f3c;
+  --lg-evergreen: #d97757;
   background: #faf9f5;
   color: #2a2724;
 }
@@ -1159,7 +1159,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   padding-left: 0;
   color: #2a2724;
 }
-.screen.skin-claude .tick { background: #c15f3c; }
+.screen.skin-claude .tick { background: #d97757; }
 .screen.skin-claude .toolrow {
   background: #fff;
   border: 1px solid rgba(42, 39, 36, 0.09);
@@ -1178,17 +1178,103 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
   box-shadow: none;
   color: rgba(42, 39, 36, 0.62);
 }
-.screen.skin-claude .chip .gdot { background: #c15f3c; }
-.screen.skin-claude .send { background: #c15f3c; }
+.screen.skin-claude .chip .gdot { background: #d97757; }
+.screen.skin-claude .send { background: #d97757; }
 .screen.skin-claude .lrow .pip { background: rgba(42, 39, 36, 0.2); }
-.screen.skin-claude .lrow.on .pip { background: #c15f3c; }
-.screen.skin-claude .caret { background: #c15f3c; }
+.screen.skin-claude .lrow.on .pip { background: #d97757; }
+.screen.skin-claude .caret { background: #d97757; }
 .screen.skin-claude .cx-switch .track,
 .screen.skin-claude.connectskin .cx-switch .track { background: rgba(42, 39, 36, 0.18); }
-.screen.skin-claude .connect.live .cx-switch .track { background: #c15f3c; }
-.screen.skin-claude .connect.live .cx-wire .fill { background: #c15f3c; }
-.screen.skin-claude .cx-wire .bead { background: #c15f3c; box-shadow: 0 0 0 4px rgba(193, 95, 60, 0.18); }
+.screen.skin-claude .connect.live .cx-switch .track { background: #d97757; }
+.screen.skin-claude .connect.live .cx-wire .fill { background: #d97757; }
+.screen.skin-claude .cx-wire .bead { background: #d97757; box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.18); }
 .screen.skin-claude .cx-status .ok { color: #7a4630; }
+
+
+
+/* ---- the phone as Claude's phone ----
+ *
+ * Closer to the app a merchant would actually be holding: the ivory ground
+ * with its warm bleed top and bottom, the uneven three-line menu opposite the
+ * ghost, an empty thread that opens on the starburst and a greeting, and a
+ * composer that is a card with its own control row rather than one flat pill.
+ * The Pro upsell above the composer is deliberately NOT here -- it is the one
+ * strip on that screen selling something, and this phone sells Cashfree.
+ */
+.screen.skin-claude {
+  background:
+    radial-gradient(130% 30% at 50% 0%, #f4f1e2 0%, rgba(244, 241, 226, 0) 100%),
+    radial-gradient(130% 24% at 50% 100%, #f4f1e2 0%, rgba(244, 241, 226, 0) 100%),
+    #faf9f5;
+}
+
+/* Header: menu, title, ghost -- the three things Claude's own header holds.
+   The two auto margins split the free space, so the one chip left in the
+   middle sits centred between them the way a chat title does. */
+.screen.skin-claude .ph-top { padding: 44px 15px 8px 47px; gap: 7px; }
+.cl-ic { display: none; flex: none; width: 25px; height: 25px; color: #33312c; }
+.screen.skin-claude .cl-ic { display: block; }
+.screen.skin-claude .cl-ghost { margin-left: auto; }
+.screen.skin-claude .chip {
+  margin-left: auto; min-width: 0;
+  background: #efece3; border: 0; box-shadow: none;
+  color: rgba(42, 39, 36, 0.56); padding: 4px 10px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* An empty thread is Claude's home screen. --cl-greet is set per run, because
+   the app greets you by the time of day and so should the phone. */
+.screen.skin-claude .thread:empty::before {
+  content: var(--cl-greet, "Good afternoon");
+  margin: auto; padding-top: 74px; text-align: center;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Cpath%20d=%22M53.9%2047L51.5%204L48.5%204L46.1%2047Z%20M54.88%2049.35L67.8%2022.17L65.2%2020.67L48.12%2045.45Z%20M54.55%2051.88L88.86%2029.3L87.36%2026.7L50.65%2045.12Z%20M53%2053.9L81%2051.5L81%2048.5L53%2046.1Z%20M50.65%2054.88L89.09%2074.3L90.59%2071.7L54.55%2048.12Z%20M48.12%2054.55L65.2%2079.33L67.8%2077.83L54.88%2050.65Z%20M46.1%2053L48.5%2094L51.5%2094L53.9%2053Z%20M45.12%2050.65L33.2%2076.1L35.8%2077.6L51.88%2054.55Z%20M45.45%2048.12L9.41%2071.7L10.91%2074.3L49.35%2054.88Z%20M47%2046.1L17%2048.5L17%2051.5L47%2053.9Z%20M49.35%2045.12L12.64%2026.7L11.14%2029.3L45.45%2051.88Z%20M51.88%2045.45L35.8%2022.4L33.2%2023.9L45.12%2049.35Z%22%20fill=%22%23d97757%22%20stroke=%22%23d97757%22%20stroke-width=%222.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E") no-repeat top center / 54px 54px;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 22px; letter-spacing: -0.015em; color: #2a2724;
+}
+
+/* replies are plain text under the mark, the way Claude renders them */
+.screen.skin-claude .bubble-ai {
+  max-width: 100%; padding: 3px 2px 5px 0; gap: 9px;
+  font-size: 14px; line-height: 1.52;
+}
+.screen.skin-claude .tick {
+  width: 15px; height: 15px; border-radius: 0; margin-top: 2px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Cpath%20d=%22M53.9%2047L51.5%204L48.5%204L46.1%2047Z%20M54.88%2049.35L67.8%2022.17L65.2%2020.67L48.12%2045.45Z%20M54.55%2051.88L88.86%2029.3L87.36%2026.7L50.65%2045.12Z%20M53%2053.9L81%2051.5L81%2048.5L53%2046.1Z%20M50.65%2054.88L89.09%2074.3L90.59%2071.7L54.55%2048.12Z%20M48.12%2054.55L65.2%2079.33L67.8%2077.83L54.88%2050.65Z%20M46.1%2053L48.5%2094L51.5%2094L53.9%2053Z%20M45.12%2050.65L33.2%2076.1L35.8%2077.6L51.88%2054.55Z%20M45.45%2048.12L9.41%2071.7L10.91%2074.3L49.35%2054.88Z%20M47%2046.1L17%2048.5L17%2051.5L47%2053.9Z%20M49.35%2045.12L12.64%2026.7L11.14%2029.3L45.45%2051.88Z%20M51.88%2045.45L35.8%2022.4L33.2%2023.9L45.12%2049.35Z%22%20fill=%22%23d97757%22%20stroke=%22%23d97757%22%20stroke-width=%222.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.screen.skin-claude .tick svg { display: none; }
+.screen.skin-claude .bubble-me {
+  border-radius: 19px; padding: 9px 14px; font-size: 13.8px;
+  background: #efece3; border: 0;
+}
+.screen.skin-claude .toolrow {
+  background: #f4f2ea; border-color: rgba(42, 39, 36, 0.08); border-radius: 12px;
+}
+
+/* composer: a card, the line you are writing, then the control row under it */
+.screen.skin-claude .composer {
+  flex-wrap: wrap; align-items: center; gap: 7px;
+  margin: 0 12px 16px; padding: 12px 10px 10px 13px;
+  border-radius: 25px; background: #fff;
+  border: 1px solid rgba(42, 39, 36, 0.07);
+  box-shadow: 0 6px 20px rgba(42, 39, 36, 0.07);
+}
+.screen.skin-claude .composer .txt { flex: 1 0 100%; padding: 2px 2px 9px; font-size: 14.5px; }
+.screen.skin-claude .composer .txt.ph { color: rgba(42, 39, 36, 0.42); }
+.cl-btn, .cl-model { display: none; }
+.screen.skin-claude .cl-btn {
+  display: grid; place-items: center; flex: none;
+  width: 31px; height: 31px; border-radius: 50%;
+  background: #f1efe7; color: #45423c;
+}
+.screen.skin-claude .cl-btn svg { width: 15px; height: 15px; }
+.screen.skin-claude .cl-model {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 12px; border-radius: 999px; background: #f1efe7;
+  font-size: 12px; font-weight: 500; color: #2a2724; white-space: nowrap;
+}
+.screen.skin-claude .cl-model .thin { font-weight: 400; color: rgba(42, 39, 36, 0.48); }
+.screen.skin-claude .cl-mic { margin-left: auto; }
+.screen.skin-claude .send { width: 32px; height: 32px; background: #1f1e1d; }
 
 
 /* ---------------- inline connect card ---------------- */
@@ -1259,9 +1345,9 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .cxi-state { font-size: 12px; font-weight: 600; color: rgba(29,34,31,0.5); }
 .cxi.live .cxi-state { color: #04663f; }
 
-.screen.skin-claude .cxi.live .cxi-sw { background: #c15f3c; }
-.screen.skin-claude .cxi.live .cxi-wire .fill { background: #c15f3c; }
-.screen.skin-claude .cxi-wire .bead { background: #c15f3c; box-shadow: 0 0 0 3px rgba(193,95,60,0.18); }
+.screen.skin-claude .cxi.live .cxi-sw { background: #d97757; }
+.screen.skin-claude .cxi.live .cxi-wire .fill { background: #d97757; }
+.screen.skin-claude .cxi-wire .bead { background: #d97757; box-shadow: 0 0 0 3px rgba(217,119,87,0.18); }
 .screen.skin-claude .cxi.live .cxi-state { color: #7a4630; }
 .screen.skin-claude .cxi { background: #fff; border-color: rgba(42,39,36,0.09); }
 
@@ -2273,10 +2359,11 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast .pc-stage > .buyscr .bs-meta { flex: none }
 .paycast .pc-stage > .paysheet .ps-done { margin: auto 0 }
 /* the message she gets after paying, on the same phone */
-/* The link row is the link ARRIVING. Once she has opened it she is looking at
-   a checkout, and "Complete your order / Open" sitting over that checkout is an
-   instruction to do the thing she is already doing -- and after she has paid it
-   is simply false. So it goes on the first phase and does not come back. */
+/* UNUSED. No cast passes `link` any more -- all three agents drop it, because
+   the first sheet paints on mount and the strip therefore lands ON the checkout
+   it opened rather than before it. Kept, with `.pc-link` above, as the recipe
+   if a beat ever does want to show a link arriving on its own screen; if you
+   reach for it, give it a beat where nothing else is painted. */
 .paycast.opened .pc-link, .paycast.msgd .pc-link { display: none }
 .paycast .pc-stage > .wa {
   flex: 1; min-height: 0; display: flex; flex-direction: column;
@@ -3993,6 +4080,11 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
 
             <div class="composer">
               <span class="txt ph" id="composer">Tap to begin</span>
+              <!-- Claude's own control row: attach, model, dictate. Display:none
+                   in every other skin, so the composer stays a single pill. -->
+              <span class="cl-btn cl-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></span>
+              <span class="cl-model">Sonnet 5 <span class="thin">Thinking</span></span>
+              <span class="cl-btn cl-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.6" width="6" height="11" rx="3"/><path d="M5.6 11a6.4 6.4 0 0 0 12.8 0M12 17.4V21"/></svg></span>
               <span class="send">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
@@ -4069,9 +4161,15 @@ body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
  * code, they do not run it), and two taglines that claimed more than the docs.
  * ------------------------------------------------------------------ */
 
+/* Claude's header on a phone: the three-line menu whose lines shorten as they
+   go down, and the ghost that opens a temporary chat. */
+const CL_MENU = '<svg class="cl-ic cl-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 7.5h17M3.5 12h12.5M3.5 16.5h8"/></svg>';
+const CL_GHOST = '<svg class="cl-ic cl-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 20.9V10.4a7.4 7.4 0 0 1 14.8 0v10.5c0 .8-.9 1.2-1.5.6l-1.4-1.3c-.4-.4-1-.4-1.4 0l-1.2 1.1c-.4.4-1 .4-1.4 0l-1.2-1.1c-.4-.4-1-.4-1.4 0l-1.4 1.3c-.6.6-1.5.2-1.5-.6Z"/></svg>';
+
 const CX_ICON = {
  "app": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9l-3 3 3 3M16 9l3 3-3 3M13.5 6l-3 12\"/></svg>",
- "claude": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#c15f3c\" stroke-width=\"1.9\" stroke-linecap=\"round\"><path d=\"M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9\"/></svg>",
+ /* Claude's starburst, the same twelve-ray mark the phone opens on */
+ "claude": "<svg viewBox=\"0 0 100 100\" fill=\"#d97757\" stroke=\"#d97757\" stroke-width=\"2.4\" stroke-linejoin=\"round\"><path d=\"M53.9 47L51.5 4L48.5 4L46.1 47Z M54.88 49.35L67.8 22.17L65.2 20.67L48.12 45.45Z M54.55 51.88L88.86 29.3L87.36 26.7L50.65 45.12Z M53 53.9L81 51.5L81 48.5L53 46.1Z M50.65 54.88L89.09 74.3L90.59 71.7L54.55 48.12Z M48.12 54.55L65.2 79.33L67.8 77.83L54.88 50.65Z M46.1 53L48.5 94L51.5 94L53.9 53Z M45.12 50.65L33.2 76.1L35.8 77.6L51.88 54.55Z M45.45 48.12L9.41 71.7L10.91 74.3L49.35 54.88Z M47 46.1L17 48.5L17 51.5L47 53.9Z M49.35 45.12L12.64 26.7L11.14 29.3L45.45 51.88Z M51.88 45.45L35.8 22.4L33.2 23.9L45.12 49.35Z\"/></svg>",
  "ide": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2.5\"/><path d=\"M3 8.5h18M8 13l2 2-2 2M12.5 17h3.5\"/></svg>",
  "dash": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2.5\"/><path d=\"M7 15v3M12 10v8M17 13v5\"/></svg>",
  /* the Cashfree mark, inlined so the section stays one self-contained file */
@@ -4337,7 +4435,8 @@ const DEMOS = {
           kind: 'call', glow: '#10ab50', orb: 'o1',
           agent: 'Cart Recovery', buyer: 'Priya', initials: 'P',
           phone: '+91 98••• ••210', lang: 'English', dur: '00:16',
-          result: 'Paid on the call · code 5XCA', amount: '₹2,338',
+          /* no `result`: this call does not come back to show one. The beat
+             ends on her phone, on the tick and the push. */
           lines: [
             { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or just still deciding?' },
             { b: 1, t: 'Oh, I got pulled into a meeting and completely forgot about it.' },
@@ -4351,13 +4450,17 @@ const DEMOS = {
                already applied and watch the tick land */
             ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
             tag: 'Priya’s phone',
-            /* The link row is the link ARRIVING, which is the visible
-               consequence of the last thing the agent said on the call. It is
-               on screen for one beat and then the checkout opens over it --
-               `.opened` takes it away, because "Complete your order / Open"
-               sitting on top of the checkout is an instruction to do the thing
-               she is already doing. */
-            link: { title: 'Complete your One-Stop Shoppy order', url: 'checkout.cashfree.com/l/oss48291' },
+            /* No link row, the same call the other two agents made.
+               It was here to show the link ARRIVING -- the visible consequence
+               of the agent's last line -- on the understanding that it had the
+               screen to itself for a beat and then the checkout opened over
+               it. That stopped being true when the first sheet started
+               painting on mount (rightly: waiting `open` ms showed an empty
+               black rectangle for 1.3s). So the strip now sits ON the checkout
+               it opened for that whole second, which is an instruction to do
+               the thing she is already doing.
+               The link is not lost: the call says "here's the payment link" out
+               loud, and this sheet's own subtitle reads "link from Relay". */
             sheet: {
               store: 'One-Stop Shoppy', amount: '₹2,338',
               sub: 'Cart OSS-48291 · link from Relay'
@@ -5257,15 +5360,30 @@ function loadDemo(key) {
   // A Relay demo names the agent you picked and wears its face, so the chat
   // never loses track of which of the three you are watching.
   const a = DEMOS[key].agent;
+  // On the MCP demo the phone IS Claude, so it wears Claude's header: the menu
+  // on the left, the ghost on the right, the demo's own chips kept quiet in
+  // between. The ghost takes the push to the right edge, so the last chip drops
+  // the auto margin it uses everywhere else.
+  const cl = DEMOS[key].skin === 'claude';
   document.getElementById('ph-top').innerHTML =
     (DEMOS[key].surface === 'terminal' ? '<span class="tlights"><i></i><i></i><i></i></span>' : '') +
+    (cl ? CL_MENU : '') +
     (a ? '<span class="chip"><span class="orb ' + a.orb + '">' + EYES + '</span>' + a.name + '</span>' : '') +
     c.left
       .map((t, i) =>
         '<span class="chip' + (i === 0 && c.dot && !a ? '' : ' mono') + '">' +
         (i === 0 && c.dot && !a ? '<span class="gdot"></span>' : '') + t + '</span>')
       .join('') +
-    '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>';
+    (cl ? '' : '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>') +
+    (cl ? CL_GHOST : '');
+
+  // Claude greets you by the time of day, and an empty thread is that home
+  // screen; the CSS reads the greeting off this custom property.
+  if (cl) {
+    const h = new Date().getHours();
+    document.querySelector('.screen').style.setProperty('--cl-greet',
+      '"' + (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + '"');
+  }
 
   document.getElementById('demo-title').innerHTML = DEMOS[key].title;
   document.getElementById('demo-blurb').textContent = DEMOS[key].blurb;
@@ -5972,7 +6090,11 @@ function rebuild(i) {
     }
     if (!s.sceneLast) playScene(s.scene, false);
     // the call is a moment, not a state: it only stands if you landed on it
-    if (s.scene && s.scene.kind === 'call' && n === i) paintCall(s.scene);
+    // a call that carries a payment ENDS on her phone, not on the call, so
+    // that is what landing on the beat stands up
+    if (s.scene && s.scene.kind === 'call' && n === i) {
+      if (s.scene.pay) paintCast(s.scene.pay); else paintCall(s.scene);
+    }
     if (s.scene && s.scene.kind === 'cast' && n === i) paintCast(s.scene);
     if (s.say) {
       add('<div class="bubble-ai"><span class="tick">' + CHECK + '</span><span>' + s.say + '</span></div>', 'msg');
@@ -6641,12 +6763,20 @@ async function runCall(sc) {
    * voice agent and an SMS. So the checkout takes the screen over the live
    * call, and the call only hangs up once the money has actually landed. */
   if (sc.pay) {
-    // The clock keeps running. The call scene is still mounted under the
-    // checkout and the screen comes back to it, so a timer that had stopped
-    // would be saying she hung up to pay -- which is the one reading this
-    // whole arrangement exists to rule out.
+    /* And the payment is the END of the beat. The screen does not come back
+       to the call for a "Paid on the call" line and a hang-up: the money has
+       landed, her phone has said so, and there is nothing left for the call
+       to add. Going back to it made the beat end twice.
+       So the call is taken down WHILE the checkout still covers the screen --
+       500ms in, well after the cast has finished animating over it. That way
+       the cast fades to the thread on its way out instead of flashing the
+       call scene for a third of a second first. */
+    clearInterval(tick);
+    setTimeout(() => {
+      if (callEl === el) { callEl = null; el.remove(); }
+    }, 500);
     await runCast(sc.pay);
-    if (callEl !== el) { clearInterval(tick); return; }
+    return;
   }
 
   clearInterval(tick);
