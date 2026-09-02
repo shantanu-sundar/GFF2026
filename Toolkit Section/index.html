@@ -2178,31 +2178,45 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
    does, and the tick centres in the space instead of clinging to the top.
    The screen cast is exempt: that one is showing an app that has its own
    shape and would only be stretched out of it. */
-.paycast:not(.plain) .pc-stage { flex: 1; min-height: 0; display: flex }
-.paycast:not(.plain) .pc-stage > .paysheet {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
-}
-.paycast:not(.plain) .pc-stage > .paysheet .ps-body {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
-}
-.paycast:not(.plain) .pc-stage > .paysheet .ps-pay { margin-top: auto }
-.paycast:not(.plain) .pc-stage > .paysheet .ps-done { margin: auto 0 }
 
-/* And the same for a screen cast. An app on somebody's phone is not a card
-   floating on a dark ground with the bottom half of the screen empty under it
-   -- it IS the screen. So .buyscr grows to the bottom edge, its body takes the
-   slack, and a call-to-action button rides the bottom the way a real one does.
-   The sheets that land on it (the exit prompt, the receipt) are already
-   positioned against that edge, so they follow it down for free. */
-.paycast.plain .pc-stage { flex: 1; min-height: 0; display: flex }
-.paycast.plain .pc-stage > .buyscr {
+/* An app on somebody's phone is not a card floating on a dark ground with the
+   phone's own edges showing round it -- it IS the screen. So a cast goes EDGE
+   TO EDGE: no padding, no radius, no border, no shadow. What is left of the
+   dark stage is a slim header strip carrying the label that says whose phone
+   this is, the link when there is one, and the on-the-call chip. That header
+   is the one part that has to survive: the entire point of a cast is that the
+   screen under it is not the merchant's. */
+.paycast { padding: 0 }
+.paycast .pc-head {
+  flex: none; width: 100%;
+  /* 50 + the label + 12 clears the back button, which is absolutely positioned
+     at top 44 and 30 tall and would otherwise sit on the store's brand bar */
+  padding: 50px 14px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  background: #06080a;
+}
+.paycast .pc-top { justify-content: center }
+.paycast .pc-link, .paycast .pc-call { margin-top: 0 }
+
+.paycast .pc-stage { margin-top: 0; flex: 1; min-height: 0; display: flex; width: 100% }
+.paycast .pc-stage > .buyscr,
+.paycast .pc-stage > .paysheet {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  border: 0; border-radius: 0; box-shadow: none;
+}
+.paycast .pc-stage > .buyscr .bs-body,
+.paycast .pc-stage > .paysheet .ps-body {
   flex: 1; min-height: 0; display: flex; flex-direction: column;
 }
-.paycast.plain .pc-stage > .buyscr .bs-body {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
-}
-.paycast.plain .pc-stage > .buyscr .bs-cta { margin-top: auto }
-.paycast.plain .pc-stage > .buyscr .bs-meta { flex: none }
+.paycast .pc-stage > .buyscr .bs-cta,
+.paycast .pc-stage > .paysheet .ps-pay { margin-top: auto }
+.paycast .pc-stage > .buyscr .bs-meta { flex: none }
+.paycast .pc-stage > .paysheet .ps-done { margin: auto 0 }
+/* whose phone it is now reads off the header, so the sheet's own tag would be
+   the same sentence twice */
+.paycast .pc-stage > .buyscr .bs-tag,
+.paycast .pc-stage > .paysheet .bs-tag { display: none }
+.paycast .pc-foot { display: none }
 
 /* Cashfree's loader, taking the whole phone.
  *
@@ -4116,16 +4130,11 @@ const DEMOS = {
     blurb: 'Say what you want chased. Relay builds it, tests it, waits for your yes — then calls the buyer back itself.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Cart Recovery journey doc' },
     chips: { left: [], right: 'no-code', dot: false },
-    panel: {
-      title: 'Agent',
-      headline: { label: 'status', value: 'Draft' },
-      rows: [
-        { key: 'trigger', label: 'Trigger' },
-        { key: 'condition', label: 'Condition' },
-        { key: 'action', label: 'Action' },
-        { key: 'runs', label: 'Runs' }
-      ]
-    },
+    /* No `panel`. The ledger is for a run whose point is state accumulating,
+       and this one has none: the agent is configured once and then it works.
+       A slab reading "Draft" under the chat was a status for a thing with no
+       interesting statuses, and it was holding a third of the phone that the
+       transcript wanted. The patches went with it. */
     steps: [
       /* --- segment 1: setting the agent up -------------------------------- *
        *
@@ -4143,18 +4152,17 @@ const DEMOS = {
         label: 'Ask what happened', tool: 'Voice',
         voice: true,
         ask: 'Can you tell me my transactions for the past month?',
-        call: { name: 'transactions', summary: '1,755 orders · 412 dropped', ms: 680 },
+        call: { name: 'transactions', summary: '1,755 orders · 400 abandoned', ms: 680 },
         scene: {
           kind: 'brk', title: 'Last 30 days', total: '1,755 orders',
           rows: [
             { k: 'Paid', n: '1,284', v: '₹31.2L' },
-            { k: 'Dropped at checkout', n: '412', v: '₹9.8L', hot: 1 },
+            { k: 'Abandoned cart', n: '400', v: '₹9.8L', hot: 1 },
             { k: 'Payment failed', n: '38', v: '₹2.1L' },
             { k: 'Refunded', n: '21', v: '₹48,900' }
           ]
         },
-        say: '1,284 paid, but 412 walked at the payment step, ₹9.8L of it, and 38 payments failed outright. Which of those do you want an agent on first?',
-        patch: {}
+        say: '1,284 paid, but 400 customers abandoned cart, leading to a loss of ₹9.8L. Shall I set up an agent to follow up payments?'
       },
       {
         label: 'Pick the template', tool: 'Abandoned Cart Recovery',
@@ -4162,83 +4170,66 @@ const DEMOS = {
         /* no tool row: she picked a ready-made template off a list. The ledger
            filling in with the trigger, the condition and the action is what
            shows it landed, and it does not need a receipt printed over it. */
-        say: 'It’s done. Would you like to do a test run?',
-        patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · idle 10 min', action: 'Call + 10% offer' }
+        say: 'It’s done. Would you like to do a test run?'
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Yes, let’s do a test run',
         call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
-        say: 'Test run successful. Should I activate the Abandoned Cart Recovery Agent?',
-        patch: { __headline: 'Tested' }
+        say: 'Test run successful. Should I activate the Abandoned Cart Recovery Agent?'
       },
       {
         label: 'Switch it on', tool: 'Agents',
         ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        scene: { kind: 'live', title: 'It’s live', body: 'Your Abandoned Cart Recovery Agent is now live.' },
-        patch: { __headline: 'Active' }
+        scene: { kind: 'live', title: 'It’s live', body: 'Your Abandoned Cart Recovery Agent is now live.' }
       },
 
       /* --- segment 2: Priya's phone, not this chat ------------------------ *
        *
-       * One switch, two states. You have to see the cart before it can be
-       * abandoned -- a "Leaving Checkout?" prompt with nothing behind it is a
-       * dialog, not a drop-off -- so the cast holds her checkout, then lands
-       * the exit prompt on it, then hands the screen back.
+       * Her cart, sitting at the payment step, and then nothing. There is no
+       * exit prompt and nothing to click: she got pulled into a meeting and
+       * forgot, which is what actually happens to most abandoned carts and is
+       * the reason the agent has to ASK rather than read a reason off a form.
+       * A "why are you leaving?" dialog would hand the answer over for free and
+       * make the call a lookup.
        *
-       * Drawn as cards in the thread this read as two more things Relay said,
+       * Drawn as a card in the thread this read as one more thing Relay said,
        * which is the opposite of true: it is what is on somebody else's phone
-       * while the merchant does nothing at all. So it takes the screen, the
-       * way the call does.
+       * while the merchant does nothing at all. So it takes the screen, the way
+       * the call does, and hands it back.
        */
       {
-        label: 'Her cart, and she leaves', tool: 'One-Stop Shoppy',
+        label: 'Her cart, abandoned', tool: 'One-Stop Shoppy',
         call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 150 },
         scene: {
-          kind: 'cast', hold: 2600, hold2: 3800,
+          kind: 'cast', hold: 4200,
           tag: 'Priya’s phone · live',
-          foot: 'Cart OSS-48291 · held · the 10 minutes start now',
           screen: {
             tone: 'drop', store: 'One-Stop Shoppy', amount: '₹2,598',
             cart: OSS_CART,
             cta: 'Pay ₹2,598',
             meta: 'Order OSS-48291 · at the payment step'
-          },
-          then: {
-            tone: 'drop', store: 'One-Stop Shoppy', amount: '₹2,598',
-            cart: OSS_CART,
-            exit: {
-              head: 'Leaving Checkout?',
-              sub: 'Please share the reason:',
-              opts: [
-                { t: 'I need to update cart' },
-                { t: 'I didn’t find the payment mode I was looking for', on: 1 },
-                { t: 'Other reasons' }
-              ],
-              go: 'No, Continue to checkout',
-              leave: 'Yes, Leave'
-            }
           }
         },
         /* no `say`: the agent is not narrating her checkout while she is
            standing in it. It reports on the next beat, back in the chat. */
-        patch: { runs: 'triggered' }
       },
 
-      /* --- back in the chat: the agent has the trigger and the reason ------ */
+      /* --- back in the chat, and it has the trigger ------------------------ */
       {
         label: 'Relay has the trigger', tool: 'Cart Abandoned',
-        call: { name: 'agent.triggered', summary: 'OSS-48291 · reason captured', ms: 190 },
-        say: 'Priya left a ₹2,598 cart at the payment step. She could not find the payment mode she was looking for. Calling her now.',
-        patch: { runs: 'calling Priya' }
+        call: { name: 'agent.triggered', summary: 'OSS-48291 · ₹2,598 · above the floor', ms: 190 },
+        say: 'Priya left a ₹2,598 cart at the payment step. Calling her right now.'
       },
 
       /* --- segment 3: the call, and the payment that happens ON it -------- *
        *
-       * Inside ten minutes, not thirty. Priya gives the SAME reason she ticked
-       * on the way out, which is what makes the method screen a few seconds
-       * later the answer to something rather than a checkout screenshot.
+       * Inside ten minutes, not thirty. And the REASON only exists because the
+       * agent asked for it: nothing on her screen captured one, she simply got
+       * pulled into a meeting and forgot. That is the case for a call rather
+       * than a reminder email -- an email cannot ask, and a form she never
+       * filled in has nothing to read.
        *
        * And she pays while she is still on the phone. The link goes out on the
        * agent's last line; hanging up before it is opened made the recovery
@@ -4260,7 +4251,7 @@ const DEMOS = {
           result: 'Paid on the call · code 5XCA', amount: '₹2,338',
           lines: [
             { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or just still deciding?' },
-            { b: 1, t: 'I couldn’t find the payment mode I wanted, so I left it.' },
+            { b: 1, t: 'Oh, I got pulled into a meeting and completely forgot about it.' },
             { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' },
             { b: 1, t: 'Okay, I’ll pay now.' }
           ],
@@ -4288,8 +4279,7 @@ const DEMOS = {
               method: {
                 tag: 'Choose a method',
                 methods: [
-                  { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
-                    note: 'The mode she left the checkout looking for' },
+                  { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick' },
                   { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
                   { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
                 ],
@@ -4305,7 +4295,6 @@ const DEMOS = {
             }
           }
         },
-        patch: { runs: '1 run · recovered ₹2,338' }
       },
 
       /* --- and back in the chat, the merchant asks ------------------------- */
@@ -4313,8 +4302,11 @@ const DEMOS = {
         label: 'Did she pay?', tool: 'Runs',
         ask: 'Did Priya pay?',
         call: { name: 'Runs', summary: 'recovered · ₹2,338 · success', ms: 430 },
-        say: 'She did, while she was still on the call. ₹2,338, inside ten minutes of her walking, at the 10% you capped it at and no deeper. The call, the reason she gave and the code are all on the run in the Runs tab.',
-        patch: { runs: '1 run · recovered' }
+        /* Two words. The tool row above it already carries the amount and the
+           outcome, and the viewer watched her pay thirty seconds ago -- a
+           paragraph reciting all of that back is the agent taking credit out
+           loud for something the screen already showed. */
+        say: 'She did.'
       }
     ]
   },
@@ -5166,8 +5158,18 @@ function loadDemo(key) {
   paintNav();
 }
 
+/* The ledger is optional.
+ *
+ * It earns its place on a demo whose point is state accumulating -- the
+ * Toolkit's order going ACTIVE, then PAID, then refunded; Spark's account.
+ * Cart Recovery has no such state. The agent is configured once and then it
+ * runs, so a slab reading "Draft" under the chat was a status panel for a
+ * thing with no interesting statuses, and it was eating a third of the phone
+ * that the transcript wanted. */
 function renderPanel() {
   const p = DEMOS[DEMO_KEY].panel;
+  if (!p) { panelEl.innerHTML = ''; panelEl.style.display = 'none'; return; }
+  panelEl.style.display = '';
   const head = panelState.__headline ?? p.headline.value;
   panelEl.innerHTML =
     '<div class="lg-top"><span class="lbl">' + p.title + '</span>' +
@@ -6564,23 +6566,26 @@ function buildCast(sc) {
   const el = document.createElement('div');
   el.className = 'paycast' + (sc.screen ? ' plain' : '');
   el.innerHTML =
-    '<div class="pc-top"><span class="live"></span>' + sc.tag + '</div>' +
-    // a screen cast has no link: nothing has been sent yet, she is just here
-    (sc.link
-      ? '<div class="pc-link"><span class="cfl">' + CX_ICON.cf + '</span>' +
-          '<span class="tx"><b>' + sc.link.title + '</b><i>' + sc.link.url + '</i></span>' +
-          '<span class="go">Open</span></div>'
-      : '') +
-    // she is still on the call while this happens
-    (sc.oncall
-      ? '<div class="pc-call"><span class="orb ' + sc.oncall.orb + '">' + EYES + '</span>' +
-        '<span class="t">On the call with ' + sc.oncall.buyer + '</span>' +
-        '<span class="bars">' + [7, 11, 5, 9, 6].map((h, i) =>
-          '<i style="height:' + h + 'px;animation-delay:' + (i * 0.11).toFixed(2) + 's"></i>').join('') +
-        '</span><span class="dur">' + sc.oncall.dur + '</span></div>'
-      : '') +
-    '<div class="pc-stage"></div>' +
-    '<div class="pc-foot">' + sc.foot + '</div>';
+    // Everything that is NOT her screen lives in one dark header strip, because
+    // the screen itself now goes edge to edge under it.
+    '<div class="pc-head">' +
+      '<div class="pc-top"><span class="live"></span>' + sc.tag + '</div>' +
+      // a screen cast has no link: nothing has been sent yet, she is just here
+      (sc.link
+        ? '<div class="pc-link"><span class="cfl">' + CX_ICON.cf + '</span>' +
+            '<span class="tx"><b>' + sc.link.title + '</b><i>' + sc.link.url + '</i></span>' +
+            '<span class="go">Open</span></div>'
+        : '') +
+      // she is still on the call while this happens
+      (sc.oncall
+        ? '<div class="pc-call"><span class="orb ' + sc.oncall.orb + '">' + EYES + '</span>' +
+          '<span class="t">On the call with ' + sc.oncall.buyer + '</span>' +
+          '<span class="bars">' + [7, 11, 5, 9, 6].map((h, i) =>
+            '<i style="height:' + h + 'px;animation-delay:' + (i * 0.11).toFixed(2) + 's"></i>').join('') +
+          '</span><span class="dur">' + sc.oncall.dur + '</span></div>'
+        : '') +
+    '</div>' +
+    '<div class="pc-stage"></div>';
   screenEl2.appendChild(el);
   castEl = el;
   return el;

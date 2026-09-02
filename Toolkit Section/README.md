@@ -495,7 +495,7 @@ The extra beats they gained are the ones the docs actually describe:
 
 | | Cart Recovery | Subscription Dunning | Payment Recovery |
 |---|---|---|---|
-| segment 2 | **one cast, two states** — her cart, then the exit prompt on it | one cast: the push, the paused order and the EMI schedule | one cast |
+| segment 2 | **one cast** — her cart, sitting at the payment step, and then nothing | one cast: the push, the paused order and the EMI schedule | one cast |
 | segment 4 | **no separate beat** — she pays *on* the call | *in flux* | *in flux* |
 
 > **Only the Cart Recovery column is verified.** Payment Recovery and Subscription Dunning are
@@ -507,9 +507,17 @@ The extra beats they gained are the ones the docs actually describe:
 
 **Nothing that happens on Priya's phone is a card in the merchant's thread.** It takes the
 whole screen — `.paycast`, the same chassis the call uses — held for a few seconds and then
-handed back. And it takes the whole of it: the checkout and the screen cast both grow to the
-bottom edge, so the Pay button and the exit sheet ride that edge the way a real mobile
-checkout's do, instead of floating as a card with half the phone empty underneath. Rendered as bubbles those beats read as *things Relay said*, which is the exact
+handed back. And it takes the **whole** of it — edge to edge, no padding, no radius, no border,
+no shadow. An app on somebody's phone is not a card floating on a dark ground with the phone's
+own edges showing round it; it IS the screen, and the Pay button rides the bottom edge the way
+a real mobile checkout's does.
+
+What is left of the dark stage is one slim header strip (`.pc-head`) carrying the label that
+says whose phone this is, the payment link when there is one, and the on-the-call chip. That
+strip is the part that cannot go: the entire point of a cast is that the screen under it is not
+the merchant's. Its top padding is 50px because the back button is absolutely positioned at
+`top: 44px` and 30px tall, and anything less puts a floating white circle on the store's brand
+bar. Rendered as bubbles those beats read as *things Relay said*, which is the exact
 opposite of what they are: they are what is on somebody else's phone while the merchant does
 nothing at all. Whatever the thread shows, the merchant did or the agent said. That rule is
 what makes the run legible.
@@ -518,13 +526,17 @@ What is left in the thread for those beats is the tool row — `cart.abandoned`,
 `checkout.opened` — and that is correct: the merchant's log records that it happened, not a
 replay of it.
 
-**Segment 2 is one cast with two states, and they are in that order for a reason.** You have
-to see the cart before it can be abandoned: a "Leaving Checkout?" prompt with nothing behind
-it is a dialog, not a drop-off. So the cast holds One-Stop Shoppy's checkout — ₹2,598, the
-kurta line and `+1 more item`, shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar —
-and then lands the exit prompt **as a sheet on that same cart**. `runCast()` takes a `then`
-screen for exactly this; without it a screen cast is a single held state, which is all the
-other two agents need.
+**Segment 2 is a cart and then nothing, and the nothing is the point.** There is no exit
+prompt and nothing for her to click: she got pulled into a meeting and forgot, which is what
+actually happens to most abandoned carts. An earlier cut had her tick *"I didn't find the
+payment mode I was looking for"* on a "Leaving Checkout?" dialog — which reads well, and
+quietly wrecks the demo, because it hands the agent its answer for free and turns the call into
+a lookup. **The reason has to be something only the call can get.** An email cannot ask, and a
+form she never filled in has nothing to read.
+
+So the cast holds One-Stop Shoppy's checkout — ₹2,598, the kurta line and `+1 more item`,
+shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar on the bottom edge — and hands the
+screen back. `runCast()` still takes a `then` screen for a second state; nothing uses it now.
 
 ### She pays while she is still on the phone
 
@@ -546,9 +558,9 @@ it, and that is the entire difference between a voice agent and an SMS.
 | 1–3 | both | the month's numbers, the template, the test run |
 | 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
 | 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
-| 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. She could not find the payment mode she was looking for. Calling her now."* |
+| 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. Calling her right now."* |
 | 7 | *nobody* | **the call, and the payment on it** |
-| 8 | the merchant | *"Did Priya pay?"* → and Relay answers |
+| 8 | the merchant | *"Did Priya pay?"* → **"She did."** |
 
 Beats 5 and 7 carry **no `say` and no `ask`**: two consecutive taps where neither party types
 anything and the screen just shows what is happening. The composer reads *"Tap, it runs without
@@ -569,24 +581,35 @@ The same discipline shortens segment 1. *"It's done. Would you like to do a test
 ledger that visibly fills in with the trigger, the condition and the action beats a paragraph
 restating all three: one is a product doing something, the other is a chatbot narrating itself.
 
-### The reason she gives is the reason the checkout answers
+### Relay's replies are short, and get shorter
 
-Priya ticks **"I didn't find the payment mode I was looking for"** on the way out. Relay leads
-the call with it. She says the same thing in her own words. And when she opens the link, the
-method screen has **UPI already selected**, carrying the note *"The mode she left the checkout
-looking for"*.
+| beat | what it says | what it does not say |
+|---|---|---|
+| 2 | *"It's done. Would you like to do a test run?"* | the trigger, the condition and the action it just wrote |
+| 4 | the green card: *"Your Abandoned Cart Recovery Agent is now live."* | anything else — the card **is** the reply |
+| 6 | *"Priya left a ₹2,598 cart at the payment step. Calling her right now."* | why she left. It does not know yet |
+| 8 | **"She did."** | the amount, the code, the discount cap, the Runs tab |
 
-That chain is the whole demo. Break any link of it — change the ticked option, change her
-line, change which method is picked — and the checkout screen goes back to being a screenshot
-of a checkout. **The agent calls inside ten minutes, not thirty**, which is why the condition
-reads `above ₹2,000 · idle 10 min`, the tool row says `called in 6 min` and the closing line
-says *inside ten minutes*; those three move together.
+Beat 8 is the one worth defending. The tool row directly above it already reads
+`Runs · recovered · ₹2,338 · success`, and the viewer watched her pay thirty seconds earlier.
+A paragraph reciting the amount, the cap and where the record lives is the agent taking credit
+out loud for something the screen has already shown. **Two words land harder**, and the reason
+they land is everything above them.
 
-`OSS_CART` is **one cart read by both states of the segment 2 cast**, the same discipline
-`CART_ITEMS` follows in the Skills store and for the same reason: 1,299 × 2 = the 2,598 the
-exit prompt shows, 10% of which is the 260 the call gives away and the 2,338 the checkout, the
-ledger and the Runs tab all report. Change one of those numbers and change the constant, not
-the beat.
+**There is no ledger on this run.** The `panel` slab is for a demo whose point is state
+accumulating — the Toolkit's order going ACTIVE, then PAID, then refunded; Spark's account. An
+agent is configured once and then it works, so a panel reading "Draft" under the chat was a
+status for a thing with no interesting statuses, and it was holding a third of the phone that
+the transcript wanted. `panel` is optional now; the other six demos keep theirs.
+
+`OSS_CART` is **the one cart the run reads**, the same discipline `CART_ITEMS` follows in the
+Skills store and for the same reason: 1,299 × 2 = the 2,598 her screen shows and Relay quotes
+in the chat, 10% of which is the 260 the call gives away and the 2,338 the checkout and the
+Runs tab report. Change one of those numbers and change the constant, not the beat.
+
+**The month's numbers move together too.** `400 abandoned` appears in the tool row, in the
+breakdown table's hot row and in Relay's own sentence, against a ₹9.8L loss. Change one and
+change all three.
 
 **Subscription Dunning ends on the checkout, and its segment 2 is an instalment rather than
 a plan.** A failed renewal is the only failure in the set where the customer is not standing in
