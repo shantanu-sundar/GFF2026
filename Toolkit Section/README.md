@@ -348,7 +348,7 @@ For Builders** opens **three more**. Each demo has its own steps, its own bottom
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
-| **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the template loads → test run → activate → her ₹2,598 One-Stop Shoppy cart → the exit prompt over that cart → **Relay calls Priya inside ten minutes** → the link, the UPI she went looking for, the tick → Relay reports it | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the template loads → test run → activate → **Priya's phone takes the screen**: her ₹2,598 cart, then she leaves → Relay has the reason and calls her → **her phone again**: the link, the UPI she went looking for, the Cashfree loader, the tick → *"Did Priya pay?"* | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Payment Recovery** *(shelf → onboarding)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Subscription Dunning** *(shelf → onboarding)* | **spoken** prompt → renewals by reason → the ready-made template loads → test run → activate → Rahul's ₹999 EMI bounces on Myra and the delivery pauses → **Relay calls Rahul** → he opens the link → the Cashfree checkout, credit card preselected → paid → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Cashfree Spark** *(home → dashboard)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
@@ -495,28 +495,51 @@ The extra beats they gained are the ones the docs actually describe:
 
 | | Cart Recovery | Subscription Dunning | Payment Recovery |
 |---|---|---|---|
-| segment 2 | **two beats on one screen** — her cart, then the exit prompt over it | one beat: the push, the paused order and the EMI schedule | one beat |
-| segment 4 | **three beats on the checkout** — the link she opens, the method, the tick | **three beats on the checkout** — Proceed to Pay, the method, the tick | none |
+| segment 2 | **one cast, two states** — her cart, then the exit prompt on it | one cast: the push, the paused order and the EMI schedule | one cast |
+| segment 4 | **one cast** — the link, review, method, **the Cashfree loader**, the tick | the same, with the loader | the same, without the loader |
 
-**Segment 2 is two beats and they are in that order for a reason.** You have to see the cart
-before it can be abandoned: a "Leaving Checkout?" card with nothing behind it is a dialog, not
-a drop-off. So the first beat draws One-Stop Shoppy's cart — ₹2,598, the kurta line and
-`+1 more item`, shipping free, the `PREPAID_GIFT` strip — and the second lands the exit prompt
-**as a sheet over that same cart**, which dims underneath rather than being replaced. The basket
-she is walking away from stays on screen behind the question she is being asked.
+### The buyer's screens are not in the chat
 
-### Relay says nothing for six beats, and that is the loudest thing it does
+**Nothing that happens on Priya's phone is a card in the merchant's thread.** It takes the
+whole screen — `.paycast`, the same chassis the call uses — held for a few seconds and then
+handed back. Rendered as bubbles those beats read as *things Relay said*, which is the exact
+opposite of what they are: they are what is on somebody else's phone while the merchant does
+nothing at all. Whatever the thread shows, the merchant did or the agent said. That rule is
+what makes the run legible.
 
-From her cart to the tick — the cart, the exit prompt, the call, the link, the method, the
-payment — **not one beat on Cart Recovery carries a `say`.** The merchant types nothing either.
-The composer reads *"Tap, it runs without you"* for the whole stretch, and Relay does not speak
-again until it has something to report, which is the last beat and is that she paid.
+What is left in the thread for those beats is the tool row — `cart.abandoned`,
+`checkout.opened` — and that is correct: the merchant's log records that it happened, not a
+replay of it.
 
-That is the product's claim rendered as an interaction rather than asserted in a bubble. It is
-also the reason `say` is optional: `runStep()` and `rebuild()` both guard it, as do the two
+**Segment 2 is one cast with two states, and they are in that order for a reason.** You have
+to see the cart before it can be abandoned: a "Leaving Checkout?" prompt with nothing behind
+it is a dialog, not a drop-off. So the cast holds One-Stop Shoppy's checkout — ₹2,598, the
+kurta line and `+1 more item`, shipping free, the `PREPAID_GIFT` strip, a `Pay ₹2,598` bar —
+and then lands the exit prompt **as a sheet on that same cart**. `runCast()` takes a `then`
+screen for exactly this; without it a screen cast is a single held state, which is all the
+other two agents need.
+
+### Relay speaks five times in the whole run, and the fifth is the payoff
+
+| beat | who | what |
+|---|---|---|
+| 1–3 | both | the month's numbers, the template, the test run |
+| 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
+| 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
+| 6 | Relay | *"Priya left a ₹2,598 cart… she could not find the payment mode she was looking for. Calling her now."* |
+| 7 | *nobody* | **the call** |
+| 8 | *nobody* | **Priya's phone.** The link, review, UPI, the Cashfree loader, the tick |
+| 9 | the merchant | *"Did Priya pay?"* → and Relay answers |
+
+Beats 5, 7 and 8 carry **no `say` and no `ask`**: three consecutive taps where neither party
+types anything and the screen just shows what is happening. The composer reads *"Tap, it runs
+without you"* through all of them. That is the product's claim rendered as an interaction
+rather than asserted in a bubble.
+
+`say` is optional for this reason — `runStep()` and `rebuild()` both guard it, as do the two
 terminal painters. **Do not add narration back to those beats.** A sentence describing the
-screen the viewer is already looking at is the agent talking about itself, and it costs the run
-the one thing that makes it read as automatic.
+screen the viewer is already looking at is the agent talking about itself, and it costs the
+run the one thing that makes it read as automatic.
 
 The same discipline shortens segment 1. *"It's done. Would you like to do a test run?"* plus a
 ledger that visibly fills in with the trigger, the condition and the action beats a paragraph
@@ -524,21 +547,22 @@ restating all three: one is a product doing something, the other is a chatbot na
 
 ### The reason she gives is the reason the checkout answers
 
-Priya ticks **"I didn't find the payment mode I was looking for"** on the way out. On the call
-she says the same thing in her own words. Three beats later the method screen opens with **UPI
-already selected**, carrying the note *"The mode she left the checkout looking for"*.
+Priya ticks **"I didn't find the payment mode I was looking for"** on the way out. Relay leads
+the call with it. She says the same thing in her own words. And when she opens the link, the
+method screen has **UPI already selected**, carrying the note *"The mode she left the checkout
+looking for"*.
 
-That chain is the whole demo. Break any link of it — change the ticked option, change her line,
-change which method is picked — and the checkout screen goes back to being a screenshot of a
-checkout. **The agent calls inside ten minutes, not thirty**, which is why the condition reads
-`above ₹2,000 · idle 10 min` and the tool row says `called in 6 min`; those three numbers move
-together.
+That chain is the whole demo. Break any link of it — change the ticked option, change her
+line, change which method is picked — and the checkout screen goes back to being a screenshot
+of a checkout. **The agent calls inside ten minutes, not thirty**, which is why the condition
+reads `above ₹2,000 · idle 10 min`, the tool row says `called in 6 min` and the closing line
+says *inside ten minutes*; those three move together.
 
-`OSS_CART` / `OSS_CART_PAID` are **one cart read by the cart and exit beats**, the same
-discipline `CART_ITEMS` follows in the Skills store and for the same reason: 1,299 × 2 = the
-2,598 the exit prompt shows, 10% of which is the 260 the call gives away and the 2,338 the
-checkout, the ledger and the Runs tab all report. Change one of those numbers and change the
-constant, not the beat.
+`OSS_CART` is **one cart read by both states of the segment 2 cast**, the same discipline
+`CART_ITEMS` follows in the Skills store and for the same reason: 1,299 × 2 = the 2,598 the
+exit prompt shows, 10% of which is the 260 the call gives away and the 2,338 the checkout, the
+ledger and the Runs tab all report. Change one of those numbers and change the constant, not
+the beat.
 
 **Subscription Dunning ends on the checkout, and its segment 2 is an instalment rather than
 a plan.** A failed renewal is the only failure in the set where the customer is not standing in
