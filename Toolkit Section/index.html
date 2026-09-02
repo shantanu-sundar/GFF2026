@@ -2131,6 +2131,56 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast .pc-stage .paysheet { color: var(--graphite) }
 .paycast.plain { justify-content: flex-start }
 
+/* Cashfree's loader with the whole phone, rather than a card on a dark stage.
+   This is what the buyer actually sees: whatever page she was on is gone and
+   the drop-in owns the screen until it comes back with an answer. Same asset
+   and same note as the Skills store shows, at the size that store shows it. */
+.paycast.cffull > .pc-top,
+.paycast.cffull > .pc-link,
+.paycast.cffull > .pc-foot,
+.paycast.cffull > .pc-call { opacity: 0; transition: opacity 0.24s ease }
+.paycast.cffull .pc-stage { position: absolute; inset: 0; margin: 0; display: block }
+.paycast.cffull .pc-cf {
+  position: absolute; inset: 0; margin: 0; padding: 0;
+  background: #fdfdfd;
+  justify-content: center; gap: 26px;
+}
+.paycast.cffull .pc-cf .cf-load {
+  padding: 0; border-radius: 0; box-shadow: none; background: transparent;
+}
+.paycast.cffull .pc-cf .lgif { width: 62%; border-radius: 0 }
+.paycast.cffull .pc-cf .cf-pay {
+  background: #fff; border: 1px solid rgba(17, 24, 39, 0.1); color: #111827;
+}
+
+/* The call did not end when the checkout opened: she is paying with the agent
+   still on the line. A hung-up call and a checkout in sequence would be two
+   separate events; this is one. */
+.paycast .pc-call {
+  flex: none; margin-top: 10px; width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 999px;
+  background: rgba(16, 171, 80, 0.11);
+  border: 1px solid rgba(16, 171, 80, 0.24);
+}
+.paycast .pc-call .orb { width: 17px; height: 17px; flex: none }
+.paycast .pc-call .t {
+  flex: 1; min-width: 0; font-size: 10.5px; font-weight: 600; color: #b7f0cd;
+}
+.paycast .pc-call .dur {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(183, 240, 205, 0.72);
+}
+.paycast .pc-call .bars { display: flex; align-items: flex-end; gap: 1.5px; height: 11px }
+.paycast .pc-call .bars i {
+  width: 2px; border-radius: 1px; background: #10ab50;
+  transform-origin: bottom;
+  animation: pcbar 0.9s ease-in-out infinite;
+}
+/* its own keyframe rather than .vcap's `vbar`: that one animates height between
+   16px and a --h the caller sets, which would burst an 11px strip. */
+@keyframes pcbar { 0%, 100% { transform: scaleY(0.4) } 50% { transform: scaleY(1) } }
+@media (prefers-reduced-motion: reduce) { .paycast .pc-call .bars i { animation: none } }
+
 /* A checkout is a PAGE on her phone, not a card floating in the middle of a
    dark stage with half the screen left empty under it. So the sheet grows to
    the bottom edge, its Pay button sits on that edge the way every checkout's
@@ -2146,6 +2196,22 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 }
 .paycast:not(.plain) .pc-stage > .paysheet .ps-pay { margin-top: auto }
 .paycast:not(.plain) .pc-stage > .paysheet .ps-done { margin: auto 0 }
+
+/* And the same for a screen cast. An app on somebody's phone is not a card
+   floating on a dark ground with the bottom half of the screen empty under it
+   -- it IS the screen. So .buyscr grows to the bottom edge, its body takes the
+   slack, and a call-to-action button rides the bottom the way a real one does.
+   The sheets that land on it (the exit prompt, the receipt) are already
+   positioned against that edge, so they follow it down for free. */
+.paycast.plain .pc-stage { flex: 1; min-height: 0; display: flex }
+.paycast.plain .pc-stage > .buyscr {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+}
+.paycast.plain .pc-stage > .buyscr .bs-body {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+}
+.paycast.plain .pc-stage > .buyscr .bs-cta { margin-top: auto }
+.paycast.plain .pc-stage > .buyscr .bs-meta { flex: none }
 
 /* the drop-in loader, on the dark stage instead of over the store */
 .paycast .pc-cf {
@@ -4101,7 +4167,9 @@ const DEMOS = {
       {
         label: 'Pick the template', tool: 'Abandoned Cart Recovery',
         ask: 'Abandoned cart.',
-        call: { name: 'load template', summary: 'Abandoned Cart Recovery · wired', ms: 1240 },
+        /* no tool row: she picked a ready-made template off a list. The ledger
+           filling in with the trigger, the condition and the action is what
+           shows it landed, and it does not need a receipt printed over it. */
         say: 'It’s done. Would you like to do a test run?',
         patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · idle 10 min', action: 'Call + 10% offer' }
       },
@@ -4170,86 +4238,82 @@ const DEMOS = {
       {
         label: 'Relay has the trigger', tool: 'Cart Abandoned',
         call: { name: 'agent.triggered', summary: 'OSS-48291 · reason captured', ms: 190 },
-        say: 'Priya left a ₹2,598 cart at the payment step, and she told the exit prompt why: she could not find the payment mode she was looking for. That is what I will lead with. Calling her now.',
+        say: 'Priya left a ₹2,598 cart at the payment step. She could not find the payment mode she was looking for. Calling her now.',
         patch: { runs: 'calling Priya' }
       },
 
-      /* --- segment 3: the call --------------------------------------------- *
+      /* --- segment 3: the call, and the payment that happens ON it -------- *
        *
        * Inside ten minutes, not thirty. Priya gives the SAME reason she ticked
-       * on the way out, which is what makes the method screen two beats later
-       * the answer to something rather than a checkout screenshot.
+       * on the way out, which is what makes the method screen a few seconds
+       * later the answer to something rather than a checkout screenshot.
+       *
+       * And she pays while she is still on the phone. The link goes out on the
+       * agent's last line; hanging up before it is opened made the recovery
+       * something that happened afterwards, in its own beat, with the call
+       * already a memory. It is not. She is still holding the phone and the
+       * agent is still on it, and that is the entire difference between a voice
+       * agent and an SMS. So `pay` hangs off the call scene, the checkout takes
+       * the screen over the live call, and the call only hangs up once the
+       * money has landed -- which is why the result line reads "paid on the
+       * call" rather than "link sent".
        */
       {
-        label: 'Relay calls Priya', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called in 6 min · reason heard · link sent', ms: 610 },
+        label: 'Relay calls Priya, and she pays', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'called in 6 min · paid on the call', ms: 610 },
         scene: {
           kind: 'call', glow: '#10ab50', orb: 'o1',
           agent: 'Cart Recovery', buyer: 'Priya', initials: 'P',
-          phone: '+91 98••• ••210', lang: 'English', dur: '00:41',
-          result: 'Payment link sent · code 5XCA', amount: '₹2,338',
+          phone: '+91 98••• ••210', lang: 'English', dur: '00:16',
+          result: 'Paid on the call · code 5XCA', amount: '₹2,338',
           lines: [
             { t: 'Hi Priya, I noticed you were checking out. Was there an issue with payment, or just still deciding?' },
             { b: 1, t: 'I couldn’t find the payment mode I wanted, so I left it.' },
             { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' },
             { b: 1, t: 'Okay, I’ll pay now.' }
-          ]
-        },
-        patch: { runs: 'called in 6 min' }
-      },
-
-      /* --- segment 4: her phone again, and she pays ------------------------ *
-       *
-       * The call ends on "here is the link", and a link that is never seen to
-       * open is an assertion. She opens it, the UPI she went looking for is
-       * already the chosen method, and the drop-in takes the time a real one
-       * takes -- that loader is the Skills store's, not a redrawn one, because
-       * the merchant in the room has seen it on their own checkout.
-       */
-      {
-        label: 'She opens the link and pays', tool: 'Cashfree Checkout',
-        call: { name: 'checkout.opened', summary: 'link opened · UPI · ₹2,338', ms: 210 },
-        scene: {
-          kind: 'cast', cfx: true,
-          tag: 'Priya’s phone · live',
-          link: { title: 'Complete your One-Stop Shoppy order', url: 'checkout.cashfree.com/l/oss48291' },
-          foot: 'Cart OSS-48291 · code 5XCA · 10% off',
-          sheet: {
-            store: 'One-Stop Shoppy', amount: '₹2,338',
-            sub: 'Cart OSS-48291 · link from Relay'
-          },
-          phases: {
-            review: {
-              tag: 'Review',
-              line: { art: 'k', name: 'Arjun Classic Kurta Pajama', meta: 'Cart OSS-48291 · 2 items' },
-              rows: [
-                { k: 'Cart Total', v: '₹2,598' },
-                { k: 'Discount · 5XCA', v: '-₹260' },
-                { k: 'Shipping Charges', v: 'FREE', free: 1 },
-                { k: 'Total Amount', v: '₹2,338', tot: 1 }
-              ],
-              cta: 'Proceed to Pay ₹2,338'
+          ],
+          pay: {
+            kind: 'cast', cfx: true,
+            tag: 'Priya’s phone · still on the call',
+            link: { title: 'Complete your One-Stop Shoppy order', url: 'checkout.cashfree.com/l/oss48291' },
+            foot: 'Cart OSS-48291 · code 5XCA · 10% off',
+            sheet: {
+              store: 'One-Stop Shoppy', amount: '₹2,338',
+              sub: 'Cart OSS-48291 · link from Relay'
             },
-            method: {
-              tag: 'Choose a method',
-              methods: [
-                { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
-                  note: 'The mode she left the checkout looking for' },
-                { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
-                { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
-              ],
-              cta: 'Pay ₹2,338'
-            },
-            done: {
-              tag: 'Paid',
+            phases: {
+              review: {
+                tag: 'Review',
+                line: { art: 'k', name: 'Arjun Classic Kurta Pajama', meta: 'Cart OSS-48291 · 2 items' },
+                rows: [
+                  { k: 'Cart Total', v: '₹2,598' },
+                  { k: 'Discount · 5XCA', v: '-₹260' },
+                  { k: 'Shipping Charges', v: 'FREE', free: 1 },
+                  { k: 'Total Amount', v: '₹2,338', tot: 1 }
+                ],
+                cta: 'Proceed to Pay ₹2,338'
+              },
+              method: {
+                tag: 'Choose a method',
+                methods: [
+                  { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
+                    note: 'The mode she left the checkout looking for' },
+                  { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
+                  { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
+                ],
+                cta: 'Pay ₹2,338'
+              },
               done: {
-                t: 'Payment successful', amt: '₹2,338',
-                sub: 'CF-48291 · UPI<br>code 5XCA applied · ₹260 off'
+                tag: 'Paid',
+                done: {
+                  t: 'Payment successful', amt: '₹2,338',
+                  sub: 'CF-48291 · UPI<br>code 5XCA applied · ₹260 off'
+                }
               }
             }
           }
         },
-        patch: { runs: '1 run · paying' }
+        patch: { runs: '1 run · recovered ₹2,338' }
       },
 
       /* --- and back in the chat, the merchant asks ------------------------- */
@@ -4257,7 +4321,7 @@ const DEMOS = {
         label: 'Did she pay?', tool: 'Runs',
         ask: 'Did Priya pay?',
         call: { name: 'Runs', summary: 'recovered · ₹2,338 · success', ms: 430 },
-        say: 'She did. ₹2,338 on the link, inside ten minutes of her walking, at the 10% you capped it at and no deeper. The call, the reason she gave and the code are all on the run in the Runs tab.',
+        say: 'She did, while she was still on the call. ₹2,338, inside ten minutes of her walking, at the 10% you capped it at and no deeper. The call, the reason she gave and the code are all on the run in the Runs tab.',
         patch: { runs: '1 run · recovered' }
       }
     ]
@@ -4317,7 +4381,7 @@ const DEMOS = {
         label: 'Relay builds it', tool: 'Failed Payment Recovery',
         ask: 'Yes, do that.',
         call: { name: 'build agent', summary: 'Failed Payment Recovery \u00b7 wired', ms: 1180 },
-        say: 'It\u2019s done. Failed Payment Recovery is set up. Would you like to do a test run?',
+        say: 'It\u2019s done. Payment Recovery Agent is set up. Would you like to do a test run?',
         patch: { trigger: 'Payment Failed', condition: 'above \u20b91,000', action: 'Call + retry link' }
       },
       {
@@ -4378,6 +4442,7 @@ const DEMOS = {
           kind: 'call', glow: '#d5cd2b', orb: 'o2',
           agent: 'Payment Recovery', buyer: 'Neha', initials: 'N',
           phone: '+91 99\u2022\u2022\u2022 \u2022\u2022847', lang: 'English', dur: '00:38',
+          stay: true,
           result: 'Retry link sent \u00b7 UPI', amount: '\u20b92,598',
           lines: [
             { t: 'Hi Neha, I noticed your payment didn\u2019t go through earlier. Your bank was facing a temporary issue. Would you like to try again?' },
@@ -4404,7 +4469,9 @@ const DEMOS = {
           /* slower than the default: this one is the payoff of the whole run,
              so the room gets time to read the amount, see UPI already chosen
              and watch the tick land */
-          ms: { open: 1300, review: 2500, method: 2800, done: 2800 },
+          ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
+          cfx: 'full',
+          oncall: { buyer: 'Neha', orb: 'o2', dur: '01:12' },
           tag: 'Neha\u2019s phone \u00b7 live',
           link: { title: 'Complete your payment', url: 'checkout.cashfree.com/l/oss48291' },
           foot: 'Order OSS-48291 \u00b7 attempt 2 of 3',
@@ -4451,7 +4518,6 @@ const DEMOS = {
       {
         label: 'Neha paid', tool: 'Runs',
         call: { name: 'payment.success', summary: 'OSS-48291 \u00b7 \u20b92,598 \u00b7 SUCCESS', ms: 300 },
-        say: 'It gave her the actual reason instead of \u201csomething went wrong\u201d, pointed her at the method that is clearing, and sent a fresh link. No discount, because a failed payment does not need one.',
         patch: { runs: '1 run \u00b7 recovered', __headline: 'Active' }
       }
     ]
@@ -4569,7 +4635,7 @@ const DEMOS = {
             cta: 'Retry payment'
           }
         },
-        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. He is not at a checkout, so all he has is a push and a Retry button. I have his number and the reason. Shall I call him?',
+        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. Calling him',
         patch: { runs: 'triggered' }
       },
 
@@ -5724,15 +5790,21 @@ async function runStep(i) {
     return;
   }
 
-  const row = add(
-    '<div class="toolrow"><span class="nm">' + s.call.name + '</span><span class="sm">running…</span></div>',
-    'msg',
-  );
-  await sleep(Math.min(s.call.ms, 620));
-  row.innerHTML =
-    '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
-    '<span class="sm">' + s.call.summary + '</span>' +
-    '<span class="ms">' + s.call.ms + 'ms</span></div>';
+  // The tool row is optional. Some beats are conversation and nothing else --
+  // picking a ready-made template off a list is a choice, not a call, and
+  // printing `load template ... 1240ms` under it dressed the choice up as
+  // machinery that had not run.
+  if (s.call) {
+    const row = add(
+      '<div class="toolrow"><span class="nm">' + s.call.name + '</span><span class="sm">running…</span></div>',
+      'msg',
+    );
+    await sleep(Math.min(s.call.ms, 620));
+    row.innerHTML =
+      '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
+      '<span class="sm">' + s.call.summary + '</span>' +
+      '<span class="ms">' + s.call.ms + 'ms</span></div>';
+  }
 
   applyPatch(s.patch);
   await sleep(200);
@@ -5780,12 +5852,14 @@ function rebuild(i) {
       applyPatch(s.patch);
       continue;
     }
-    add(
-      '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
-      '<span class="sm">' + s.call.summary + '</span>' +
-      '<span class="ms">' + s.call.ms + 'ms</span></div>',
-      'msg',
-    );
+    if (s.call) {
+      add(
+        '<div class="toolrow"><span class="nm">' + s.call.name + '</span>' +
+        '<span class="sm">' + s.call.summary + '</span>' +
+        '<span class="ms">' + s.call.ms + 'ms</span></div>',
+        'msg',
+      );
+    }
     if (!s.sceneLast) playScene(s.scene, false);
     // the call is a moment, not a state: it only stands if you landed on it
     if (s.scene && s.scene.kind === 'call' && n === i) paintCall(s.scene);
@@ -6437,12 +6511,33 @@ async function runCall(sc) {
     await sleep(line.b ? 1300 : 2200);
   }
 
-  clearInterval(tick);
-  if (callEl !== el) return;
+  if (callEl !== el) { clearInterval(tick); return; }
   el.classList.remove('side-a', 'side-b');
+
+  /* She pays WHILE she is still on the phone.
+   *
+   * The link is sent on the last line of the call, and hanging up before it is
+   * opened made the recovery something that happened afterwards, off in its own
+   * beat, with the call already a memory. It is not: she is still holding the
+   * phone, the agent is still on it, and that is the whole difference between a
+   * voice agent and an SMS. So the checkout takes the screen over the live call
+   * -- the tag on it says so -- and the call only hangs up once the money has
+   * actually landed. */
+  if (sc.pay) {
+    // the clock keeps running: the checkout says "still on the call", and a
+    // timer frozen behind it would call that a lie
+    await runCast(sc.pay);
+    if (callEl !== el) { clearInterval(tick); return; }
+  }
+
+  clearInterval(tick);
   el.insertBefore(callResult(sc), el.querySelector('.cend'));
   await sleep(1250);
   if (callEl !== el) return;
+  // `stay` holds the line open. Payment Recovery needs it: she pays WHILE the
+  // agent is still on with her, so hanging up here and only then opening the
+  // checkout would tell the opposite story.
+  if (sc.stay) return;
   killCall();
   await sleep(320);
 }
@@ -6486,6 +6581,14 @@ function buildCast(sc) {
           '<span class="tx"><b>' + sc.link.title + '</b><i>' + sc.link.url + '</i></span>' +
           '<span class="go">Open</span></div>'
       : '') +
+    // she is still on the call while this happens
+    (sc.oncall
+      ? '<div class="pc-call"><span class="orb ' + sc.oncall.orb + '">' + EYES + '</span>' +
+        '<span class="t">On the call with ' + sc.oncall.buyer + '</span>' +
+        '<span class="bars">' + [7, 11, 5, 9, 6].map((h, i) =>
+          '<i style="height:' + h + 'px;animation-delay:' + (i * 0.11).toFixed(2) + 's"></i>').join('') +
+        '</span><span class="dur">' + sc.oncall.dur + '</span></div>'
+      : '') +
     '<div class="pc-stage"></div>' +
     '<div class="pc-foot">' + sc.foot + '</div>';
   screenEl2.appendChild(el);
@@ -6497,6 +6600,7 @@ function buildCast(sc) {
  *  The header, the amount and the Secured by Cashfree strip are carried by
  *  sc.sheet so they cannot drift between the three phases. */
 function castPhase(el, sc, step) {
+  el.classList.remove('cffull');       // a sheet is never full bleed
   const stage = el.querySelector('.pc-stage');
   stage.innerHTML = paysheetHTML(Object.assign({}, sc.sheet, sc.phases[step], { step: step }));
 }
@@ -6504,7 +6608,10 @@ function castPhase(el, sc, step) {
 /** The Cashfree drop-in doing the one part of paying that takes real time.
  *  Lifted from the Skills store rather than re-drawn, because the merchant in
  *  the room has seen this exact loader on their own checkout. */
-function castPaying(el) {
+function castPaying(el, sc) {
+  // `cfx: 'full'` gives it the whole phone, which is what a real drop-in does:
+  // the page you were on is gone and Cashfree's loader IS the screen.
+  if (sc && sc.cfx === 'full') el.classList.add('cffull');
   el.querySelector('.pc-stage').innerHTML =
     '<div class="pc-cf">' + CF_LOAD + CF_PAYING + '</div>';
 }
@@ -6552,7 +6659,7 @@ async function runCast(sc) {
     // between picking a method and seeing the tick is where a real checkout
     // actually spends its time, so that is where the loader goes
     if (step === 'done' && sc.cfx) {
-      castPaying(el);
+      castPaying(el, sc);
       await sleep(ms('paying'));
       if (castEl !== el) return;
     }
