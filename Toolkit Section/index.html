@@ -2212,7 +2212,18 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .paycast .pc-stage > .paysheet .ps-pay { margin-top: auto }
 .paycast .pc-stage > .buyscr .bs-meta { flex: none }
 .paycast .pc-stage > .paysheet .ps-done { margin: auto 0 }
-/* whose phone it is now reads off the header, so the sheet's own tag would be
+/* the message she gets after paying, on the same phone */
+.paycast.msgd .pc-link { display: none }
+.paycast .pc-stage > .wa {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  border: 0; border-radius: 0; box-shadow: none;
+}
+.paycast .pc-stage > .wa .wa-top { padding: 11px 13px }
+.paycast .pc-stage > .wa .wa-body { flex: 1; min-height: 0; padding: 13px 12px; gap: 8px }
+.paycast .pc-stage > .wa .wb { max-width: 88%; font-size: 12px; padding: 9px 11px 6px }
+.paycast .pc-stage > .wa .wb .t { font-size: 9px }
+
+/* whose phone it is now reads off the header, so a builder's own tag would be
    the same sentence twice */
 .paycast .pc-stage > .buyscr .bs-tag,
 .paycast .pc-stage > .paysheet .bs-tag { display: none }
@@ -4204,7 +4215,7 @@ const DEMOS = {
         call: { name: 'cart.abandoned', summary: 'OSS-48291 · ₹2,598 · left at payment', ms: 150 },
         scene: {
           kind: 'cast', hold: 4200,
-          tag: 'Priya’s phone · live',
+          tag: 'Priya’s phone',
           screen: {
             tone: 'drop', store: 'One-Stop Shoppy', amount: '₹2,598',
             cart: OSS_CART,
@@ -4257,7 +4268,7 @@ const DEMOS = {
           ],
           pay: {
             kind: 'cast', cfx: true,
-            tag: 'Priya’s phone · still on the call',
+            tag: 'Priya’s phone',
             link: { title: 'Complete your One-Stop Shoppy order', url: 'checkout.cashfree.com/l/oss48291' },
             foot: 'Cart OSS-48291 · code 5XCA · 10% off',
             sheet: {
@@ -4292,6 +4303,13 @@ const DEMOS = {
                   sub: 'CF-48291 · UPI<br>code 5XCA applied · ₹260 off'
                 }
               }
+            },
+            msg: {
+              initials: 'R', who: 'Relay', status: 'One-Stop Shoppy',
+              lines: [
+                { t: 'Payment received, ₹2,338. Thank you, Priya!', at: '2:41 pm' },
+                { t: 'Your One-Stop Shoppy order OSS-48291 is confirmed. We’ll message you the moment it ships.', at: '2:41 pm' }
+              ]
             }
           }
         },
@@ -4318,16 +4336,12 @@ const DEMOS = {
     blurb: 'Every failed payment gets a second try — with the real reason, and the method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Payment Recovery journey doc' },
     chips: { left: [], right: 'no-code', dot: false },
-    panel: {
-      title: 'Agent',
-      headline: { label: 'status', value: 'Draft' },
-      rows: [
-        { key: 'trigger', label: 'Trigger' },
-        { key: 'condition', label: 'Condition' },
-        { key: 'action', label: 'Action' },
-        { key: 'runs', label: 'Runs' }
-      ]
-    },
+    /* No `panel`, for the reason Cart Recovery has none: the ledger is for a
+       run whose point is state accumulating, and this one has none. The agent
+       is configured once and then it works, so a slab reading "Draft" under
+       the chat was a status for a thing with no interesting statuses, and it
+       was holding a third of the phone the transcript wanted. The patches went
+       with it. */
     steps: [
       /* --- segment 1: setting the agent up -------------------------------- *
        *
@@ -4359,21 +4373,18 @@ const DEMOS = {
         /* the doc's line, and only it: the table above is already "the agent
            lists failed transactions with reasons for failure" */
         say: 'Would you like to set up an agent to help recover them?',
-        patch: {}
       },
       {
         label: 'Relay builds it', tool: 'Failed Payment Recovery',
         ask: 'Yes, do that.',
         call: { name: 'build agent', summary: 'Failed Payment Recovery \u00b7 wired', ms: 1180 },
         say: 'It\u2019s done. Payment Recovery Agent is set up. Would you like to do a test run?',
-        patch: { trigger: 'Payment Failed', condition: 'above \u20b91,000', action: 'Call + retry link' }
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Yes, let\u2019s do a test run',
         call: { name: 'test run', summary: 'dry run \u00b7 reason read \u00b7 link issued', ms: 840 },
         say: 'Test run successful. Should I activate the Payment Recovery Agent?',
-        patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
@@ -4385,7 +4396,6 @@ const DEMOS = {
           kind: 'live', title: 'It\u2019s live',
           body: 'Your Payment Recovery Agent is now live.'
         },
-        patch: { __headline: 'Active' }
       },
 
       /* --- segment 2: the agent catches one -------------------------------- *
@@ -4415,7 +4425,6 @@ const DEMOS = {
           ],
           cta: 'Call Neha'
         },
-        patch: { runs: 'triggered' }
       },
 
       /* --- segment 3: the call --------------------------------------------- */
@@ -4434,7 +4443,6 @@ const DEMOS = {
             { t: 'Here\u2019s the payment link. We recommend using UPI for the payment.' }
           ]
         },
-        patch: { runs: '1 run \u00b7 link sent' }
       },
 
       /* --- segment 4: her phone, not this chat ----------------------------- *
@@ -4455,9 +4463,11 @@ const DEMOS = {
              and watch the tick land */
           ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
           cfx: 'full',
-          oncall: { buyer: 'Neha', orb: 'o2', dur: '01:12' },
+          /* No link row and no on-call strip. By the time she is in here the
+             call has done its job, and both were chrome ABOUT the checkout
+             laid on top of the checkout. What she is looking at is a Cashfree
+             page, so a Cashfree page is all this shows. */
           tag: 'Neha\u2019s phone \u00b7 live',
-          link: { title: 'Complete your payment', url: 'checkout.cashfree.com/l/oss48291' },
           foot: 'Order OSS-48291 \u00b7 attempt 2 of 3',
           sheet: {
             store: 'One-Stop Shoppy', amount: '\u20b92,598',
@@ -4478,7 +4488,7 @@ const DEMOS = {
               tag: 'Choose a method',
               methods: [
                 { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
-                  note: 'The method the agent said would clear' },
+                  note: 'Suggested Method' },
                 { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
                 { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
               ],
@@ -4495,14 +4505,42 @@ const DEMOS = {
         },
         /* deliberately no `say`: the agent is not narrating her checkout while
            she is standing in it. It reports on the next beat, once she paid. */
-        patch: { runs: '1 run \u00b7 paying' }
       },
 
-      /* --- and back in the chat, the agent reports it ---------------------- */
+      /* --- Relay closes the loop with HER, not just with the merchant ------ *
+       *
+       * A recovered payment has two people in it. The merchant finds out in
+       * the chat, and that beat is below; this one is the half that is easy to
+       * forget, and it is the half the buyer actually feels. She took a call
+       * about a payment that failed, so she gets told it worked.
+       */
       {
-        label: 'Neha paid', tool: 'Runs',
-        call: { name: 'payment.success', summary: 'OSS-48291 \u00b7 \u20b92,598 \u00b7 SUCCESS', ms: 300 },
-        patch: { runs: '1 run \u00b7 recovered', __headline: 'Active' }
+        label: 'Relay thanks her', tool: 'Relay',
+        call: { name: 'notification.sent', summary: 'Neha \u00b7 payment received', ms: 180 },
+        scene: {
+          kind: 'cast', hold: 4200,
+          tag: 'Neha\u2019s phone \u00b7 live',
+          screen: {
+            tone: 'ok', tag: 'Relay \u00b7 just now',
+            store: 'One-Stop Shoppy', amount: '\u20b92,598',
+            notif: {
+              app: 'Relay', when: 'now', ic: 'R',
+              title: 'Payment received',
+              body: 'Thank you, Neha. Your \u20b92,598 has gone through and your order is on its way.'
+            },
+            head: 'Order confirmed',
+            reason: 'Paid by UPI on the second attempt. Nothing else needed from you.',
+            meta: 'Order OSS-48291 \u00b7 CF-48291'
+          }
+        }
+      },
+
+      /* --- and only then does the merchant hear about it ------------------- */
+      {
+        label: 'Did Neha pay?', tool: 'Runs',
+        ask: 'Did Neha pay?',
+        call: { name: 'Runs', summary: 'recovered \u00b7 \u20b92,598 \u00b7 success', ms: 430 },
+        say: 'She did. \u20b92,598 by UPI, on the second attempt.'
       }
     ]
   },
@@ -4514,16 +4552,9 @@ const DEMOS = {
     blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, names the reason, and gets it retried on a method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
     chips: { left: [], right: 'no-code', dot: false },
-    panel: {
-      title: 'Agent',
-      headline: { label: 'status', value: 'Draft' },
-      rows: [
-        { key: 'trigger', label: 'Trigger' },
-        { key: 'condition', label: 'Condition' },
-        { key: 'action', label: 'Action' },
-        { key: 'runs', label: 'Runs' }
-      ]
-    },
+    /* No `panel`, for the reason Cart Recovery has none: the ledger is for
+       a run whose point is state accumulating, and this one has none. The
+       agent is configured once and then it works. The patches went with it. */
     steps: [
       /* --- segment 1: setting the agent up -------------------------------- *
        *
@@ -4545,8 +4576,7 @@ const DEMOS = {
             { k: 'Mandate revoked', n: '18', v: '₹17,982' }
           ]
         },
-        say: '128 renewals failed this month, ₹1,27,872 in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Would you like to set up an agent to help recover them?',
-        patch: {}
+        say: '128 renewals failed this month, ₹1,27,872 in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Would you like to set up an agent to help recover them?'
       },
       {
         label: 'Relay builds it', tool: 'trigger + condition + action',
@@ -4556,15 +4586,13 @@ const DEMOS = {
            trigger. It does not need to: the Agent panel fills in underneath on
            this same beat, which is a better place to read a rule than a
            sentence is. */
-        say: 'It’s done. Would you like to do a test run?',
-        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call · retry or reschedule' }
+        say: 'It’s done. Would you like to do a test run?'
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Yes, let’s do a test run',
         call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
-        say: 'Test run successful. No customer was contacted. Should I activate the Subscription Dunning Agent?',
-        patch: { __headline: 'Tested' }
+        say: 'Test run successful. No customer was contacted. Should I activate the Subscription Dunning Agent?'
       },
       {
         label: 'Switch it on', tool: 'Agents',
@@ -4574,8 +4602,7 @@ const DEMOS = {
           kind: 'live', title: 'It’s live',
           body: 'It’ll now call customers whose renewal didn’t go through and get the payment back on track.'
         },
-        say: 'Your Subscription Agent is now live.',
-        patch: { __headline: 'Active' }
+        say: 'Your Subscription Agent is now live.'
       },
 
       /* --- segment 2: Rahul's phone, not this chat ------------------------ *
@@ -4603,7 +4630,7 @@ const DEMOS = {
               body: 'EMI 2 of 3 (₹999) for your kurta order bounced. Your order is on hold.'
             },
             head: 'Order on hold — EMI bounced',
-            reason: 'We couldn’t charge ₹999 to the card ending 4412 — insufficient funds. Delivery is paused until the payment clears.',
+            reason: 'We couldn’t charge ₹999 to the card ending 4412 — insufficient funds.',
             order: {
               art: 'k', name: 'Chikankari Kurta Set', meta: '#4127 · 3 × ₹999',
               state: 'paused', badge: 'Delivery paused'
@@ -4619,8 +4646,7 @@ const DEMOS = {
             cta: 'Retry payment'
           }
         },
-        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. Calling him',
-        patch: { runs: 'triggered' }
+        say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. Calling him'
       },
 
       /* --- segment 3: the call --------------------------------------------- */
@@ -4641,7 +4667,6 @@ const DEMOS = {
         /* no reply: the call is a set piece you watch, and a bubble
            summarising it afterwards is the agent describing what you just
            saw happen. It reports once, at the end, when asked. */
-        patch: { runs: '1 run · link sent' }
       },
 
       /* --- segment 4: the merchant asks, and the payment answers ---------- *
@@ -4700,8 +4725,7 @@ const DEMOS = {
             }
           }
         },
-        say: 'He did. ₹999 on the credit card, on the second attempt.',
-        patch: { runs: '1 run · recovered', __headline: 'Active' }
+        say: 'He did. ₹999 on the credit card, on the second attempt.'
       }
     ]
   },
@@ -6389,7 +6413,8 @@ function approveGate(a) {
  */
 function waHTML(w) {
   return '<div class="wa">' +
-    '<div class="wa-tag"><span class="live"></span>' + w.tag + '</div>' +
+    // optional, because on a cast the header strip already names the phone
+    (w.tag ? '<div class="wa-tag"><span class="live"></span>' + w.tag + '</div>' : '') +
     '<div class="wa-top"><span class="av">' + w.initials + '</span>' +
       '<span><span class="nm">' + w.who + '</span>' +
       '<span class="st">' + w.status + '</span></span></div>' +
@@ -6619,7 +6644,7 @@ function castScreen(el, screen) {
   el.querySelector('.pc-stage').innerHTML = buyscrHTML(screen);
 }
 
-const CAST_MS = { open: 900, review: 1600, method: 1600, done: 1900, paying: 2100 };
+const CAST_MS = { open: 900, review: 1600, method: 1600, done: 1900, paying: 2100, msg: 3400 };
 
 /** She taps the link, reviews what she is paying for, picks UPI because that
  *  is the method the agent told her would clear, and pays. Then it hands the
@@ -6662,6 +6687,24 @@ async function runCast(sc) {
     await sleep(ms(step));
   }
   if (castEl !== el) return;
+
+  /* And then the message she gets.
+   *
+   * A tick on a checkout is the payment gateway saying the payment worked; it
+   * is not the agent saying anything. The run has just spent a minute making
+   * the case that this thing talks to people, so it ends by talking to her:
+   * her money is in, her order is confirmed, and somebody said thank you. It
+   * belongs on HER phone, not in the merchant's chat -- a receipt described in
+   * a bubble is a claim about a message rather than the message. */
+  if (sc.msg) {
+    // the link is spent -- an "Open" button on an order she has already paid
+    // for is the one thing on this screen that is no longer true
+    el.classList.add('msgd');
+    el.querySelector('.pc-stage').innerHTML = waHTML(sc.msg);
+    await sleep(ms('msg'));
+    if (castEl !== el) return;
+  }
+
   killCast();
   await sleep(320);
 }
@@ -6669,8 +6712,12 @@ async function runCast(sc) {
 /** The no-animation form, for Back and dot-jumps that land ON this beat. */
 function paintCast(sc) {
   const el = buildCast(sc);
-  // a two-state screen rests on the second: the state the beat ENDED in
+  // a cast rests on the state the beat ENDED in
   if (sc.screen) castScreen(el, sc.then || sc.screen);
+  else if (sc.msg) {
+    el.classList.add('msgd');
+    el.querySelector('.pc-stage').innerHTML = waHTML(sc.msg);
+  }
   else castPhase(el, sc, 'done');
 }
 
