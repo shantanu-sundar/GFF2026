@@ -1142,6 +1142,9 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
  */
 .screen.skin-claude {
   --lg-evergreen: #d97757;
+  /* Claude's own mark, from .snapshots/Claude_AI_logo.svg -- inlined, like the
+     Cashfree one, so this section stays a single self-contained file. */
+  --cl-mark: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2275.96 223.53 148.09 148.18%22%3E%3Cpath fill=%22%23d97757%22 d=%22m 105.01,322.07 29.14,-16.35 0.49,-1.42 -0.49,-0.79 h -1.42 l -4.87,-0.3 -16.65,-0.45 -14.44,-0.6 -13.99,-0.75 -3.52,-0.75 -3.3,-4.35 0.34,-2.17 2.96,-1.99 4.24,0.37 9.37,0.64 14.06,0.97 10.2,0.6 15.11,1.57 h 2.4 l 0.34,-0.97 -0.82,-0.6 -0.64,-0.6 -14.55,-9.86 -15.75,-10.42 -8.25,-6 -4.46,-3.04 -2.25,-2.85 -0.97,-6.22 4.05,-4.46 5.44,0.37 1.39,0.37 5.51,4.24 11.77,9.11 15.37,11.32 2.25,1.87 0.9,-0.64 0.11,-0.45 -1.01,-1.69 -8.36,-15.11 -8.92,-15.37 -3.97,-6.37 -1.05,-3.82 c -0.37,-1.57 -0.64,-2.89 -0.64,-4.5 l 4.61,-6.26 2.55,-0.82 6.15,0.82 2.59,2.25 3.82,8.74 6.19,13.76 9.6,18.71 2.81,5.55 1.5,5.14 0.56,1.57 h 0.97 v -0.9 l 0.79,-10.54 1.46,-12.94 1.42,-16.65 0.49,-4.69 2.32,-5.62 4.61,-3.04 3.6,1.72 2.96,4.24 -0.41,2.74 -1.76,11.44 -3.45,17.92 -2.25,12 h 1.31 l 1.5,-1.5 6.07,-8.06 10.2,-12.75 4.5,-5.06 5.25,-5.59 3.37,-2.66 h 6.37 l 4.69,6.97 -2.1,7.2 -6.56,8.32 -5.44,7.05 -7.8,10.5 -4.87,8.4 0.45,0.67 1.16,-0.11 17.62,-3.75 9.52,-1.72 11.36,-1.95 5.14,2.4 0.56,2.44 -2.02,4.99 -12.15,3 -14.25,2.85 -21.22,5.02 -0.26,0.19 0.3,0.37 9.56,0.9 4.09,0.22 h 10.01 l 18.64,1.39 4.87,3.22 2.92,3.94 -0.49,3 -7.5,3.82 -10.12,-2.4 -23.62,-5.62 -8.1,-2.02 h -1.12 v 0.67 l 6.75,6.6 12.37,11.17 15.49,14.4 0.79,3.56 -1.99,2.81 -2.1,-0.3 -13.61,-10.24 -5.25,-4.61 -11.89,-10.01 h -0.79 v 1.05 l 2.74,4.01 14.47,21.75 0.75,6.67 -1.05,2.17 -3.75,1.31 -4.12,-0.75 -8.47,-11.89 -8.74,-13.39 -7.05,-12 -0.86,0.49 -4.16,44.81 -1.95,2.29 -4.5,1.72 -3.75,-2.85 -1.99,-4.61 1.99,-9.11 2.4,-11.89 1.95,-9.45 1.76,-11.74 1.05,-3.9 -0.07,-0.26 -0.86,0.11 -8.85,12.15 -13.46,18.19 -10.65,11.4 -2.55,1.01 -4.42,-2.29 0.41,-4.09 2.47,-3.64 14.74,-18.75 8.89,-11.62 5.74,-6.71 -0.04,-0.97 h -0.34 l -39.15,25.42 -6.97,0.9 -3,-2.81 0.37,-4.61 1.42,-1.5 11.77,-8.1 -0.04,0.04 z%22/%3E%3C/svg%3E");
   background: #faf9f5;
   color: #2a2724;
 }
@@ -1227,7 +1230,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 .screen.skin-claude .thread:empty::before {
   content: var(--cl-greet, "Good afternoon");
   margin: auto; padding-top: 74px; text-align: center;
-  background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Cpath%20d=%22M53.9%2047L51.5%204L48.5%204L46.1%2047Z%20M54.88%2049.35L67.8%2022.17L65.2%2020.67L48.12%2045.45Z%20M54.55%2051.88L88.86%2029.3L87.36%2026.7L50.65%2045.12Z%20M53%2053.9L81%2051.5L81%2048.5L53%2046.1Z%20M50.65%2054.88L89.09%2074.3L90.59%2071.7L54.55%2048.12Z%20M48.12%2054.55L65.2%2079.33L67.8%2077.83L54.88%2050.65Z%20M46.1%2053L48.5%2094L51.5%2094L53.9%2053Z%20M45.12%2050.65L33.2%2076.1L35.8%2077.6L51.88%2054.55Z%20M45.45%2048.12L9.41%2071.7L10.91%2074.3L49.35%2054.88Z%20M47%2046.1L17%2048.5L17%2051.5L47%2053.9Z%20M49.35%2045.12L12.64%2026.7L11.14%2029.3L45.45%2051.88Z%20M51.88%2045.45L35.8%2022.4L33.2%2023.9L45.12%2049.35Z%22%20fill=%22%23d97757%22%20stroke=%22%23d97757%22%20stroke-width=%222.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E") no-repeat top center / 54px 54px;
+  background: var(--cl-mark) no-repeat top center / 54px 54px;
   font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
   font-size: 22px; letter-spacing: -0.015em; color: #2a2724;
 }
@@ -1239,7 +1242,7 @@ h1 .muted { font-weight: 400; color: var(--fg-3); }
 }
 .screen.skin-claude .tick {
   width: 15px; height: 15px; border-radius: 0; margin-top: 2px;
-  background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Cpath%20d=%22M53.9%2047L51.5%204L48.5%204L46.1%2047Z%20M54.88%2049.35L67.8%2022.17L65.2%2020.67L48.12%2045.45Z%20M54.55%2051.88L88.86%2029.3L87.36%2026.7L50.65%2045.12Z%20M53%2053.9L81%2051.5L81%2048.5L53%2046.1Z%20M50.65%2054.88L89.09%2074.3L90.59%2071.7L54.55%2048.12Z%20M48.12%2054.55L65.2%2079.33L67.8%2077.83L54.88%2050.65Z%20M46.1%2053L48.5%2094L51.5%2094L53.9%2053Z%20M45.12%2050.65L33.2%2076.1L35.8%2077.6L51.88%2054.55Z%20M45.45%2048.12L9.41%2071.7L10.91%2074.3L49.35%2054.88Z%20M47%2046.1L17%2048.5L17%2051.5L47%2053.9Z%20M49.35%2045.12L12.64%2026.7L11.14%2029.3L45.45%2051.88Z%20M51.88%2045.45L35.8%2022.4L33.2%2023.9L45.12%2049.35Z%22%20fill=%22%23d97757%22%20stroke=%22%23d97757%22%20stroke-width=%222.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E") no-repeat center / contain;
+  background: var(--cl-mark) no-repeat center / contain;
 }
 .screen.skin-claude .tick svg { display: none; }
 .screen.skin-claude .bubble-me {
@@ -4168,8 +4171,8 @@ const CL_GHOST = '<svg class="cl-ic cl-ghost" viewBox="0 0 24 24" fill="none" st
 
 const CX_ICON = {
  "app": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 9l-3 3 3 3M16 9l3 3-3 3M13.5 6l-3 12\"/></svg>",
- /* Claude's starburst, the same twelve-ray mark the phone opens on */
- "claude": "<svg viewBox=\"0 0 100 100\" fill=\"#d97757\" stroke=\"#d97757\" stroke-width=\"2.4\" stroke-linejoin=\"round\"><path d=\"M53.9 47L51.5 4L48.5 4L46.1 47Z M54.88 49.35L67.8 22.17L65.2 20.67L48.12 45.45Z M54.55 51.88L88.86 29.3L87.36 26.7L50.65 45.12Z M53 53.9L81 51.5L81 48.5L53 46.1Z M50.65 54.88L89.09 74.3L90.59 71.7L54.55 48.12Z M48.12 54.55L65.2 79.33L67.8 77.83L54.88 50.65Z M46.1 53L48.5 94L51.5 94L53.9 53Z M45.12 50.65L33.2 76.1L35.8 77.6L51.88 54.55Z M45.45 48.12L9.41 71.7L10.91 74.3L49.35 54.88Z M47 46.1L17 48.5L17 51.5L47 53.9Z M49.35 45.12L12.64 26.7L11.14 29.3L45.45 51.88Z M51.88 45.45L35.8 22.4L33.2 23.9L45.12 49.35Z\"/></svg>",
+ /* the same mark the phone opens on, from the logo file */
+ "claude": "<svg viewBox=\"75.96 223.53 148.09 148.18\" fill=\"#d97757\"><path d=\"m 105.01,322.07 29.14,-16.35 0.49,-1.42 -0.49,-0.79 h -1.42 l -4.87,-0.3 -16.65,-0.45 -14.44,-0.6 -13.99,-0.75 -3.52,-0.75 -3.3,-4.35 0.34,-2.17 2.96,-1.99 4.24,0.37 9.37,0.64 14.06,0.97 10.2,0.6 15.11,1.57 h 2.4 l 0.34,-0.97 -0.82,-0.6 -0.64,-0.6 -14.55,-9.86 -15.75,-10.42 -8.25,-6 -4.46,-3.04 -2.25,-2.85 -0.97,-6.22 4.05,-4.46 5.44,0.37 1.39,0.37 5.51,4.24 11.77,9.11 15.37,11.32 2.25,1.87 0.9,-0.64 0.11,-0.45 -1.01,-1.69 -8.36,-15.11 -8.92,-15.37 -3.97,-6.37 -1.05,-3.82 c -0.37,-1.57 -0.64,-2.89 -0.64,-4.5 l 4.61,-6.26 2.55,-0.82 6.15,0.82 2.59,2.25 3.82,8.74 6.19,13.76 9.6,18.71 2.81,5.55 1.5,5.14 0.56,1.57 h 0.97 v -0.9 l 0.79,-10.54 1.46,-12.94 1.42,-16.65 0.49,-4.69 2.32,-5.62 4.61,-3.04 3.6,1.72 2.96,4.24 -0.41,2.74 -1.76,11.44 -3.45,17.92 -2.25,12 h 1.31 l 1.5,-1.5 6.07,-8.06 10.2,-12.75 4.5,-5.06 5.25,-5.59 3.37,-2.66 h 6.37 l 4.69,6.97 -2.1,7.2 -6.56,8.32 -5.44,7.05 -7.8,10.5 -4.87,8.4 0.45,0.67 1.16,-0.11 17.62,-3.75 9.52,-1.72 11.36,-1.95 5.14,2.4 0.56,2.44 -2.02,4.99 -12.15,3 -14.25,2.85 -21.22,5.02 -0.26,0.19 0.3,0.37 9.56,0.9 4.09,0.22 h 10.01 l 18.64,1.39 4.87,3.22 2.92,3.94 -0.49,3 -7.5,3.82 -10.12,-2.4 -23.62,-5.62 -8.1,-2.02 h -1.12 v 0.67 l 6.75,6.6 12.37,11.17 15.49,14.4 0.79,3.56 -1.99,2.81 -2.1,-0.3 -13.61,-10.24 -5.25,-4.61 -11.89,-10.01 h -0.79 v 1.05 l 2.74,4.01 14.47,21.75 0.75,6.67 -1.05,2.17 -3.75,1.31 -4.12,-0.75 -8.47,-11.89 -8.74,-13.39 -7.05,-12 -0.86,0.49 -4.16,44.81 -1.95,2.29 -4.5,1.72 -3.75,-2.85 -1.99,-4.61 1.99,-9.11 2.4,-11.89 1.95,-9.45 1.76,-11.74 1.05,-3.9 -0.07,-0.26 -0.86,0.11 -8.85,12.15 -13.46,18.19 -10.65,11.4 -2.55,1.01 -4.42,-2.29 0.41,-4.09 2.47,-3.64 14.74,-18.75 8.89,-11.62 5.74,-6.71 -0.04,-0.97 h -0.34 l -39.15,25.42 -6.97,0.9 -3,-2.81 0.37,-4.61 1.42,-1.5 11.77,-8.1 -0.04,0.04 z\"/></svg>",
  "ide": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2.5\"/><path d=\"M3 8.5h18M8 13l2 2-2 2M12.5 17h3.5\"/></svg>",
  "dash": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1d221f\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2.5\"/><path d=\"M7 15v3M12 10v8M17 13v5\"/></svg>",
  /* the Cashfree mark, inlined so the section stays one self-contained file */
@@ -4623,86 +4626,88 @@ const DEMOS = {
         },
       },
 
-      /* --- segment 3: the call --------------------------------------------- */
+      /* --- segment 3: the call, and the payment it produces ----------------- *
+       *
+       * One beat, not two, for the reason Cart Recovery's is one: the link is
+       * sent on the last line of the call, and hanging up before it is opened
+       * made the recovery something that happened afterwards, off in its own
+       * beat, with the call already a memory. It is not. She is still holding
+       * the phone and the agent is still on it, and that is the whole
+       * difference between a voice agent and an SMS. So `pay` hands the screen
+       * from the call straight to the checkout, and the call comes down behind
+       * it once the checkout is already covering the screen.
+       *
+       * The journey doc ends this segment on "Customer clicks the link, makes
+       * the payment", which is not a spoken line. It is this handoff.
+       */
       {
-        label: 'Relay calls Neha', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'reason given \u00b7 UPI suggested \u00b7 link sent', ms: 720 },
+        label: 'Relay calls Neha, and she pays', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'reason given \u00b7 UPI suggested \u00b7 paid on the call', ms: 720 },
         scene: {
           kind: 'call', glow: '#d5cd2b', orb: 'o2',
           agent: 'Payment Recovery', buyer: 'Neha', initials: 'N',
           phone: '+91 99\u2022\u2022\u2022 \u2022\u2022847', lang: 'English', dur: '00:38',
-          stay: true,
-          result: 'Retry link sent',
+          /* no `result`, and no `stay`: this call does not come back to show a
+             "Retry link sent" card, because the beat ends on her phone instead,
+             on the tick and the push. */
           lines: [
             { t: 'Hi Neha, I noticed your payment didn\u2019t go through earlier. Your bank was facing a temporary issue. Would you like to try again?' },
             { b: 1, t: 'Yes.' },
             { t: 'Here\u2019s the payment link. We recommend using UPI for the payment.' }
-          ]
-        },
-      },
-
-      /* --- segment 4: her phone, not this chat ----------------------------- *
-       *
-       * She opens the link and pays, and none of it happens in the thread. The
-       * agent handed off; if the checkout were drawn as one more card in the
-       * merchant's chat it would read as something Relay did on her behalf,
-       * which is the opposite of what a payment link is. So it takes the whole
-       * screen, the way the call does, and gives it back when she is done.
-       */
-      {
-        label: 'Neha pays by UPI', tool: 'Cashfree Checkout',
-        call: { name: 'checkout.opened', summary: 'link opened \u00b7 UPI \u00b7 \u20b92,598', ms: 210 },
-        scene: {
-          kind: 'cast',
-          /* slower than the default: this one is the payoff of the whole run,
-             so the room gets time to read the amount, see UPI already chosen
-             and watch the tick land */
-          ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
-          cfx: 'full',
-          /* No link row and no on-call strip. By the time she is in here the
-             call has done its job, and both were chrome ABOUT the checkout
-             laid on top of the checkout. What she is looking at is a Cashfree
-             page, so a Cashfree page is all this shows. */
-          tag: 'Neha\u2019s phone \u00b7 live',
-          foot: 'Order OSS-48291 \u00b7 attempt 2 of 3',
-          /* Relay tells HER, the moment the money lands. A recovered payment
-             has two people in it, and she is the one who took a call about a
-             payment that failed. */
-          push: {
-            orb: 'o2', app: 'Relay', when: 'now',
-            title: 'Payment received',
-            body: 'Thank you, Neha. Your \u20b92,598 has gone through and your order is on its way.'
-          },
-          sheet: {
-            store: 'One-Stop Shoppy', amount: '\u20b92,598',
-            sub: 'Order OSS-48291 \u00b7 retry link from Relay'
-          },
-          phases: {
-            review: {
-              tag: 'Review',
-              line: { name: 'Arjun Classic Kurta Pajama', meta: 'Size L and Size M \u00b7 Qty 2', art: 'k' },
-              rows: [
-                { k: 'Cart Total', v: '\u20b92,598' },
-                { k: 'Shipping Charges', v: 'FREE', free: 1 },
-                { k: 'Total Amount', v: '\u20b92,598', tot: 1 }
-              ],
-              cta: 'Continue to pay'
+          ],
+          pay: {
+            kind: 'cast', cfx: 'full',
+            /* slower than the default: this one is the payoff of the whole run,
+               so the room gets time to read the amount, see UPI already chosen
+               and watch the tick land */
+            ms: { open: 1300, review: 2500, method: 2800, done: 2800, paying: 2600 },
+            /* No link row and no on-call strip, the same call Cart Recovery
+               made. Both were chrome ABOUT the checkout laid on top of the
+               checkout; what she is looking at is a Cashfree page, so a
+               Cashfree page is all this shows. The link is not lost, because
+               the call says "here's the payment link" out loud and this
+               sheet's own subtitle reads "retry link from Relay". */
+            tag: 'Neha\u2019s phone',
+            foot: 'Order OSS-48291 \u00b7 attempt 2 of 3',
+            /* Relay tells HER, the moment the money lands. A recovered payment
+               has two people in it, and she is the one who took a call about a
+               payment that failed. */
+            push: {
+              orb: 'o2', app: 'Relay', when: 'now',
+              title: 'Payment received',
+              body: 'Thank you, Neha. Your \u20b92,598 has gone through and your order is on its way.'
             },
-            method: {
-              tag: 'Choose a method',
-              methods: [
-                { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
-                  note: 'Suggested Method' },
-                { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
-                { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
-              ],
-              cta: 'Pay \u20b92,598'
+            sheet: {
+              store: 'One-Stop Shoppy', amount: '\u20b92,598',
+              sub: 'Order OSS-48291 \u00b7 retry link from Relay'
             },
-            done: {
-              tag: 'Paid',
+            phases: {
+              review: {
+                tag: 'Review',
+                line: { name: 'Arjun Classic Kurta Pajama', meta: 'Size L and Size M \u00b7 Qty 2', art: 'k' },
+                rows: [
+                  { k: 'Cart Total', v: '\u20b92,598' },
+                  { k: 'Shipping Charges', v: 'FREE', free: 1 },
+                  { k: 'Total Amount', v: '\u20b92,598', tot: 1 }
+                ],
+                cta: 'Continue to pay'
+              },
+              method: {
+                tag: 'Choose a method',
+                methods: [
+                  { ic: 'upi', name: 'UPI', sub: 'GPay, PhonePe, Paytm, any app', state: 'pick',
+                    note: 'Suggested Method' },
+                  { ic: 'card', name: 'Credit or debit card', sub: 'Visa, Mastercard, RuPay' },
+                  { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
+                ],
+                cta: 'Pay \u20b92,598'
+              },
               done: {
-                t: 'Payment successful', amt: '\u20b92,598',
-                sub: 'CF-48291 \u00b7 UPI \u00b7 attempt 2 of 3'
+                tag: 'Paid',
+                done: {
+                  t: 'Payment successful', amt: '\u20b92,598',
+                  sub: 'CF-48291 \u00b7 UPI \u00b7 attempt 2 of 3'
+                }
               }
             }
           }
@@ -4712,7 +4717,7 @@ const DEMOS = {
       },
 
       /* --- and only then does the merchant hear about it ------------------- */
-      {
+            {
         label: 'Did Neha pay?', tool: 'Runs',
         ask: 'Did Neha pay?',
         call: { name: 'Runs', summary: 'recovered \u00b7 \u20b92,598 \u00b7 success', ms: 430 },
@@ -4825,92 +4830,85 @@ const DEMOS = {
         say: 'Rahul’s renewal just failed. EMI 2 of 3 on his kurta order, ₹999, insufficient funds, and Myra has paused the delivery until it clears. Calling him'
       },
 
-      /* --- segment 3: the call --------------------------------------------- */
+      /* --- segment 3: the call, and he pays on it ------------------------- *
+       *
+       * The link goes out on the agent's last line, and hanging up before it is
+       * opened made the recovery something that happened afterwards, off in its
+       * own beat, with the call already a memory. It is not: he is still
+       * holding the phone and the agent is still on it, which is the entire
+       * difference between a voice agent and an SMS. So the checkout takes the
+       * screen over the live call, and the call only comes down once the money
+       * has landed.
+       *
+       * Nothing here is narrated. The agent is not talking over his checkout
+       * while he is standing in it; it reports on the next beat, when asked.
+       */
       {
-        label: 'Relay calls Rahul', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called · retry now · link sent', ms: 700 },
+        label: 'Relay calls Rahul, and he pays', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'called · retry now · paid on the call', ms: 700 },
         scene: {
           kind: 'call', glow: '#b493ea', orb: 'o4',
           agent: 'Subscription Dunning', buyer: 'Rahul', initials: 'R',
           phone: '+91 97••• ••305', lang: 'English', dur: '00:34',
-          stay: true,
           result: 'Payment link sent', amount: '₹999',
           lines: [
             { t: 'Hi Rahul, your ₹999 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
             { b: 1, t: 'Yes we can try now.' },
-            { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' }
-          ]
-        },
-        /* no reply: the call is a set piece you watch, and a bubble
-           summarising it afterwards is the agent describing what you just
-           saw happen. It reports once, at the end, when asked. */
-      },
-
-      /* --- segment 4: his phone, not this chat ---------------------------- *
-       *
-       * He opens the link and pays, and none of it happens in the thread. The
-       * agent handed off; drawn as one more card in the merchant's chat it
-       * would read as something Relay did on his behalf, which is the opposite
-       * of what a payment link is. So it takes the screen over the live call,
-       * and hands it back when he is done.
-       *
-       * Nothing here is narrated. The agent is not talking over his checkout
-       * while he is standing in it.
-       */
-      {
-        label: 'Rahul pays', tool: 'Cashfree Checkout',
-        call: { name: 'checkout.opened', summary: 'link opened · ₹999', ms: 210 },
-        scene: {
-          kind: 'cast', cfx: 'full',
-          /* slower than the default: this is the payoff of the whole run, so
-             the room gets time to read the amount, see the card the agent
-             recommended already chosen, and watch the tick land */
-          ms: { open: 1300, review: 2500, method: 2900, done: 2600, paying: 2600, push: 3400 },
-          tag: 'Rahul’s phone',
-          /* No link row: he has already opened it, and a "Complete your
-             payment / Open" strip over the page he opened is chrome about
-             the checkout laid on the checkout. */
-          foot: 'Mandate MYR-4127 · attempt 2 of 3',
-          /* Relay tells HIM, the moment the money lands. A recovered
-             renewal has two people in it, and he is the one who took a
-             call about a payment that failed. */
-          push: {
-            orb: 'o4', app: 'Relay', when: 'now',
-            title: 'Payment received',
-            body: 'Thank you, Rahul. Your ₹999 has gone through and EMI 2 of 3 is cleared.'
-          },
-          sheet: {
-            store: 'Myra', amount: '₹999',
-            sub: 'Renewal · EMI 2 of 3 · link from Relay'
-          },
-          phases: {
-            review: {
-              tag: 'Review',
-              line: { art: 'k', name: 'Chikankari Kurta Set', meta: 'Order #4127 · instalment 2 of 3' },
-              rows: [
-                { k: 'Instalment 2 of 3', v: '₹999' },
-                { k: 'Late fee', v: 'WAIVED', free: 1 },
-                { k: 'Total', v: '₹999', tot: 1 }
-              ],
-              cta: 'Proceed to Pay ₹999'
+            { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' },
+            { b: 1, t: 'Got it, paying now.' }
+          ],
+          pay: {
+            kind: 'cast', cfx: 'full',
+            /* slower than the default: this is the payoff of the whole run, so
+               the room gets time to read the amount, see the card the agent
+               recommended already chosen, and watch the tick land */
+            ms: { open: 1300, review: 2500, method: 2900, done: 2600, paying: 2600, push: 3400 },
+            tag: 'Rahul’s phone',
+            /* No link row: he has already opened it, and a "Complete your
+               payment / Open" strip over the page he opened is chrome about
+               the checkout laid on the checkout. */
+            foot: 'Mandate MYR-4127 · attempt 2 of 3',
+            /* Relay tells HIM, the moment the money lands. A recovered
+               renewal has two people in it, and he is the one who took a
+               call about a payment that failed. */
+            push: {
+              orb: 'o4', app: 'Relay', when: 'now',
+              title: 'Payment received',
+              body: 'Thank you, Rahul. Your ₹999 has gone through and EMI 2 of 3 is cleared.'
             },
-            method: {
-              tag: 'Choose a method',
-              methods: [
-                { ic: 'card', name: 'Credit card', sub: 'HDFC •••• 8821', state: 'pick',
-                  note: 'Suggested on the call — a low balance will not block this' },
-                { ic: 'card', name: 'Debit card', sub: 'HDFC •••• 4412', state: 'off',
-                  note: 'Declined 1 Sep · insufficient funds' },
-                { ic: 'upi', name: 'UPI', sub: 'Any UPI app' },
-                { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
-              ],
-              cta: 'Pay ₹999'
+            sheet: {
+              store: 'Myra', amount: '₹999',
+              sub: 'Renewal · EMI 2 of 3 · link from Relay'
             },
-            done: {
-              tag: 'Paid',
+            phases: {
+              review: {
+                tag: 'Review',
+                line: { art: 'k', name: 'Chikankari Kurta Set', meta: 'Order #4127 · instalment 2 of 3' },
+                rows: [
+                  { k: 'Instalment 2 of 3', v: '₹999' },
+                  { k: 'Late fee', v: 'WAIVED', free: 1 },
+                  { k: 'Total', v: '₹999', tot: 1 }
+                ],
+                cta: 'Proceed to Pay ₹999'
+              },
+              method: {
+                tag: 'Choose a method',
+                methods: [
+                  { ic: 'card', name: 'Credit card', sub: 'HDFC •••• 8821', state: 'pick',
+                    note: 'Suggested on the call — a low balance will not block this' },
+                  { ic: 'card', name: 'Debit card', sub: 'HDFC •••• 4412', state: 'off',
+                    note: 'Declined 1 Sep · insufficient funds' },
+                  { ic: 'upi', name: 'UPI', sub: 'Any UPI app' },
+                  { ic: 'bank', name: 'Netbanking', sub: '50+ banks' }
+                ],
+                cta: 'Pay ₹999'
+              },
               done: {
-                t: 'Payment successful', amt: '₹999',
-                sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
+                tag: 'Paid',
+                done: {
+                  t: 'Payment successful', amt: '₹999',
+                  sub: 'CF-4127-2 · credit card •••• 8821<br>1 Sep · EMI 2 of 3 cleared'
+                }
               }
             }
           }
