@@ -3454,72 +3454,19 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 .st-cap .amt { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6b7280; white-space: nowrap; }
 .store.paid .st-cap .amt { color: #047857; font-weight: 700; }
 
-@media (max-width: 700px) {
-  /* too narrow for a rail beside the transcript -- stack it under, and let both
-     it and the transcript shrink so the lid keeps its 596:376 proportions */
-  .screen.term {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto;
-    grid-template-areas: "top" "thread" "panel" "composer";
-  }
-  .screen.term .ledger {
-    border-right: 0;
-    border-top: 1px solid rgba(29, 34, 31, 0.09);
-    padding: 9px 12px 10px;
-    overflow: hidden;
-  }
-  .screen.term .ledger .rows { grid-template-columns: 1fr 1fr; margin-top: 7px; }
-  /* ShirtShop under a phone-width lid: three cards across become unreadable,
-     so show the first one only -- which is what the store does on a phone anyway */
-  .st-chrome { padding: 6px 10px 6px 44px; }
-  .st-nav { padding: 7px 10px; gap: 6px; }
-  .st-brand { font-size: 11px; }
-  .st-links { font-size: 8px; gap: 2px; }
-  .st-links span { padding: 3px 6px; }
-  /* the section heading and the size chips are the first things to go: the grid
-     row is ~130px under a phone-width lid and the card has to fit inside it.
-     The nav already says ShirtShop, so the heading is the cheapest thing to cut. */
-  .st-head, .st-sizes { display: none; }
-  .st-grid { grid-template-columns: 1fr; gap: 0; padding: 6px 10px 4px; }
-  .st-card:nth-child(n + 2) { display: none; }
-  .st-info { padding: 6px 7px 7px; }
-  .st-shot { height: 38px; }
-  .st-name { font-size: 10.5px; }
-  .st-price { font-size: 13px; }
-  .st-btn { font-size: 9px; padding: 6px 8px; }
-  .st-cap { padding: 6px 10px 8px; font-size: 9px; gap: 6px; }
-  .st-cap .tick { width: 14px; height: 14px; }
-  .st-cap .tick svg { width: 8px; height: 8px; }
-  .st-cap .amt { font-size: 9px; }
-
-  /* the payment step keeps the total and the button; the explainer card goes */
-  .st-pay { padding: 8px 10px 6px; }
-  .st-method, .st-secure { display: none; }
-  .st-cols { grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
-  .st-h2 { font-size: 11px; }
-  .st-cta { margin-top: 8px; padding: 8px; font-size: 10px; }
-  .st-sum { padding: 7px 8px; }
-  .st-sum .r:not(.tot) { display: none; }
-  .st-sum .r.tot { border-top: 0; margin-top: 0; padding-top: 0; }
-
-  /* the sheet is already phone-shaped, so it only has to fit the lid */
-  .cf { width: calc(100% - 18px); max-height: calc(100% - 26px); }
-  .cf-done { width: 190px; padding: 14px 12px; }
-  .cf-done .amt { font-size: 17px; }
-}
+/* No viewport rules for the terminal or the store any more.
+ *
+ * They used to exist because the lid was fluid: below 700px it shrank, so the
+ * file rail had to stack and ShirtShop had to drop two of its three products
+ * to survive a ~270px-tall band. The screen is now a fixed 360 x 800 at every
+ * window size, on the page and on the booth alike, so a layout keyed to how
+ * big the WINDOW is would only ever be wrong. The store rules below are the
+ * phone-storefront ones the booth shipped, and they are unconditional. */
 
 @media (max-width: 980px) {
   .demo, .demo.wide { grid-template-columns: 1fr; }
   .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
   .phone-wrap { order: -1; min-height: 0; }
-  /* a flex item's automatic minimum size is its content, which beats
-     aspect-ratio and stretches the lid into a slab -- so pin it to 0 */
-  .phone.as-laptop { width: min(596px, 100%); height: auto; min-height: 0; aspect-ratio: 596 / 376; }
-}
-@media (max-width: 700px) {
-  /* still landscape, but tall enough to hold a page at phone widths */
-  .phone.as-laptop { aspect-ratio: 4 / 3; }
-  .phone.as-laptop::after { width: 100%; }
 }
 
 /* =====================================================================
@@ -3565,12 +3512,11 @@ body.booth .card.demo {
 }
 body.booth .phone-wrap { min-height: 0; }
 
-/* The chassis in BOTH shapes is now just the frame. Skills still gets
-   `.as-laptop` from setChassis() -- the JS is untouched -- it just has
-   nowhere to widen to, and `.screen.term` carries the terminal on its
-   own (see the portrait terminal rules below). */
+/* The chassis is just the frame here. Skills still gets `.as-term` from
+   setChassis(), which on the page grows the phone to hold a 360x800 screen;
+   on the booth the screen IS 360x800, so the class has nothing left to do. */
 body.booth .phone,
-body.booth .phone.as-laptop {
+body.booth .phone.as-term {
   width: 360px; height: 800px;
   padding: 0; border-radius: 0;
   background: none; box-shadow: none;
@@ -3578,49 +3524,22 @@ body.booth .phone.as-laptop {
 }
 body.booth .phone::before,
 body.booth .phone::after,
-body.booth .phone.as-laptop::before,
-body.booth .phone.as-laptop::after,
 body.booth .notch { display: none; }
 /* `overflow: clip` rather than the inherited `hidden`: the four level
    panels sit under `transform: scale(1.05)` while they are `.gone`, which
    overhangs 9px a side and makes `.screen` a scroll container it has no
    business being. `clip` clips without ever becoming one. */
 body.booth .screen,
-body.booth .phone.as-laptop .screen { border-radius: 0; overflow: clip; }
+body.booth .phone.as-term .screen { border-radius: 0; overflow: clip; }
 /* no notch to clear any more */
 body.booth .ph-top { padding-top: 14px; }
 body.booth .backbtn { top: 12px; }
 
-/* --- the terminal stacks on the CLASS, not on a viewport media query ---
- *
- * This is the bug `?booth` on a laptop exposes. The `max-width: 700px` rules
- * further down already know how to put the file rail under the transcript,
- * and at a 360px viewport they fire, so booth mode looked correct on the
- * kiosk and in a 360-wide test. But `?booth` sizes the SCREEN to 360x800
- * while leaving the viewport at 1440 -- the media query never fires, the
- * 186px rail stays beside a 174px transcript, and the install banner and
- * every tool line are cut in half.
- *
- * A layout that depends on how big the screen is cannot be keyed to how big
- * the window is. Booth mode is 360x800 by definition, so it carries its own
- * copy and is self-sufficient at any window size.
- */
-body.booth .screen.term {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto;
-  grid-template-areas:
-    "top"
-    "thread"
-    "panel"
-    "composer";
-}
-body.booth .screen.term .ledger {
-  border-right: 0;
-  border-top: 1px solid rgba(29, 34, 31, 0.09);
-  padding: 9px 12px 10px;
-  overflow: hidden;
-}
-body.booth .screen.term .ledger .rows { grid-template-columns: 1fr 1fr; margin-top: 7px; }
+/* The terminal needs nothing here any more. It used to carry a booth-only
+   copy of the portrait layout, because the only other copy lived behind a
+   `max-width: 700px` media query that `?booth` never fires. The portrait
+   layout is now simply what `.screen.term` IS, so both surfaces read the
+   same rule and there is nothing left to keep in sync. */
 
 /* 800px is 100px more than the phone was ever drawn for, and on the home
    grid that landed as dead black under the third tile. The tiles take it:
@@ -3632,94 +3551,98 @@ body.booth .hcard { flex: 1; min-height: 0; }
 
 /* --- the store, as a phone storefront --------------------------------
  *
- * The `max-width: 700px` rules were written for a phone-WIDE laptop lid
- * about 270px tall: they delete the section heading, the size chips and
- * two of the three products because nothing else fits in that band. A
- * booth screen inverts the problem -- 360 wide but 800 tall, height to
- * spare -- so booth mode puts all of it back and lets the grid run down
- * the page the way a phone shop actually does.
+ * These were the booth's rules and they are now everyone's. The sizes above
+ * them were picked against a 596px laptop lid inside a 1440px page, and a
+ * `max-width: 700px` block cut ShirtShop down to one product to survive that
+ * lid at phone widths. Both were answers to a lid that no longer exists: the
+ * screen is 360 wide and 800 tall wherever it runs, which inverts the problem
+ * -- narrow, but with height to spare -- so the section heading, the size
+ * chips and all three products come back and the grid runs down the page the
+ * way a phone shop actually does.
  *
- * The type goes up with it. Every size in here was picked against a 596px
- * lid sitting inside a 1440px page; on a screen that IS 360px the same
+ * The type goes up with it, because on a screen that IS 360px the smaller
  * numbers read as a picture of a website rather than as a website.
+ *
+ * Nothing here is booth-only. The store and the drop-in exist solely inside
+ * the Skills demo, so one copy serves the kiosk and the page both.
  */
-body.booth .st-chrome { padding: 9px 12px 9px 46px; }
-body.booth .st-url { font-size: 11px; padding: 5px 13px; }
-body.booth .st-nav { padding: 11px 14px; }
-body.booth .st-logo { width: 24px; height: 24px; }
-body.booth .st-logo svg { width: 13px; height: 13px; }
-body.booth .st-brand { font-size: 15px; }
-body.booth .st-links { font-size: 11px; gap: 3px; }
-body.booth .st-links span { padding: 5px 9px; }
-body.booth .st-av { width: 22px; height: 22px; font-size: 9px; }
+.st-chrome { padding: 9px 12px 9px 46px; }
+.st-url { font-size: 11px; padding: 5px 13px; }
+.st-nav { padding: 11px 14px; }
+.st-logo { width: 24px; height: 24px; }
+.st-logo svg { width: 13px; height: 13px; }
+.st-brand { font-size: 15px; }
+.st-links { font-size: 11px; gap: 3px; }
+.st-links span { padding: 5px 9px; }
+.st-av { width: 22px; height: 22px; font-size: 9px; }
 
-body.booth .st-head { display: block; padding: 13px 14px 0; }
-body.booth .st-head .h { font-size: 16px; }
-body.booth .st-head .c { font-size: 11px; margin-top: 2px; }
+.st-head { display: block; padding: 13px 14px 0; }
+.st-head .h { font-size: 16px; }
+.st-head .c { font-size: 11px; margin-top: 2px; }
 
 /* flex, not a one-column grid: with a definite height the grid divided it
    into three equal rows and clipped 58px off the bottom of every card --
    the price, the stock pill and Add to Cart, i.e. the whole product. A
    flex column sizes each card to its own content and scrolls. */
-body.booth .st-grid {
+.st-grid {
   display: flex; flex-direction: column; gap: 11px;
   padding: 11px 14px 14px;
   overflow-y: auto;
 }
-body.booth .st-card { display: flex; flex: none; }   /* two and three are back */
-body.booth .st-shot { height: 122px; }
-body.booth .st-shot svg { width: 74px; height: 74px; }
-body.booth .st-new { font-size: 8px; padding: 3px 7px; top: 7px; right: 7px; }
-body.booth .st-info { padding: 10px 11px 11px; }
-body.booth .st-name { font-size: 13px; }
-body.booth .st-sizes { display: flex; margin: 8px 0 7px; }
-body.booth .st-sizes i { font-size: 9.5px; padding: 5px 0; }
-body.booth .st-price { font-size: 16px; }
-body.booth .st-stock { font-size: 8.5px; padding: 3px 7px; }
-body.booth .st-btn { font-size: 11.5px; padding: 9px; margin-top: 8px; }
-body.booth .st-btn svg { width: 12px; height: 12px; }
+.st-card { display: flex; flex: none; }   /* two and three are back */
+.st-shot { height: 122px; }
+.st-shot svg { width: 74px; height: 74px; }
+.st-new { font-size: 8px; padding: 3px 7px; top: 7px; right: 7px; }
+.st-info { padding: 10px 11px 11px; }
+.st-name { font-size: 13px; }
+.st-sizes { display: flex; margin: 8px 0 7px; }
+.st-sizes i { font-size: 9.5px; padding: 5px 0; }
+.st-price { font-size: 16px; }
+.st-stock { font-size: 8.5px; padding: 3px 7px; }
+.st-btn { font-size: 11.5px; padding: 9px; margin-top: 8px; }
+.st-btn svg { width: 12px; height: 12px; }
 
 /* The payment step reorders, because a column is not a two-column layout
    stacked. On a phone the order is what you are buying, what it costs, how
    you are paying, then the button -- so the summary side comes first and
    Proceed to Pay stays last, where a thumb expects it. */
-body.booth .st-pay { padding: 14px 14px 12px; }
-body.booth .stp { font-size: 10.5px; padding: 6px 12px; }
-body.booth .stp svg { width: 10px; height: 10px; }
-body.booth .st-cols {
+.st-pay { padding: 14px 14px 12px; }
+.stp { font-size: 10.5px; padding: 6px 12px; }
+.stp svg { width: 10px; height: 10px; }
+.st-cols {
   display: flex; flex-direction: column; gap: 15px;
   margin-top: 14px; overflow-y: auto;
 }
-body.booth .st-cols > div:first-child { order: 2; }
-body.booth .st-side { order: 1; align-self: stretch; }
-body.booth .st-h2 { font-size: 15px; }
-body.booth .st-method { display: flex; padding: 11px 12px; margin-top: 10px; }
-body.booth .st-method .ic { width: 24px; height: 24px; }
-body.booth .st-method .ic svg { width: 13px; height: 13px; }
-body.booth .st-method b { font-size: 12.5px; }
-body.booth .st-method i { font-size: 10.5px; }
-body.booth .st-secure { display: flex; font-size: 10.5px; margin-top: 10px; }
-body.booth .st-secure svg { width: 12px; height: 12px; }
-body.booth .st-cta { font-size: 14px; padding: 13px; margin-top: 13px; border-radius: 11px; }
-body.booth .st-cart .hd { font-size: 10px; padding-bottom: 7px; }
-body.booth .st-cline { padding: 9px 10px; }
-body.booth .st-cline .pic { width: 40px; height: 40px; }
-body.booth .st-cline .pic svg { width: 30px; height: 30px; }
-body.booth .st-cline .tx b { font-size: 12px; }
-body.booth .st-cline .tx i { font-size: 10px; }
-body.booth .st-cline .pz { font-size: 13px; }
-body.booth .st-sum { padding: 11px 12px; }
-body.booth .st-sum .r { display: flex; font-size: 11.5px; padding: 4px 0; }
-body.booth .st-sum .r.tot {
+.st-cols > div:first-child { order: 2; }
+.st-side { order: 1; align-self: stretch; }
+.st-h2 { font-size: 15px; }
+.st-method { display: flex; padding: 11px 12px; margin-top: 10px; }
+.st-method .ic { width: 24px; height: 24px; }
+.st-method .ic svg { width: 13px; height: 13px; }
+.st-method b { font-size: 12.5px; }
+.st-method i { font-size: 10.5px; }
+.st-secure { display: flex; font-size: 10.5px; margin-top: 10px; }
+.st-secure svg { width: 12px; height: 12px; }
+.st-cta { font-size: 14px; padding: 13px; margin-top: 13px; border-radius: 11px; }
+.st-cart .hd { font-size: 10px; padding-bottom: 7px; }
+.st-cline { padding: 9px 10px; }
+.st-cline .pic { width: 40px; height: 40px; }
+.st-cline .pic svg { width: 30px; height: 30px; }
+.st-cline .tx b { font-size: 12px; }
+.st-cline .tx i { font-size: 10px; }
+.st-cline .pz { font-size: 13px; }
+.st-sum { padding: 11px 12px; }
+.st-sum .r { display: flex; font-size: 11.5px; padding: 4px 0; }
+.st-sum .r.tot {
   font-size: 13px; border-top: 1px solid rgba(17, 24, 39, 0.1);
   margin-top: 6px; padding-top: 8px;
 }
-body.booth .st-sum .r.tot b { font-size: 16px; }
+.st-sum .r.tot b { font-size: 16px; }
 
-body.booth .st-cap { padding: 11px 14px 13px; font-size: 12px; }
-body.booth .st-cap .tick { width: 19px; height: 19px; }
-body.booth .st-cap .tick svg { width: 11px; height: 11px; }
-body.booth .st-cap .amt { font-size: 11px; }
+.st-cap { padding: 11px 14px 13px; font-size: 12px; }
+.st-cap .tick { width: 19px; height: 19px; }
+.st-cap .tick svg { width: 11px; height: 11px; }
+.st-cap .amt { font-size: 11px; }
 
 /* --- the drop-in, as the bottom sheet it is on a phone ----------------
  *
@@ -3729,71 +3652,71 @@ body.booth .st-cap .amt { font-size: 11px; }
  * edge at full width. It slides rather than scales: a sheet that zooms out
  * of the centre of a phone reads as a modal, not as a checkout.
  */
-body.booth .cf {
+.cf {
   left: 0; right: 0; top: auto; bottom: 0;
-  width: 360px; height: 568px;
+  width: auto; height: 568px;
   border-radius: 20px 20px 0 0;
   transform: translateY(22px);
 }
-body.booth .store.cfopen .cf { transform: none; }
-body.booth .store.paid .cf { transform: translateY(22px); }
+.store.cfopen .cf { transform: none; }
+.store.paid .cf { transform: translateY(22px); }
 
-body.booth .occ-strip { font-size: 10px; padding: 5px 0; gap: 6px; }
-body.booth .occ-strip svg { width: 12px; height: 12px; }
-body.booth .occ-head { padding: 10px 13px 8px; gap: 9px; }
-body.booth .occ-head .bk { font-size: 17px; }
-body.booth .occ-head .logo { width: 34px; height: 34px; border-radius: 9px; }
-body.booth .occ-head .logo svg { width: 19px; height: 19px; }
-body.booth .occ-head .nm { font-size: 15px; }
-body.booth .occ-head .amt { font-size: 13px; padding: 5px 9px; }
-body.booth .occ-sec { font-size: 9.5px; padding-bottom: 8px; }
-body.booth .occ-sec .cfl { width: 17px; height: 17px; }
+.occ-strip { font-size: 10px; padding: 5px 0; gap: 6px; }
+.occ-strip svg { width: 12px; height: 12px; }
+.occ-head { padding: 10px 13px 8px; gap: 9px; }
+.occ-head .bk { font-size: 17px; }
+.occ-head .logo { width: 34px; height: 34px; border-radius: 9px; }
+.occ-head .logo svg { width: 19px; height: 19px; }
+.occ-head .nm { font-size: 15px; }
+.occ-head .amt { font-size: 13px; padding: 5px 9px; }
+.occ-sec { font-size: 9.5px; padding-bottom: 8px; }
+.occ-sec .cfl { width: 17px; height: 17px; }
 
-body.booth .occ-body { padding: 10px 11px; }
-body.booth .occ-card { padding: 9px 11px; border-radius: 11px; margin-bottom: 8px; }
-body.booth .occ-addr { font-size: 10.5px; }
-body.booth .occ-ship { font-size: 10.5px; margin-top: 7px; padding-top: 7px; gap: 7px; }
-body.booth .occ-ship svg { width: 15px; height: 15px; }
+.occ-body { padding: 10px 11px; }
+.occ-card { padding: 9px 11px; border-radius: 11px; margin-bottom: 8px; }
+.occ-addr { font-size: 10.5px; }
+.occ-ship { font-size: 10.5px; margin-top: 7px; padding-top: 7px; gap: 7px; }
+.occ-ship svg { width: 15px; height: 15px; }
 
-body.booth .occ-lbl { padding: 9px 2px 5px; }
-body.booth .occ-lbl .l { font-size: 11px; }
-body.booth .occ-lbl .r { font-size: 10.5px; }
-body.booth .occ-item { padding: 9px; border-radius: 11px; gap: 9px; }
-body.booth .occ-item .pic { width: 46px; height: 46px; border-radius: 8px; }
-body.booth .occ-item .pic svg { width: 35px; height: 35px; }
-body.booth .occ-item .nm { font-size: 11px; }
-body.booth .occ-item .pr { margin-top: 5px; gap: 5px; }
-body.booth .occ-item .pr b { font-size: 12.5px; }
-body.booth .occ-item .pr s { font-size: 10px; }
-body.booth .occ-item .pr i { font-size: 9px; padding: 2px 7px; }
-body.booth .occ-item .add { font-size: 10px; padding: 5px 12px; margin-top: 6px; }
+.occ-lbl { padding: 9px 2px 5px; }
+.occ-lbl .l { font-size: 11px; }
+.occ-lbl .r { font-size: 10.5px; }
+.occ-item { padding: 9px; border-radius: 11px; gap: 9px; }
+.occ-item .pic { width: 46px; height: 46px; border-radius: 8px; }
+.occ-item .pic svg { width: 35px; height: 35px; }
+.occ-item .nm { font-size: 11px; }
+.occ-item .pr { margin-top: 5px; gap: 5px; }
+.occ-item .pr b { font-size: 12.5px; }
+.occ-item .pr s { font-size: 10px; }
+.occ-item .pr i { font-size: 9px; padding: 2px 7px; }
+.occ-item .add { font-size: 10px; padding: 5px 12px; margin-top: 6px; }
 
-body.booth .occ-off { padding: 8px 10px; gap: 8px; border-radius: 9px; }
-body.booth .occ-off .cd, body.booth .occ-off .ds { font-size: 10.5px; }
-body.booth .occ-off .ap { font-size: 9.5px; padding: 4px 10px; }
+.occ-off { padding: 8px 10px; gap: 8px; border-radius: 9px; }
+.occ-off .cd, .occ-off .ds { font-size: 10.5px; }
+.occ-off .ap { font-size: 9.5px; padding: 4px 10px; }
 
-body.booth .occ-pm { padding: 8px 10px; margin-top: 7px; border-radius: 11px; gap: 9px; }
-body.booth .occ-pm .rd { width: 14px; height: 14px; }
-body.booth .occ-pm.on .rd { box-shadow: inset 0 0 0 3.5px #111827; }
-body.booth .occ-pm .ic { width: 27px; height: 27px; border-radius: 7px; }
-body.booth .occ-pm .ic svg { width: 16px; height: 16px; }
-body.booth .occ-pm .nm { font-size: 11.5px; }
-body.booth .occ-pm .nm i { font-size: 9px; margin-top: 2px; }
-body.booth .occ-pm .vl { font-size: 12px; }
-body.booth .occ-pm-note { font-size: 9.5px; padding-top: 7px; }
+.occ-pm { padding: 8px 10px; margin-top: 7px; border-radius: 11px; gap: 9px; }
+.occ-pm .rd { width: 14px; height: 14px; }
+.occ-pm.on .rd { box-shadow: inset 0 0 0 3.5px #111827; }
+.occ-pm .ic { width: 27px; height: 27px; border-radius: 7px; }
+.occ-pm .ic svg { width: 16px; height: 16px; }
+.occ-pm .nm { font-size: 11.5px; }
+.occ-pm .nm i { font-size: 9px; margin-top: 2px; }
+.occ-pm .vl { font-size: 12px; }
+.occ-pm-note { font-size: 9.5px; padding-top: 7px; }
 
-body.booth .occ-bar { margin: 8px 11px 11px; padding: 11px 14px; border-radius: 11px; }
-body.booth .occ-bar .t, body.booth .occ-bar .go { font-size: 15px; }
+.occ-bar { margin: 8px 11px 11px; padding: 11px 14px; border-radius: 11px; }
+.occ-bar .t, .occ-bar .go { font-size: 15px; }
 
-body.booth .cf-load .lgif { width: 240px; }
-body.booth .cf-load .lnote { font-size: 11px; }
-body.booth .cf-pay { font-size: 12px; }
-body.booth .cf-done { width: 292px; padding: 24px 20px; border-radius: 16px; }
-body.booth .cf-done .big { width: 42px; height: 42px; margin-bottom: 12px; }
-body.booth .cf-done .big svg { width: 21px; height: 21px; }
-body.booth .cf-done .t { font-size: 16px; }
-body.booth .cf-done .amt { font-size: 26px; }
-body.booth .cf-done .sub { font-size: 10px; margin-top: 8px; }
+.cf-load .lgif { width: 240px; }
+.cf-load .lnote { font-size: 11px; }
+.cf-pay { font-size: 12px; }
+.cf-done { width: 292px; padding: 24px 20px; border-radius: 16px; }
+.cf-done .big { width: 42px; height: 42px; margin-bottom: 12px; }
+.cf-done .big svg { width: 21px; height: 21px; }
+.cf-done .t { font-size: 16px; }
+.cf-done .amt { font-size: 26px; }
+.cf-done .sub { font-size: 10px; margin-top: 8px; }
 
 @media (prefers-reduced-motion: reduce) {
   .rise, .caret { animation: none !important; }
@@ -4221,7 +4144,7 @@ const DEMOS = {
     title: 'Cart <span class="thin">Recovery</span>',
     blurb: 'Say what you want chased. Relay builds it, tests it, waits for your yes — then calls the buyer back itself.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Cart Recovery journey doc' },
-    chips: { left: [], right: 'no-code', dot: false },
+    chips: { left: [], dot: false },
     /* No `panel`. The ledger is for a run whose point is state accumulating,
        and this one has none: the agent is configured once and then it works.
        A slab reading "Draft" under the chat was a status for a thing with no
@@ -4450,7 +4373,7 @@ const DEMOS = {
     title: 'Payment <span class="thin">Recovery</span>',
     blurb: 'Every failed payment gets a second try — with the real reason, and the method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Payment Recovery journey doc' },
-    chips: { left: [], right: 'no-code', dot: false },
+    chips: { left: [], dot: false },
     /* No `panel`, for the reason Cart Recovery has none: the ledger is for a
        run whose point is state accumulating, and this one has none. The agent
        is configured once and then it works, so a slab reading "Draft" under
@@ -4648,7 +4571,7 @@ const DEMOS = {
     title: 'Subscription <span class="thin">Dunning</span>',
     blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, names the reason, and gets it retried on a method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
-    chips: { left: [], right: 'no-code', dot: false },
+    chips: { left: [], dot: false },
     /* No `panel`, for the reason Cart Recovery has none: the ledger is for
        a run whose point is state accumulating, and this one has none. The
        agent is configured once and then it works. The patches went with it. */
@@ -5306,7 +5229,13 @@ function loadDemo(key) {
         '<span class="chip' + (i === 0 && c.dot && !a ? '' : ' mono') + '">' +
         (i === 0 && c.dot && !a ? '<span class="gdot"></span>' : '') + t + '</span>')
       .join('') +
-    (cl || gp ? '' : '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>') +
+    // `right` is optional. The three Relay agents have nothing to put there:
+    // the header already carries the agent's face and name, and a "no-code"
+    // badge next to it was selling the product to a merchant who has already
+    // bought it and is watching it work.
+    (c.right && !cl && !gp
+      ? '<span class="chip mono" style="margin-left:auto">' + c.right + '</span>'
+      : '') +
     (cl ? CL_GHOST : '') +
     (gp ? GPT_NEW : '');
 
@@ -6989,9 +6918,10 @@ function setProvenance(key) {
   document.getElementById('prov-text').textContent = p.text;
 }
 
-/** The chassis follows the demo: a phone for the merchant surfaces, a laptop
- *  for the one that lives in a terminal. Same .screen node either way, so taps,
- *  dots, the tour and the connect beat carry over untouched. */
+/** The chassis follows the demo: every surface is a phone, and the one that
+ *  lives in a terminal gets the taller one -- 382x822, so its screen is the
+ *  360x800 the booth renders. Same .screen node either way, so taps, dots,
+ *  the tour and the connect beat carry over untouched. */
 const demoCardEl = document.querySelector('.demo');
 const phoneEl = document.querySelector('.phone');
 
@@ -7002,7 +6932,7 @@ function setChassis(key) {
   killVoice();
   const term = !!(key && DEMOS[key] && DEMOS[key].surface === 'terminal');
   screenEl2.classList.toggle('term', term);
-  phoneEl.classList.toggle('as-laptop', term);
+  phoneEl.classList.toggle('as-term', term);
   demoCardEl.classList.toggle('wide', term);
 }
 
