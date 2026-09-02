@@ -348,7 +348,7 @@ For Builders** opens **three more**. Each demo has its own steps, its own bottom
 
 | demo | what it shows | panel | provenance |
 |---|---|---|---|
-| **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the ready-made template loads → test run → activate → her ₹2,598 One-Stop Shoppy cart → the exit prompt over that cart → **Relay calls Priya** → she taps the link and pays → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
+| **Relay · Cart Recovery** *(home → shelf → onboarding)* | **spoken** prompt → the month in a table → the template loads → test run → activate → her ₹2,598 One-Stop Shoppy cart → the exit prompt over that cart → **Relay calls Priya inside ten minutes** → the link, the UPI she went looking for, the tick → Relay reports it | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Payment Recovery** *(shelf → onboarding)* | **spoken** prompt → 38 failures by reason → Relay builds it → test run → activate → the buyer's own screen shows a ₹2,598 UPI decline → **Relay calls Rahul** → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Relay · Subscription Dunning** *(shelf → onboarding)* | **spoken** prompt → renewals by reason → the ready-made template loads → test run → activate → Rahul's ₹999 EMI bounces on Myra and the delivery pauses → **Relay calls Rahul** → he opens the link → the Cashfree checkout, credit card preselected → paid → Runs tab | Agent: trigger, condition, action, runs | Illustrative |
 | **Cashfree Spark** *(home → dashboard)* | settlement asked and answered in Hindi → a customer's payment → a refund that **stops and asks** → say yes → a ₹500 link → WhatsApp → paid | Account: settlement, order, refund, link | Illustrative |
@@ -496,7 +496,7 @@ The extra beats they gained are the ones the docs actually describe:
 | | Cart Recovery | Subscription Dunning | Payment Recovery |
 |---|---|---|---|
 | segment 2 | **two beats on one screen** — her cart, then the exit prompt over it | one beat: the push, the paused order and the EMI schedule | one beat |
-| segment 4 | she taps the link and **pays**, on the same screen she walked off | **three beats on the checkout** — Proceed to Pay, the method, the tick | none |
+| segment 4 | **three beats on the checkout** — the link she opens, the method, the tick | **three beats on the checkout** — Proceed to Pay, the method, the tick | none |
 
 **Segment 2 is two beats and they are in that order for a reason.** You have to see the cart
 before it can be abandoned: a "Leaving Checkout?" card with nothing behind it is a dialog, not
@@ -505,15 +505,39 @@ a drop-off. So the first beat draws One-Stop Shoppy's cart — ₹2,598, the kur
 **as a sheet over that same cart**, which dims underneath rather than being replaced. The basket
 she is walking away from stays on screen behind the question she is being asked.
 
-**Segment 4 closes on the same device.** The call ends on a link and the code `5XCA`; the next
-beat is her tapping it, and the receipt lands as the same sheet on the same One-Stop Shoppy
-screen — ₹2,338, the ₹2,598 basket less the 10% the agent was allowed to give. A run that
-opens on a cart and closes on a tick has told the whole story on one screen.
+### Relay says nothing for six beats, and that is the loudest thing it does
 
-`OSS_CART` / `OSS_CART_PAID` are **one cart read by all three of those beats**, the same
+From her cart to the tick — the cart, the exit prompt, the call, the link, the method, the
+payment — **not one beat on Cart Recovery carries a `say`.** The merchant types nothing either.
+The composer reads *"Tap, it runs without you"* for the whole stretch, and Relay does not speak
+again until it has something to report, which is the last beat and is that she paid.
+
+That is the product's claim rendered as an interaction rather than asserted in a bubble. It is
+also the reason `say` is optional: `runStep()` and `rebuild()` both guard it, as do the two
+terminal painters. **Do not add narration back to those beats.** A sentence describing the
+screen the viewer is already looking at is the agent talking about itself, and it costs the run
+the one thing that makes it read as automatic.
+
+The same discipline shortens segment 1. *"It's done. Would you like to do a test run?"* plus a
+ledger that visibly fills in with the trigger, the condition and the action beats a paragraph
+restating all three: one is a product doing something, the other is a chatbot narrating itself.
+
+### The reason she gives is the reason the checkout answers
+
+Priya ticks **"I didn't find the payment mode I was looking for"** on the way out. On the call
+she says the same thing in her own words. Three beats later the method screen opens with **UPI
+already selected**, carrying the note *"The mode she left the checkout looking for"*.
+
+That chain is the whole demo. Break any link of it — change the ticked option, change her line,
+change which method is picked — and the checkout screen goes back to being a screenshot of a
+checkout. **The agent calls inside ten minutes, not thirty**, which is why the condition reads
+`above ₹2,000 · idle 10 min` and the tool row says `called in 6 min`; those three numbers move
+together.
+
+`OSS_CART` / `OSS_CART_PAID` are **one cart read by the cart and exit beats**, the same
 discipline `CART_ITEMS` follows in the Skills store and for the same reason: 1,299 × 2 = the
 2,598 the exit prompt shows, 10% of which is the 260 the call gives away and the 2,338 the
-receipt, the ledger and the Runs tab all report. Change one of those numbers and change the
+checkout, the ledger and the Runs tab all report. Change one of those numbers and change the
 constant, not the beat.
 
 **Subscription Dunning ends on the checkout, and its segment 2 is an instalment rather than
