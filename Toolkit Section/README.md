@@ -488,7 +488,7 @@ the shelf run it:
 | **1 · set the agent up** | the merchant **speaks** the opening prompt, Relay answers with the month's numbers, loads the ready-made template, **test-runs it**, then asks before switching it on | the merchant |
 | **2 · the drop-off** | the payment fails, or the cart is left at the payment step | **the buyer** |
 | **3 · the call** | Relay rings the buyer, works the objection, sends a link | both |
-| **4 · the payoff** *(Cart Recovery, Dunning)* | the buyer comes back through the link and pays | **the buyer** |
+| **4 · the payoff** *(Cart Recovery, Dunning)* | the buyer opens the link and pays — on Cart Recovery, without hanging up first | **the buyer** |
 
 **Cart Recovery and Subscription Dunning run the whole arc; Payment Recovery does not yet.**
 The extra beats they gained are the ones the docs actually describe:
@@ -496,13 +496,20 @@ The extra beats they gained are the ones the docs actually describe:
 | | Cart Recovery | Subscription Dunning | Payment Recovery |
 |---|---|---|---|
 | segment 2 | **one cast, two states** — her cart, then the exit prompt on it | one cast: the push, the paused order and the EMI schedule | one cast |
-| segment 4 | **one cast** — the link, review, method, **the Cashfree loader**, the tick | the same, with the loader | the same, without the loader |
+| segment 4 | **no separate beat** — she pays *on* the call | *in flux* | *in flux* |
+
+> **Only the Cart Recovery column is verified.** Payment Recovery and Subscription Dunning are
+> being reworked toward the same shape by a parallel effort and their segment 4 is mid-move —
+> Payment Recovery still pays in its own beat after the call, Dunning currently has no payment
+> beat at all. Do not read this table as a description of those two until they settle.
 
 ### The buyer's screens are not in the chat
 
 **Nothing that happens on Priya's phone is a card in the merchant's thread.** It takes the
 whole screen — `.paycast`, the same chassis the call uses — held for a few seconds and then
-handed back. Rendered as bubbles those beats read as *things Relay said*, which is the exact
+handed back. And it takes the whole of it: the checkout and the screen cast both grow to the
+bottom edge, so the Pay button and the exit sheet ride that edge the way a real mobile
+checkout's do, instead of floating as a card with half the phone empty underneath. Rendered as bubbles those beats read as *things Relay said*, which is the exact
 opposite of what they are: they are what is on somebody else's phone while the merchant does
 nothing at all. Whatever the thread shows, the merchant did or the agent said. That rule is
 what makes the run legible.
@@ -519,6 +526,19 @@ and then lands the exit prompt **as a sheet on that same cart**. `runCast()` tak
 screen for exactly this; without it a screen cast is a single held state, which is all the
 other two agents need.
 
+### She pays while she is still on the phone
+
+The link goes out on the agent's **last line of the call**, and the checkout opens over the
+live call rather than after it. `pay` hangs off the call scene: `runCall()` plays its lines,
+runs that cast, and only then shows the result and hangs up. The clock keeps ticking behind it
+— the tag on the checkout reads *"Priya's phone · still on the call"*, and a timer frozen
+behind that would be calling it a lie — and the call comes back to a result line that says
+**"Paid on the call · code 5XCA · ₹2,338"**, not "link sent".
+
+Hanging up first made the recovery something that happened *afterwards*, in its own beat, with
+the call already a memory. It is not. She is still holding the phone and the agent is still on
+it, and that is the entire difference between a voice agent and an SMS.
+
 ### Relay speaks five times in the whole run, and the fifth is the payoff
 
 | beat | who | what |
@@ -526,15 +546,19 @@ other two agents need.
 | 1–3 | both | the month's numbers, the template, the test run |
 | 4 | Relay | the green "It's live" card. **No `say`** — the card is the reply |
 | 5 | *nobody* | **Priya's phone.** Her cart, then she leaves |
-| 6 | Relay | *"Priya left a ₹2,598 cart… she could not find the payment mode she was looking for. Calling her now."* |
-| 7 | *nobody* | **the call** |
-| 8 | *nobody* | **Priya's phone.** The link, review, UPI, the Cashfree loader, the tick |
-| 9 | the merchant | *"Did Priya pay?"* → and Relay answers |
+| 6 | Relay | *"Priya left a ₹2,598 cart at the payment step. She could not find the payment mode she was looking for. Calling her now."* |
+| 7 | *nobody* | **the call, and the payment on it** |
+| 8 | the merchant | *"Did Priya pay?"* → and Relay answers |
 
-Beats 5, 7 and 8 carry **no `say` and no `ask`**: three consecutive taps where neither party
-types anything and the screen just shows what is happening. The composer reads *"Tap, it runs
-without you"* through all of them. That is the product's claim rendered as an interaction
-rather than asserted in a bubble.
+Beats 5 and 7 carry **no `say` and no `ask`**: two consecutive taps where neither party types
+anything and the screen just shows what is happening. The composer reads *"Tap, it runs without
+you"* through both. That is the product's claim rendered as an interaction rather than asserted
+in a bubble.
+
+**Beat 2 carries no tool row either.** `call` is optional the same way `say` is. Picking a
+ready-made template off a list is a choice, not a call, and printing `load template … 1240ms`
+under it dressed the choice up as machinery that had not run. The ledger filling in with the
+trigger, the condition and the action is what shows it landed.
 
 `say` is optional for this reason — `runStep()` and `rebuild()` both guard it, as do the two
 terminal painters. **Do not add narration back to those beats.** A sentence describing the
