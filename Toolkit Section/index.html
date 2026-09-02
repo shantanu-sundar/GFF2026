@@ -1643,6 +1643,98 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
   .buyscr .bs-notif, .buyscr .bs-banner { animation: none }
 }
 
+/* --- the EMI order, and where in the plan it broke ------------------------ *
+ *
+ * A bounced instalment is neither a checkout error nor a paused SaaS plan. It
+ * is one line of a plan the buyer is halfway through, with a delivery hanging
+ * off it -- so the screen has to carry the ORDER (what is being held) and the
+ * SCHEDULE (where it broke), or the stakes never read.
+ *
+ * Two rows rather than one. The badge is the whole point of the block, since
+ * it is what says money failing has stopped a delivery, so it must never be
+ * the thing that gets squeezed: giving it the second row beside the mono meta
+ * line lets the title own the full width and stops both from ellipsing.
+ */
+.buyscr .bs-order {
+  display: grid; grid-template-columns: 34px 1fr; column-gap: 9px; row-gap: 4px;
+  align-items: center;
+  margin-top: 9px; padding: 8px 9px;
+  border-radius: 12px;
+  background: #faf9f7; border: 1px solid rgba(29, 34, 31, 0.09);
+}
+.buyscr .bs-order .pic {
+  grid-row: 1 / 3; align-self: center;
+  width: 34px; height: 34px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: #fff; border: 1px solid rgba(29, 34, 31, 0.09);
+}
+.buyscr .bs-order .pic svg { width: 24px; height: 24px }
+.buyscr .bs-order b {
+  grid-column: 2; min-width: 0;
+  font-size: 11.5px; font-weight: 700; letter-spacing: -0.015em; color: var(--graphite);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.buyscr .bs-order .mt {
+  grid-column: 2;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 7px; align-items: center;
+}
+.buyscr .bs-order .mt i {
+  min-width: 0; font-style: normal;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(29, 34, 31, 0.46);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* Named for the delivery state rather than the colour -- and deliberately not
+   `.hold`, because a bare state word is exactly the class name some layout
+   wrapper elsewhere in this file will also want, and that collision is silent:
+   the badge simply inherits the wrapper's width and blows out of the card. */
+.buyscr .bs-badge {
+  padding: 3px 6px; border-radius: 5px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.buyscr .bs-badge.paused { background: #fdeeee; color: #a33232; border: 1px solid rgba(214, 69, 69, 0.22) }
+.buyscr .bs-badge.moving { background: #edfaf3; color: #0d5f40; border: 1px solid rgba(0, 173, 108, 0.26) }
+
+/* Three rows, because the buyer's stake is the two instalments either side of
+   the one that failed -- one already paid, one still coming. */
+.buyscr .bs-emi { margin-top: 10px }
+.buyscr .bs-emi .eh {
+  padding: 0 1px 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.44);
+}
+.buyscr .bs-erow { display: flex; align-items: center; gap: 8px; padding: 6px 1px }
+.buyscr .bs-erow + .bs-erow { border-top: 1px solid rgba(29, 34, 31, 0.07) }
+.buyscr .bs-erow .st {
+  flex: none; width: 15px; height: 15px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 8px; font-weight: 700; color: #fff;
+}
+.buyscr .bs-erow .st svg { width: 8px; height: 8px }
+.buyscr .bs-erow.paid .st { background: var(--evergreen) }
+.buyscr .bs-erow.fail .st { background: #d64545 }
+.buyscr .bs-erow.due  .st { background: #fff; color: rgba(29, 34, 31, 0.4); border: 1.5px solid rgba(29, 34, 31, 0.18) }
+.buyscr .bs-erow .tx { flex: 1; min-width: 0 }
+.buyscr .bs-erow .tx b { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em; color: var(--graphite) }
+.buyscr .bs-erow .tx i { display: block; margin-top: 1px; font-style: normal; font-size: 9px; color: rgba(29, 34, 31, 0.46) }
+.buyscr .bs-erow .pz {
+  flex: none; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+  color: rgba(29, 34, 31, 0.85); font-variant-numeric: tabular-nums;
+}
+.buyscr .bs-erow.fail .tx i, .buyscr .bs-erow.fail .pz { color: #a33232 }
+.buyscr .bs-erow.due .tx b, .buyscr .bs-erow.due .pz { color: rgba(29, 34, 31, 0.45) }
+
+/* The button the buyer is being left alone with -- the thing the agent exists
+   to make unnecessary, so it is drawn as a real CTA rather than a hint. */
+.buyscr .bs-cta {
+  margin-top: 11px; padding: 9px; border-radius: 11px;
+  background: var(--graphite); color: #fff; text-align: center;
+  font-size: 11.5px; font-weight: 700; letter-spacing: -0.01em;
+}
+
+/* a letter mark needs a colour on the brick tile; an emoji ignores it */
+.buyscr .bs-notif .ic { color: #fff }
+
 /* --- 2b. the month at a glance -------------------------------------------
  *
  * Both docs open the same way: the merchant asks what happened this month and
@@ -2261,6 +2353,48 @@ img.cfmark { display: block; object-fit: contain; max-width: 100%; max-height: 1
 /* the installed skill tree */
 .ttree { display: block; color: rgba(29, 34, 31, 0.5); white-space: pre; }
 .ttree .hi { color: rgba(29, 34, 31, 0.78); }
+
+/* CLAUDE.md's routing table, drawn rather than described.
+ *
+ * "CLAUDE.md is the routing table" was a sentence in the voiceover, which is
+ * the weakest way to make the claim -- the whole point is that a question on
+ * the left lands on a file on the right without the merchant choosing it. So
+ * it is a table with arrows, shown once, on the beat where Claude picks the
+ * file up. The left column is fixed-width so all four arrows line up into one
+ * column: a ragged arrow reads as four statements, an aligned one reads as a
+ * mechanism. 106 + 20 + the longest path still clears the 360px transcript
+ * booth mode gives it.
+ */
+.troute {
+  margin: 5px 0 3px;
+  border: 1px solid rgba(29, 34, 31, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 5px 16px rgba(29, 34, 31, 0.05);
+  overflow: hidden;
+}
+.troute .hd {
+  display: flex; align-items: baseline; gap: 7px;
+  padding: 4px 10px;
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(29, 34, 31, 0.36);
+  border-bottom: 1px solid rgba(29, 34, 31, 0.08);
+}
+.troute .hd b {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0;
+  text-transform: none; color: var(--evergreen);
+}
+.troute .rw {
+  display: grid;
+  grid-template-columns: 106px 20px 1fr;
+  align-items: center;
+  padding: 3.5px 10px;
+  font-size: 10.5px; line-height: 1.45;
+}
+.troute .rw + .rw { border-top: 1px dashed rgba(29, 34, 31, 0.07); }
+.troute .q  { color: rgba(29, 34, 31, 0.5); }
+.troute .ar { color: var(--evergreen); font-weight: 700; text-align: center; }
+.troute .to { color: rgba(29, 34, 31, 0.82); font-weight: 500; }
 
 /* the payoff: skills generate code, so the code shows up on screen */
 .tcode {
@@ -3642,21 +3776,21 @@ const DEMOS = {
             { k: 'Refunded', n: '21', v: '₹48,900' }
           ]
         },
-        say: '1,284 paid — but 412 walked at the payment step, ₹9.8L of it, and 38 payments failed outright. Which of those do you want an agent on first?',
+        say: '1,284 paid, but 412 walked at the payment step, ₹9.8L of it, and 38 payments failed outright. Which of those do you want an agent on first?',
         patch: {}
       },
       {
         label: 'Pick the template', tool: 'Abandoned Cart Recovery',
         ask: 'Abandoned cart. Based on the metrics you’ve shared, that one is the more important one for me.',
         call: { name: 'load template', summary: 'Abandoned Cart Recovery · wired', ms: 1240 },
-        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go — trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Want to take it for a quick spin and give it a test run?',
+        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go: trigger Cart Abandoned, condition above ₹2,000 and idle 30 minutes, action a call with a personalised offer capped at 10%. Want to take it for a quick spin and give it a test run?',
         patch: { trigger: 'Cart Abandoned', condition: 'above ₹2,000 · 10% cap', action: 'Voice call + offer' }
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Okay — take it for a spin.',
         call: { name: 'test run', summary: 'dry run · 1 call · no buyer contacted', ms: 860 },
-        say: 'Took it for a spin and it ran clean. It held the 30 minutes, placed the call and stopped the discount at 10% — and nothing reached a real buyer. Ready to turn it on and start recovering those abandoned carts?',
+        say: 'Took it for a spin and it ran clean. It held the 30 minutes, placed the call and stopped the discount at 10%, and nothing reached a real buyer. Ready to turn it on and start recovering those abandoned carts?',
         patch: { __headline: 'Tested' }
       },
       {
@@ -3667,7 +3801,7 @@ const DEMOS = {
           kind: 'live', title: 'It’s live',
           body: 'It’ll now reach out to customers who leave something in their cart and help them finish their purchase.'
         },
-        say: 'Your newest teammate just clocked in — and it won’t be clocking out.',
+        say: 'Your newest teammate just clocked in, and it won’t be clocking out.',
         patch: { __headline: 'Active' }
       },
 
@@ -3690,7 +3824,7 @@ const DEMOS = {
           cart: OSS_CART,
           meta: 'Order OSS-48291 · at the payment step'
         },
-        say: 'Priya is at the payment step with two kurta pajamas — ₹2,598, and nothing charged yet.',
+        say: 'Priya is at the payment step with two kurta pajamas worth ₹2,598, and nothing charged yet.',
         patch: {}
       },
       {
@@ -3731,7 +3865,7 @@ const DEMOS = {
             { t: 'Here’s the payment link. Use the code 5XCA to get 10% off at the checkout.' }
           ]
         },
-        say: 'It waited the 30 minutes, called her, heard the real reason and sent a link with the 10% you capped it at — not a rupee deeper.',
+        say: 'It waited the 30 minutes, called her, heard the real reason and sent a link with the 10% you capped it at, not a rupee deeper.',
         patch: { runs: '1 run' }
       },
       {
@@ -3743,14 +3877,14 @@ const DEMOS = {
           cart: OSS_CART_PAID,
           done: { t: 'Payment successful', amt: '₹2,338', sub: 'OSS-48291 · code 5XCA · ₹260 off' }
         },
-        say: 'She tapped the link and paid — ₹2,338 back, at the cap and not a rupee deeper.',
+        say: 'She tapped the link and paid. ₹2,338 back, at the cap and not a rupee deeper.',
         patch: { runs: 'recovered ₹2,338' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
         ask: 'Did that one come back?',
         call: { name: 'Runs', summary: 'recovered · ₹2,338 · success', ms: 430 },
-        say: '₹2,338 recovered. The Runs tab is the execution history — every agent, when it ran, how long it took and how it ended.',
+        say: '₹2,338 recovered. The Runs tab is the execution history: every agent, when it ran, how long it took and how it ended.',
         patch: { runs: '1 run · recovered' }
       }
     ]
@@ -3798,21 +3932,21 @@ const DEMOS = {
             { k: 'Other', n: '3', v: '₹12,300' }
           ]
         },
-        say: '38 payments failed this month — ₹2,06,400 the account never collected. The biggest slice is a bank-side decline, and that one usually clears on a second attempt. Want me to put an agent on these?',
+        say: '38 payments failed this month, ₹2,06,400 the account never collected. The biggest slice is a bank-side decline, and that one usually clears on a second attempt. Want me to put an agent on these?',
         patch: {}
       },
       {
         label: 'Pick the template', tool: 'Failed Payment Recovery',
         ask: 'Failed payment recovery. With this many payments dropping off, that one hits home.',
         call: { name: 'load template', summary: 'Failed Payment Recovery · wired', ms: 1180 },
-        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go — trigger Payment Failed, condition above ₹1,000, and a call that carries the real decline reason and a fresh link on whichever method is clearing. Want to take it for a quick spin and give it a test run?',
+        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go: trigger Payment Failed, condition above ₹1,000, and a call that carries the real decline reason and a fresh link on whichever method is clearing. Want to take it for a quick spin and give it a test run?',
         patch: { trigger: 'Payment Failed', condition: 'above ₹1,000', action: 'Call + retry link' }
       },
       {
         label: 'Test run', tool: 'Dry run',
         ask: 'Okay — take it for a spin.',
         call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
-        say: 'Took it for a spin and it ran clean. It read the decline reason off the failed payment, placed the call and issued the retry link — and nothing reached a real buyer. Ready to turn it on and start winning those payments back?',
+        say: 'Took it for a spin and it ran clean. It read the decline reason off the failed payment, placed the call and issued the retry link, and nothing reached a real buyer. Ready to turn it on and start winning those payments back?',
         patch: { __headline: 'Tested' }
       },
       {
@@ -3823,7 +3957,7 @@ const DEMOS = {
           kind: 'live', title: 'It’s live',
           body: 'It’ll now reach out to customers whose payment didn’t go through and help them finish paying.'
         },
-        say: 'Your newest teammate just clocked in — and it won’t be clocking out.',
+        say: 'Your newest teammate just clocked in, and it won’t be clocking out.',
         patch: { __headline: 'Active' }
       },
 
@@ -3858,7 +3992,7 @@ const DEMOS = {
           },
           meta: 'Order OSS-48291 · retry 1 of 3'
         },
-        say: 'Rahul tapped pay on ₹2,598 and his bank declined it — nothing charged. He is looking at a Retry button that goes back to the same bank, which is why most of these never come back on their own. That is the trigger, and that reason is what the agent leads with.',
+        say: 'Rahul tapped pay on ₹2,598 and his bank declined it, with nothing charged. He is looking at a Retry button that goes back to the same bank, which is why most of these never come back on their own. That is the trigger, and that reason is what the agent leads with.',
         patch: { runs: 'triggered' }
       },
 
@@ -3872,12 +4006,12 @@ const DEMOS = {
           phone: '+91 99••• ••847', lang: 'English', dur: '00:38',
           result: 'Retry link sent · UPI', amount: '₹2,598',
           lines: [
-            { t: 'Hi Rahul, I noticed your payment didn’t go through earlier. Your bank was facing a temporary issue — would you like to try again?' },
+            { t: 'Hi Rahul, I noticed your payment didn’t go through earlier. Your bank was facing a temporary issue. Would you like to try again?' },
             { b: 1, t: 'Yes.' },
             { t: 'Here’s the payment link. We recommend using UPI for the payment.' }
           ]
         },
-        say: 'It gave him the actual reason instead of “something went wrong”, pointed him at the method that is clearing, and sent a fresh link. No discount — a failed payment does not need one.',
+        say: 'It gave him the actual reason instead of “something went wrong”, pointed him at the method that is clearing, and sent a fresh link. No discount: a failed payment does not need one.',
         patch: { runs: '1 run' }
       },
       {
@@ -3889,14 +4023,14 @@ const DEMOS = {
           cart: OSS_CART,
           done: { t: 'Payment successful', amt: '₹2,598', sub: 'OSS-48291 · UPI · retry 2 of 3' }
         },
-        say: 'He tapped the link and paid by UPI. The full ₹2,598 — the cart never had to be discounted, it just had to be told what actually went wrong.',
+        say: 'He tapped the link and paid by UPI. The full ₹2,598. The cart never had to be discounted, it just had to be told what actually went wrong.',
         patch: { runs: 'recovered ₹2,598' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
         ask: 'Did he pay?',
         call: { name: 'Runs', summary: 'recovered · ₹2,598 · success', ms: 430 },
-        say: 'Paid on the second attempt, at full price. Every call, reason and retry sits on the run — the Runs tab is the execution history, and the record is exportable.',
+        say: 'Paid on the second attempt, at full price. Every call, reason and retry sits on the run. The Runs tab is the execution history, and the record is exportable.',
         patch: { runs: '1 run · recovered' }
       }
     ]
@@ -3906,7 +4040,7 @@ const DEMOS = {
     agent: { name: 'Subscription Dunning', orb: 'o4' },
     connect: {"host":"Merchant Dashboard","hostIcon":"dash","target":"Cashfree Sandbox","via":"Agents · Runs · Connections","ok":"the sandbox, agents and runs"},
     title: 'Subscription <span class="thin">Dunning</span>',
-    blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, and retries on the day the money actually lands.',
+    blurb: 'A failed renewal is the one failure nobody is standing in front of. The agent calls, names the reason, and gets it retried on a method that will actually clear.',
     provenance: { kind: 'illustrative', text: 'Illustrative - agent copy from the Relay landing page, the run from the Subscription Dunning journey doc' },
     chips: { left: [], right: 'no-code', dot: false },
     panel: {
@@ -3920,114 +4054,149 @@ const DEMOS = {
       ]
     },
     steps: [
-      /* --- segment 1: setting the agent up --- */
+      /* --- segment 1: setting the agent up -------------------------------- *
+       *
+       * The merchant speaks, Relay answers with the month, and from there every
+       * switch is a separate yes: load the template, test it, then turn it on.
+       */
       {
         label: 'Ask about renewals', tool: 'Voice',
         voice: true,
         ask: 'How many renewals failed this month?',
-        call: { name: 'renewals', summary: '96 failed \u00b7 34 churned', ms: 700 },
+        call: { name: 'renewals', summary: '128 failed · ₹1,27,872 at risk', ms: 700 },
         scene: {
-          kind: 'brk', title: 'Renewals this month', total: '2,236 due',
+          kind: 'brk', title: 'Renewals this month', total: '1,840 due',
           rows: [
-            { k: 'Renewed', n: '2,140', v: '\u20b910.6L' },
-            { k: 'Renewal failed', n: '96', v: '\u20b947,900', hot: 1 },
-            { k: '\u2014 of those, churned', n: '34', v: '\u20b916,900' },
-            { k: 'Mandate expired', n: '12', v: '\u20b96,000' }
+            { k: 'Collected', n: '1,712', v: '₹17.1L' },
+            { k: 'Insufficient funds', n: '61', v: '₹60,939', hot: 1 },
+            { k: 'Bank decline', n: '25', v: '₹24,975' },
+            { k: 'Card expired', n: '24', v: '₹23,976' },
+            { k: 'Mandate revoked', n: '18', v: '₹17,982' }
           ]
         },
-        say: '96 renewals failed and 34 of those subscribers lapsed \u2014 \u20b916,900 gone. Only about 3 in 10 ever go and fix the card themselves. Want an agent that calls the rest before the plan lapses?',
+        say: '128 renewals failed this month, ₹1,27,872 in all. Nearly half are insufficient funds, which is a timing problem rather than a customer leaving. Want an agent on those?',
         patch: {}
       },
       {
-        label: 'Relay builds it', tool: 'trigger + condition + action',
+        label: 'Pick the template', tool: 'Subscription Dunning',
         ask: 'Yes, do that.',
-        call: { name: 'build agent', summary: 'Renewal Failed \u2192 call + reschedule', ms: 1210 },
-        say: 'It\u2019s done. Trigger Renewal Failed, condition the mandate is still active, action a call that either retries on the spot or reschedules to a day they pick. Would you like a test run?',
-        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call \u00b7 retry or reschedule' }
+        call: { name: 'load template', summary: 'Subscription Dunning · wired', ms: 1210 },
+        say: 'I’ve just loaded that up for you. Everything in this ready-made template is already wired up and ready to go: trigger Renewal Failed, condition the mandate is still active, action a call that either retries on the spot or moves the date. Want to take it for a quick spin and give it a test run?',
+        patch: { trigger: 'Renewal Failed', condition: 'mandate active', action: 'Call · retry or reschedule' }
       },
       {
         label: 'Test run', tool: 'Dry run',
-        ask: 'Yes, let\u2019s do a test run',
-        call: { name: 'test run', summary: 'dry run \u00b7 retry booked \u00b7 plan held', ms: 820 },
-        say: 'Test run successful \u2014 it read the failure, took a date and booked the retry without touching the plan. No subscriber was contacted. Should I activate the Subscription Dunning Agent?',
+        ask: 'Yes, let’s do a test run.',
+        call: { name: 'test run', summary: 'dry run · reason read · link issued', ms: 840 },
+        say: 'Took it for a spin and it ran clean. It read the failure reason, placed the call and issued a retry link without touching the plan, and no customer was contacted. Ready to turn it on and start winning those renewals back?',
         patch: { __headline: 'Tested' }
       },
       {
         label: 'Switch it on', tool: 'Agents',
-        ask: 'Yes, switch it on for the \u20b9499 plan.',
+        ask: 'Yes, please go ahead.',
         call: { name: 'activate agent', summary: 'status: Active', ms: 520 },
-        say: 'Your Subscription Dunning Agent is now live on that plan. Switch it off from the Agents tab any time.',
+        scene: {
+          kind: 'live', title: 'It’s live',
+          body: 'It’ll now call customers whose renewal didn’t go through and get the payment back on track.'
+        },
+        say: 'Your newest teammate just clocked in, and it won’t be clocking out.',
         patch: { __headline: 'Active' }
       },
 
-      /* --- segment 2: the subscriber's screen. No prompt: it runs without you.
-             A renewal is the one failure nobody is standing in front of, so what
-             reaches Anita is a notification, not a checkout error. --- */
+      /* --- segment 2: the buyer's screen. No prompt: it runs without you. -- *
+       *
+       * A renewal is the one failure nobody is standing in front of, so what
+       * reaches Rahul is a push and an order history, not a checkout error.
+       * The EMI schedule is the part that gives it stakes: he is a third of the
+       * way through a plan, and a delivery has stopped moving because of it.
+       */
       {
-        label: 'She gets the notification', tool: 'Kora Reads',
-        call: { name: 'renewal.failed', summary: 'KR-PRO \u00b7 \u20b9499 \u00b7 push sent', ms: 140 },
+        label: 'His EMI bounces', tool: 'Myra',
+        call: { name: 'renewal.failed', summary: 'MYR-4127 · ₹999 · insufficient funds', ms: 150 },
         scene: {
-          kind: 'buy', tone: 'fail', tag: 'Subscriber\u2019s screen \u00b7 live',
-          store: 'Kora Reads', amount: '\u20b9499',
+          kind: 'buy', tone: 'fail', tag: 'Buyer’s screen · live',
+          store: 'Myra', amount: '₹999', glyph: 'M',
           notif: {
-            app: 'Kora Reads', when: 'now',
-            title: 'Payment failed',
-            body: 'We couldn\u2019t renew your Pro plan. Your subscription is paused for now.'
+            app: 'Myra', when: 'now', ic: 'M',
+            title: 'Your EMI payment didn’t go through',
+            body: 'EMI 2 of 3 (₹999) for your kurta order bounced. Your order is on hold.'
           },
-          head: 'Payment failed',
-          reason: 'Card ending 4412 was declined \u2014 insufficient funds. Nothing was charged.',
-          banner: 'Subscription paused',
-          meta: 'Plan KR-PRO \u00b7 attempt 1 of 3 \u00b7 mandate still active'
+          head: 'Order on hold — EMI bounced',
+          reason: 'We couldn’t charge ₹999 to the card ending 4412 — insufficient funds. Delivery is paused until the payment clears.',
+          order: {
+            art: 'k', name: 'Chikankari Kurta Set', meta: '#4127 · 3 × ₹999',
+            state: 'paused', badge: 'Delivery paused'
+          },
+          emi: {
+            title: 'EMI schedule',
+            rows: [
+              { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹999' },
+              { st: 'fail', k: 'EMI 2 · Payment failed', sub: '1 Sep · Insufficient funds', v: '₹999' },
+              { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹999' }
+            ]
+          },
+          cta: 'Retry payment',
+          meta: 'Mandate MYR-4127 · attempt 1 of 3 · mandate still active'
         },
-        say: 'Anita is not at a checkout, so all she sees is that push and a paused plan. That is exactly where the 7 in 10 quietly go \u2014 nobody sits down to fix a card.',
-        patch: { runs: 'notified' }
+        say: 'Rahul is not at a checkout. He is in his order history. EMI 2 of 3 bounced and Myra has paused the delivery until it clears. That is the trigger, and that reason is the thing worth carrying into the call.',
+        patch: { runs: 'triggered' }
       },
 
-      /* --- segment 3: the call --- */
+      /* --- segment 3: the call -------------------------------------------- */
       {
-        label: 'Relay calls Anita', tool: 'Voice call',
-        call: { name: 'agent run', summary: 'called \u00b7 retry booked for Friday', ms: 680 },
+        label: 'Relay calls Rahul', tool: 'Voice call',
+        call: { name: 'agent run', summary: 'called · retry now · link sent', ms: 700 },
         scene: {
           kind: 'call', glow: '#b493ea', orb: 'o4',
-          agent: 'Subscription Dunning', buyer: 'Anita', initials: 'A',
-          phone: '+91 97\u2022\u2022\u2022 \u2022\u2022305', lang: 'English', dur: '00:36',
-          result: 'Retry scheduled \u00b7 Friday', amount: '\u20b9499/mo',
+          agent: 'Subscription Dunning', buyer: 'Rahul', initials: 'R',
+          phone: '+91 97••• ••305', lang: 'English', dur: '00:34',
+          result: 'Payment link sent · credit card', amount: '₹999',
           lines: [
-            { t: 'Hi Anita, your \u20b9499 renewal didn\u2019t go through. Should we retry now, or would another day work better?' },
-            { b: 1, t: 'Salary hasn\u2019t come in yet. Try again in 2 days?' },
-            { t: 'Got it \u2014 we\u2019ll retry on Friday. Nothing for you to do, and you keep your Pro access until then.' }
+            { t: 'Hi Rahul, your ₹999 renewal didn’t go through. Looks like a balance issue. Should we retry now, or would another day work better?' },
+            { b: 1, t: 'Yes, we can try now.' },
+            { t: 'Here’s the payment link. Since the balance was the issue, a credit card might work better this time.' }
           ]
         },
-        say: 'It did not push her to pay today, because she could not. It asked, took Friday, and booked the retry. Payment failed just became retry scheduled.',
-        patch: { runs: '1 run \u00b7 retry Fri' }
+        say: 'It named the reason instead of saying “payment failed”, gave him the choice, and when he said now, sent a link on the method that actually clears a balance problem, not the same debit card that just bounced.',
+        patch: { runs: '1 run' }
       },
-
-      /* --- segment 4: Friday. The payoff the doc ends on. --- */
       {
-        label: 'Friday, the retry lands', tool: 'Kora Reads',
-        call: { name: 'renewal.retry', summary: 'KR-PRO \u00b7 \u20b9499 \u00b7 SUCCESS', ms: 260 },
+        label: 'He pays', tool: 'Myra',
+        call: { name: 'renewal.retry', summary: 'MYR-4127 · ₹999 · SUCCESS', ms: 280 },
         scene: {
-          kind: 'buy', tone: 'ok', tag: 'Subscriber\u2019s screen \u00b7 Friday',
-          store: 'Kora Reads', amount: '\u20b9499',
+          kind: 'buy', tone: 'ok', tag: 'Buyer’s screen · after the call',
+          store: 'Myra', amount: '₹999', glyph: 'M',
           notif: {
-            app: 'Kora Reads', when: 'now',
-            title: 'Subscription active',
-            body: 'Your Pro plan renewed for \u20b9499. Nothing else to do.'
+            app: 'Myra', when: 'now', ic: 'M',
+            title: 'EMI 2 paid — your order is moving',
+            body: '₹999 received on your credit card. Delivery resumes today.'
           },
-          head: 'Renewal successful',
-          reason: 'Retried on the card ending 4412, as agreed on the call. Charged \u20b9499.',
-          banner: 'Subscription active',
-          meta: 'Plan KR-PRO \u00b7 attempt 2 of 3 \u00b7 next renewal 4 Oct'
+          head: 'Payment successful',
+          reason: 'Paid on the link from the call, on the credit card the agent suggested. The instalment plan is back on track.',
+          order: {
+            art: 'k', name: 'Chikankari Kurta Set', meta: '#4127 · 3 × ₹999',
+            state: 'moving', badge: 'Out for delivery'
+          },
+          emi: {
+            title: 'EMI schedule',
+            rows: [
+              { st: 'paid', k: 'EMI 1 · Paid', sub: '1 Aug · HDFC credit card', v: '₹999' },
+              { st: 'paid', k: 'EMI 2 · Paid', sub: '1 Sep · Credit card · retried', v: '₹999' },
+              { st: 'due', n: '3', k: 'EMI 3 · Upcoming', sub: '1 Oct', v: '₹999' }
+            ]
+          },
+          banner: 'Delivery resumed',
+          meta: 'Mandate MYR-4127 · attempt 2 of 3 · next instalment 1 Oct'
         },
-        say: 'Friday came, the retry cleared, and she never had to do anything. She was never really leaving \u2014 the money just was not there on Tuesday.',
-        patch: { runs: '1 run \u00b7 renewed' }
+        say: 'Paid on the link, on the card the agent suggested. EMI 2 clears, the plan is whole again and the kurta ships today.',
+        patch: { runs: '1 run · recovered' }
       },
       {
         label: 'Check the runs', tool: 'Runs',
-        ask: 'Did we keep her?',
-        call: { name: 'Runs', summary: 'renewed \u00b7 \u20b9499 \u00b7 success', ms: 430 },
-        say: 'Still subscribed. The Runs tab holds the call, the date she chose and the retry it landed on \u2014 every agent, when it ran, how long it took and how it ended.',
-        patch: { runs: '1 run \u00b7 renewed' }
+        ask: 'Did that one come back?',
+        call: { name: 'Runs', summary: 'recovered · ₹999 · success', ms: 430 },
+        say: '₹999 recovered and a delivery unblocked. The Runs tab is the execution history: every agent, when it ran, how long it took and how it ended.',
+        patch: { runs: '1 run · recovered' }
       }
     ]
   },
@@ -4084,7 +4253,8 @@ const DEMOS = {
             { n: 'GitHub Copilot CLI' },
             { n: 'Kiro' }
           ] } },
-        say: 'It asks which assistants you want. Claude Code here \u2014 the same one command covers the other eight.',
+        // no say: nine frameworks with one ticked says it by itself.
+        say: '',
         patch: {}
       },
       {
@@ -4103,7 +4273,9 @@ const DEMOS = {
             '  \u251c\u2500\u2500 \u2026',
             '  \u2514\u2500\u2500 <span class="hi">validation-and-testing/SKILL.md</span>'
           ] },
-        say: 'The skills land in .claude/skills/cashfree-skills/, and CLAUDE.md at the project root is the routing table \u2014 it tells Claude which one to open for each kind of question.',
+        // no say: the tree IS the sentence. Where CLAUDE.md points is a
+        // separate claim and gets its own drawing, one beat down.
+        say: '',
         patch: { __headline: 'installed', f_skills: 'written', f_manifest: 'written' }
       },
       {
@@ -4113,85 +4285,56 @@ const DEMOS = {
         term: { kind: 'shell', ms: 640, out: [
           { t: 'dim', s: 'Claude Code \u00b7 ready' },
           { t: 'ok', s: 'CLAUDE.md picked up' }
-        ] },
-        say: 'Restart so it picks all this up. From here the skills load on demand \u2014 whichever one your prompt calls for.',
+        ],
+          // What "picked up" bought you, on the beat it is bought. Four rows,
+          // not five: these are the four the next prompt actually walks.
+          route: [
+            { q: 'orders, refunds', to: 'pg/apis/' },
+            { q: 'server code',     to: 'pg/backend-sdks/' },
+            { q: 'checkout UI',     to: 'pg/web-sdk/' },
+            { q: 'test cards',      to: 'validation-and-testing/' }
+          ] },
+        say: 'Restart, and CLAUDE.md is the routing table. The skills load on demand \u2014 whichever one your prompt lands on.',
         patch: { f_manifest: 'loaded' }
       },
       {
-        label: 'The prompt', tool: 'CLAUDE.md',
-        ask: 'Add Cashfree Payments checkout to my app.',
-        call: { name: 'read CLAUDE.md', summary: 'checkout \u2192 pg/', ms: 14 },
-        term: { fn: 'Read(CLAUDE.md)', res: 'checkout \u2192 pg/' },
-        say: 'The manifest routes it. It opens the payment-gateway skills instead of guessing at the API.',
-        patch: { f_manifest: 'read' }
-      },
-      {
-        // no ask: the script has one prompt, everything after it is the assistant working
-        label: 'Keys and SDK', tool: 'pg/backend-sdks/SKILL.md',
-        call: { name: 'read pg/backend-sdks', summary: 'api keys \u00b7 install the SDK', ms: 26 },
+        // One prompt, and the routing table above pays for itself: four reads
+        // in integration order, then the code. This used to be five beats with
+        // a sentence each, narrating a cascade the terminal was already
+        // showing. The cascade IS the product -- no single Read() is -- so it
+        // runs as one beat and the next thing on screen is the shop.
+        label: 'One prompt', tool: 'Add Cashfree to my checkout',
+        ask: 'Add Cashfree to my checkout',
+        call: { name: 'skills', summary: '4 skills read \u00b7 integration written', ms: 137 },
         term: {
-          fn: 'Read(pg/backend-sdks/SKILL.md)',
-          res: 'api keys \u00b7 install the SDK',
+          kind: 'reads',
+          reads: [
+            { fn: 'Read(pg/backend-sdks/SKILL.md)', res: 'api keys \u00b7 install the SDK', ms: 26 },
+            { fn: 'Read(pg/apis/references/SKILL.md)', res: 'create order \u00b7 verify on backend', ms: 44 },
+            { fn: 'Read(pg/web-sdk/SKILL.md)', res: 'sdk v3 \u00b7 checkout()', ms: 22 },
+            { fn: 'Read(validation-and-testing/SKILL.md)', res: 'testing checklist \u00b7 sandbox test data', ms: 31 }
+          ],
+          // Both halves in one card: the order is created on the server, the
+          // drop-in is opened in the browser on that order's session id. Two
+          // cards did not fit the lid without pushing the reads off the top of
+          // the transcript, and the reads are the point of the beat.
           code: {
-            head: 'generated \u00b7 server',
-            body: '<span class="k">const</span> cashfree = <span class="k">new</span> Cashfree(\n' +
-                  '  CFEnvironment.SANDBOX,\n' +
-                  '  process.env.CASHFREE_APP_ID,\n' +
-                  '  process.env.CASHFREE_SECRET_KEY,\n' +
-                  ');'
-          }
-        },
-        say: 'It walks the integration in order, starting where every integration starts: keys and the SDK.',
-        patch: { f_sdk: 'read', output: 'keys + SDK' }
-      },
-      {
-        label: 'Order, then verify', tool: 'pg/apis/references/SKILL.md',
-        call: { name: 'read pg/apis/references', summary: 'create order \u00b7 verify on backend', ms: 44 },
-        term: {
-          fn: 'Read(pg/apis/references/SKILL.md)',
-          res: 'create order \u00b7 verify on backend',
-          code: {
-            head: 'generated \u00b7 server',
+            head: 'generated \u00b7 server + browser',
+            // Broken to <= 46 columns by hand: the card wraps rather than
+            // scrolls, and a wrapped line of generated code reads as a bug
+            // in the code rather than as a narrow lid.
             body: '<span class="k">const</span> order = <span class="k">await</span> cashfree.PGCreateOrder({\n' +
-                  '  order_amount: <span class="n">1042</span>,\n' +
-                  '  order_currency: <span class="s">"INR"</span>,\n' +
+                  '  order_amount: <span class="n">1042</span>, order_currency: <span class="s">"INR"</span>,\n' +
                   '  customer_details,\n' +
                   '});\n' +
-                  '<span class="c">// after the redirect, on your backend:</span>\n' +
-                  '<span class="k">const</span> res = <span class="k">await</span> cashfree.PGOrderFetchPayments(id);\n' +
-                  '<span class="k">const</span> ok = res.data.some(\n' +
-                  '  (t) => t.payment_status === <span class="s">"SUCCESS"</span>);'
+                  '<span class="c">// browser \u2014 the v3 drop-in, on that order</span>\n' +
+                  '<span class="k">const</span> cf = Cashfree({ mode: <span class="s">"sandbox"</span> });\n' +
+                  'cf.checkout({ paymentSessionId });'
           }
         },
-        say: 'It creates the order for the cart total, and verifies on your backend rather than trusting the redirect.',
-        patch: { f_api: 'read', output: 'order + verification' }
-      },
-      {
-        // the browser half: this is what makes Proceed to Pay do anything
-        label: 'Checkout in the browser', tool: 'pg/web-sdk/SKILL.md',
-        call: { name: 'read pg/web-sdk', summary: 'sdk v3 \u00b7 checkout()', ms: 22 },
-        term: {
-          fn: 'Read(pg/web-sdk/SKILL.md)',
-          res: 'sdk.cashfree.com/js/v3 \u00b7 checkout()',
-          code: {
-            head: 'generated \u00b7 browser',
-            body: '<span class="k">const</span> cashfree = Cashfree({ mode: <span class="s">"sandbox"</span> });\n' +
-                  '\n' +
-                  'cashfree.checkout({\n' +
-                  '  paymentSessionId,   <span class="c">// from the order</span>\n' +
-                  '  redirectTarget: <span class="s">"_self"</span>,\n' +
-                  '});'
-          }
-        },
-        say: 'The other half runs in the browser: the v3 SDK opens the Cashfree drop-in with that order\u2019s payment_session_id.',
-        patch: { f_web: 'read', output: 'checkout integration' }
-      },
-      {
-        label: 'Testing checklist', tool: 'validation-and-testing/SKILL.md',
-        call: { name: 'read validation-and-testing', summary: 'testing checklist \u00b7 sandbox test data', ms: 31 },
-        term: { fn: 'Read(validation-and-testing/SKILL.md)', res: 'testing checklist \u00b7 sandbox test data' },
-        say: 'Because it just wrote integration code, it pulls the validation skill too. It generated the code \u2014 running it is still yours.',
-        patch: { f_test: 'read', output: 'code + test checklist' }
+        say: '',
+        patch: { f_manifest: 'read', f_sdk: 'read', f_api: 'read', f_web: 'read',
+                 f_test: 'read', output: 'checkout integration' }
       },
       {
         // the script's outro: "Visual: Website check out - payments."
@@ -4682,10 +4825,24 @@ function tOut(o) {
     (o.t === 'ok' ? TICK : '') + o.s + '</span>';
 }
 
-function tCall(s, ms) {
-  return '<span class="tcall"><i class="bul"></i><span class="fn">' + s.term.fn + '</span>' +
+/** CLAUDE.md's routing table: a question kind on the left, the skill it opens
+ *  on the right, an arrow between them. */
+function tRoute(rows) {
+  return '<div class="troute"><div class="hd"><b>CLAUDE.md</b>routing table</div>' +
+    rows.map((r) =>
+      '<div class="rw"><span class="q">' + r.q + '</span>' +
+      '<span class="ar">\u2192</span><span class="to">' + r.to + '</span></div>').join('') +
+    '</div>';
+}
+
+/** One tool line, taken by hand rather than off a step: the one-prompt beat
+ *  prints four of them and a step carries a single term.fn. */
+function tCallRow(fn, ms) {
+  return '<span class="tcall"><i class="bul"></i><span class="fn">' + fn + '</span>' +
     '<span class="ms">' + ms + '</span></span>';
 }
+
+function tCall(s, ms) { return tCallRow(s.term.fn, ms); }
 
 function tCode(c) {
   return '<div class="tcode"><div class="hd">' + c.head + '</div><pre>' + c.body + '</pre></div>';
@@ -4903,12 +5060,18 @@ function paintStepTerm(s) {
     if (s.term.pick) tLine(tPick(s.term.pick));
     (s.term.out || []).forEach((o) => tLine(tOut(o)));
     if (s.term.tree) tLine(tTree(s.term.tree));
+  } else if (s.term.kind === 'reads') {
+    s.term.reads.forEach((r) => {
+      tLine(tCallRow(r.fn, r.ms + 'ms'));
+      tLine('<span class="tres"><span class="br">\u2514</span>' + r.res + '</span>');
+    });
   } else {
     tLine(tCall(s, s.call.ms + 'ms'));
     tLine('<span class="tres"><span class="br">\u2514</span>' + s.term.res + '</span>');
   }
+  if (s.term.route) tLine(tRoute(s.term.route));
   if (s.term.code) tLine(tCode(s.term.code));
-  tLine('<span class="tsay">' + s.say + '</span>');
+  if (s.say) tLine('<span class="tsay">' + s.say + '</span>');
   applyPatch(s.patch);
 }
 
@@ -4936,6 +5099,17 @@ async function runStepTerm(i) {
       await sleep(95);
     }
     if (s.term.tree) { tLine(tTree(s.term.tree)); await sleep(180); }
+  } else if (s.term.kind === 'reads') {
+    // The cascade, one file at a time and quicker per line than a lone tool
+    // call: four of these at the single-call pacing would outlast the beat.
+    for (const r of s.term.reads) {
+      const row = tLine(tCallRow(r.fn, '\u2026'));
+      await sleep(300);
+      row.innerHTML = tCallRow(r.fn, r.ms + 'ms');
+      await sleep(110);
+      tLine('<span class="tres"><span class="br">\u2514</span>' + r.res + '</span>');
+      await sleep(130);
+    }
   } else {
     const row = tLine(tCall(s, '\u2026'));
     await sleep(Math.min(s.call.ms, 520) + 260);
@@ -4945,6 +5119,11 @@ async function runStepTerm(i) {
   }
 
   applyPatch(s.patch);
+
+  if (s.term.route) {
+    await sleep(180);
+    tLine(tRoute(s.term.route));
+  }
 
   if (s.term.code) {
     await sleep(200);
@@ -4984,8 +5163,13 @@ async function runStepTerm(i) {
     }
   }
 
-  await sleep(180);
-  tLine('<span class="tsay">' + s.say + '</span>');
+  // Beats that show rather than tell carry no say at all now, so the trailing
+  // caption is conditional -- an empty one printed a blank line's worth of
+  // padding under the code.
+  if (s.say) {
+    await sleep(180);
+    tLine('<span class="tsay">' + s.say + '</span>');
+  }
 
   busy = false;
   paintNav();
@@ -5420,6 +5604,30 @@ function bsFailHTML(f) {
   '</div>';
 }
 
+/** The order the instalment hangs off. A bounced EMI is not only money that
+ *  failed, it is a delivery that has stopped, so the badge saying so gets its
+ *  own half of the second row. */
+function bsOrderHTML(o) {
+  return '<div class="bs-order">' +
+    '<span class="pic">' + (ART[o.art] || ART.k) + '</span>' +
+    '<b>' + o.name + '</b>' +
+    '<span class="mt"><i>' + o.meta + '</i>' +
+      '<span class="bs-badge ' + o.state + '">' + o.badge + '</span></span>' +
+  '</div>';
+}
+
+/** Where in the plan it broke. The paid row above and the upcoming row below
+ *  are what make the failed one cost something. */
+function bsEmiHTML(e) {
+  return '<div class="bs-emi"><div class="eh">' + e.title + '</div>' +
+    e.rows.map((r) =>
+      '<div class="bs-erow ' + r.st + '"><span class="st">' +
+        (r.st === 'due' ? r.n : (r.st === 'paid' ? BS_TICK : BS_X)) + '</span>' +
+        '<span class="tx"><b>' + r.k + '</b><i>' + r.sub + '</i></span>' +
+        '<span class="pz">' + r.v + '</span></div>').join('') +
+  '</div>';
+}
+
 /** Drawn as its own small device, labelled, so it can never be misread as the
  *  merchant's phone. This is the one moment in the run happening to someone
  *  else, somewhere else.
@@ -5435,12 +5643,12 @@ function buyscrHTML(b) {
     : b.done ? bsDoneHTML(b.done) : '';
   return '<div class="buyscr ' + b.tone + (sheet ? ' sheeted' : '') + '">' +
     '<div class="bs-tag"><span class="live"></span>' + b.tag + '</div>' +
-    '<div class="bs-brand"><span class="glyph">\u{1F3EA}</span>' +
+    '<div class="bs-brand"><span class="glyph">' + (b.glyph || '\u{1F3EA}') + '</span>' +
       '<span class="who"><span class="nm">' + b.store + '</span>' +
       '<span class="tr">Trusted by Cashfree</span></span>' +
       '<span class="amt">' + b.amount + '</span></div>' +
     (b.notif
-      ? '<div class="bs-notif"><span class="ic">\u{1F4D6}</span><span class="nx">' +
+      ? '<div class="bs-notif"><span class="ic">' + (b.notif.ic || '\u{1F4D6}') + '</span><span class="nx">' +
           '<span class="nt">' + b.notif.app + '<span class="when">' + b.notif.when + '</span></span>' +
           '<span class="nh">' + b.notif.title + '</span>' +
           '<span class="nb">' + b.notif.body + '</span></span></div>'
@@ -5452,12 +5660,15 @@ function buyscrHTML(b) {
           (BS_ICON[b.tone] || BS_BANG) + '</span>' + b.head + '</div>'
         : '') +
       (b.reason ? '<div class="bs-reason">' + b.reason + '</div>' : '') +
+      (b.order ? bsOrderHTML(b.order) : '') +
+      (b.emi ? bsEmiHTML(b.emi) : '') +
       (b.banner ? '<div class="bs-banner"><i></i>' + b.banner + '</div>' : '') +
       (b.opts
         ? '<div class="bs-opts">' + b.opts.map((o) =>
             '<div class="bs-opt' + (o.on ? ' on' : '') + '"><i></i>' + o.t + '</div>').join('') +
           '</div>'
         : '') +
+      (b.cta ? '<div class="bs-cta">' + b.cta + '</div>' : '') +
       (b.meta ? '<div class="bs-meta">' + b.meta + '</div>' : '') +
     '</div>' +
     sheet +

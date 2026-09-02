@@ -526,6 +526,28 @@ the call takes a date instead of a payment (`"Salary hasn't come in yet. Try aga
 says the plan is active, and she never had to do anything. That last beat is the whole point of
 the agent, so it gets its own step rather than being summarised in the Runs line.
 
+### Relay never speaks in em dashes
+
+**Every `say` on the three Relay agents, the `live` card's body and every line the agent
+speaks on a call are written without an em dash.** A dash where a comma, a colon or a full
+stop would do is the single loudest tell that a sentence was generated rather than written,
+and the whole point of these three demos is that a customer is about to hear this voice on a
+phone call. `1,284 paid, but 412 walked` and `the execution history: every agent` say the same
+thing without the tell.
+
+The rule is scoped to **what Relay says**, not to the file. These keep theirs, and should:
+
+| still has one | why |
+|---|---|
+| `blurb` | the section's own copy under the heading, outside the phone — the writer's voice, not the agent's |
+| `ask` | the merchant talking. People do use em dashes |
+| `head` / `reason` / `note` / `title` on `.buyscr` | the store's own screens and pushes: `Order on hold — EMI bounced` is a UI label |
+| `5–7 business days` | an en dash in a number range, which is just correct typography |
+
+**Check this whenever you add or reword a Relay reply.** Grepping the three `DEMOS` blocks for
+`—` and confirming every hit is one of the four rows above takes ten seconds and is the only
+thing standing between this and a slow drift back.
+
 Segments 2 and 3 carry **no merchant prompt at all** — the composer reads "Tap — it runs
 without you" rather than "Tap to continue". That is the product claim rendered as an
 interaction: you stop typing and it keeps going. Nothing goes live unasked either; the test
