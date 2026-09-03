@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>orb frame</title>
+<style>
+/* =====================================================================
+ * One Relay agent orb, alone, on nothing.
+ *
+ * The gradient recipes, the eye metrics and the blink keyframe are lifted
+ * verbatim from ../booth.html (the `--- the orbs ---` block). Two things are
+ * deliberately dropped for an export that has to sit on any background:
+ *
+ *   - the drop shadow, which without a ground behind it is just a grey smudge
+ *   - the rgba(255,255,255,0.2) rim, which is a rim LIGHT off the black shelf
+ *     and reads as a detached ring once the shelf is gone
+ *
+ * and one thing is added: `overflow: hidden`, so the blurred ::before artwork
+ * is clipped to the ball instead of bleeding 4% past it. On black that bleed
+ * is a soft glow; on a cut-out it is a fringe, and GIF's 1-bit alpha turns a
+ * fringe into a crust.
+ *
+ * The blink is NOT a CSS animation here. The renderer sets scaleY per frame,
+ * so every frame is the same render on any machine.
+ * ===================================================================== */
+html, body { margin: 0; padding: 0; background: transparent; }
+body { display: grid; place-items: center; width: 100vw; height: 100vh; }
+
+.orb {
+  --o: 512px;
+  position: relative; flex: none; overflow: hidden;
+  width: var(--o); height: var(--o); border-radius: 50%;
+}
+.orb::before {
+  content: ''; position: absolute; inset: -4%; border-radius: 50%;
+  filter: blur(calc(var(--o) * 0.0269));
+}
+.orb .eyes {
+  position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; gap: calc(var(--o) * 0.1538); z-index: 1;
+}
+.orb .eyes i {
+  width: calc(var(--o) * 0.0962); height: calc(var(--o) * 0.1923);
+  border-radius: calc(var(--o) * 0.0769); display: block;
+  background: #15191a; transform-origin: 50% 50%;
+}
+
+/* Cart Recovery - green with a sky-blue crown, lime left glow, gold fleck bottom-right */
+.o1 { background: #10ab50; }
+.o1::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 66%, rgba(8,70,45,.10) 88%, rgba(8,70,45,.16) 100%),
+  radial-gradient(70% 66% at 104% 100%, rgba(216,182,46,.95) 0%, rgba(216,182,46,.5) 38%, rgba(216,182,46,0) 62%),
+  radial-gradient(30% 36% at 106% 50%, rgba(228,246,240,.85) 0%, rgba(228,246,240,0) 60%),
+  radial-gradient(94% 64% at 66% -14%, #85cfee 0%, #7ac8de 24%, rgba(106,196,196,.85) 44%, rgba(120,200,205,.35) 60%, rgba(120,200,205,0) 74%),
+  radial-gradient(42% 48% at 108% 24%, rgba(122,202,224,.9) 0%, rgba(122,202,224,0) 62%),
+  radial-gradient(74% 100% at -10% 74%, #e4f8ac 0%, rgba(170,235,148,.9) 30%, rgba(170,235,148,.35) 54%, rgba(170,235,148,0) 68%),
+  radial-gradient(36% 36% at -4% 22%, rgba(150,225,175,.55) 0%, rgba(150,225,175,0) 62%),
+  radial-gradient(circle at 46% 54%, #1cb75a 0%, #10ab50 52%, #0a9846 100%); }
+
+/* Payment Recovery - bright yellow into olive, cream and peach left glow */
+.o2 { background: #d5cd2b; }
+.o2::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(92,92,24,.10) 90%, rgba(92,92,24,.16) 100%),
+  radial-gradient(60% 50% at 62% 106%, rgba(58,80,20,.92) 0%, rgba(58,80,20,.45) 40%, rgba(58,80,20,0) 66%),
+  radial-gradient(36% 34% at 4% 8%, rgba(246,216,170,.95) 0%, rgba(246,216,170,0) 62%),
+  radial-gradient(30% 30% at 4% 92%, rgba(246,214,168,.85) 0%, rgba(246,214,168,0) 62%),
+  radial-gradient(52% 58% at -8% 55%, rgba(252,248,230,.95) 0%, rgba(235,235,198,.7) 40%, rgba(235,235,198,0) 68%),
+  radial-gradient(circle at 44% 14%, #f7e315 0%, #ecda1e 24%, #d5cd2b 44%, #b1b733 64%, #94a02f 84%, #8b9430 100%); }
+
+/* EMI Collection - lilac with a gold spot, mint and sage left rim, violet base */
+.o4 { background: #c8b4ee; }
+.o4::before { background:
+  radial-gradient(100% 100% at 50% 50%, rgba(0,0,0,0) 68%, rgba(80,58,130,.10) 90%, rgba(80,58,130,.16) 100%),
+  radial-gradient(98% 84% at 50% 128%, #8a4be6 0%, rgba(142,84,232,.95) 28%, rgba(150,100,234,.6) 48%, rgba(158,116,236,.22) 62%, rgba(158,116,236,0) 72%),
+  radial-gradient(34% 32% at 6% 6%, #eec84e 0%, rgba(238,200,78,.55) 46%, rgba(238,200,78,0) 70%),
+  radial-gradient(28% 46% at -6% 40%, rgba(216,230,200,.95) 0%, rgba(216,230,200,0) 58%),
+  radial-gradient(26% 26% at 2% 78%, rgba(205,188,106,.85) 0%, rgba(205,188,106,0) 60%),
+  radial-gradient(26% 44% at 102% 26%, rgba(150,204,200,.8) 0%, rgba(150,204,200,0) 58%),
+  radial-gradient(56% 38% at 55% -8%, rgba(196,206,242,.85) 0%, rgba(196,206,242,0) 58%),
+  radial-gradient(circle at 52% 34%, #ddd4f4 0%, #cdbcee 48%, #b493ea 100%); }
+</style>
+</head>
+<body>
+<span class="orb o1" id="orb"><span class="eyes"><i></i><i></i></span></span>
+<script>
+  const orb  = document.getElementById('orb');
+  const eyes = orb.querySelectorAll('.eyes i');
+
+  /* the renderer drives these two, one call per frame */
+  window.setOrb = (cls, size) => {
+    orb.className = 'orb ' + cls;
+    orb.style.setProperty('--o', size + 'px');
+  };
+  window.setEye = (k) => {
+    eyes.forEach((e) => { e.style.transform = 'scaleY(' + k + ')'; });
+  };
+</script>
+</body>
+</html>
